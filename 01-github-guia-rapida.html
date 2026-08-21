@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GitHub ��� Gu��a R��pida</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">body{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6;color:#172B4D;max-width:1100px;margin:0 auto;padding:24px}
+h1{font-size:28px;color:#172B4D;border-bottom:2px solid #DFE1E6;padding-bottom:8px}
+h2{font-size:22px;color:#0052CC;margin-top:32px;border-bottom:1px solid #DFE1E6;padding-bottom:6px}
+h3{font-size:17px;color:#172B4D;margin-top:22px}
+h4{font-size:15px;color:#42526E}
+table{border-collapse:collapse;width:100%;margin:14px 0}
+th{background:#F4F5F7;border:1px solid #DFE1E6;padding:8px 10px;text-align:left;font-weight:600}
+td{border:1px solid #DFE1E6;padding:8px 10px;vertical-align:top}
+code{background:#F4F5F7;color:#172B4D;padding:2px 5px;border-radius:3px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+pre{background:#F4F5F7;border:1px solid #DFE1E6;border-radius:3px;padding:12px;overflow-x:auto}
+pre code{background:none;padding:0}
+blockquote{border-left:3px solid #0052CC;background:#DEEBFF;margin:14px 0;padding:10px 16px;color:#172B4D}
+hr{border:none;border-top:1px solid #DFE1E6;margin:28px 0}
+ul,ol{padding-left:24px}
+a{color:#0052CC}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">GitHub ��� Gu��a R��pida</h1>
+</header>
+<h1 id="github--guía-rápida">GitHub — Guía Rápida</h1>
+<blockquote>
+<p><strong>Esta es la página que usas todos los días.</strong> Para
+permisos, creación de repos y gobierno: <a href="#">Estándares
+GitHub</a>.</p>
+</blockquote>
+<hr />
+<h2 id="-configuración-inicial">🔧 Configuración inicial</h2>
+<blockquote>
+<p><strong>Solo la primera vez.</strong> Si ya tienes tu Git
+configurado, salta a la siguiente sección.</p>
+</blockquote>
+<h3 id="1-identifícate">1. Identifícate</h3>
+<p>Esto define el nombre y correo que aparecerán en cada commit que
+hagas. <strong>Usa tu correo corporativo</strong>, o tus commits no se
+vincularán a tu usuario de GitHub.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.name <span class="st">&quot;Nombre Apellido&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> user.email <span class="st">&quot;nombre.apellido@empresa.com&quot;</span></span></code></pre></div>
+<h3 id="2-configuración-recomendada">2. Configuración recomendada</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> init.defaultBranch main   <span class="co"># main como rama por defecto</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> pull.rebase true          <span class="co"># rebase en vez de merge al hacer pull</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> core.autocrlf input       <span class="co"># saltos de línea (usa &quot;true&quot; en Windows)</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--global</span> push.default current      <span class="co"># push a la rama con el mismo nombre</span></span></code></pre></div>
+<h3 id="3-verifica">3. Verifica</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> config <span class="at">--list</span> <span class="at">--global</span></span></code></pre></div>
+<h3 id="4-habilita-2fa-y-sso">4. Habilita 2FA y SSO</h3>
+<p>En GitHub: <strong>Settings → Password and authentication →
+Two-factor authentication</strong>. Es obligatorio en la organización.
+Sin 2FA no tendrás acceso a los repos.</p>
+<blockquote>
+<p>🖼️ <strong>Pantallazo #1:</strong> pantalla de configuración de 2FA
+en GitHub.</p>
+</blockquote>
+<h3 id="5-configura-tu-acceso-ssh-o-token">5. Configura tu acceso (SSH o
+Token)</h3>
+<p><strong>Opción A — SSH (recomendado):</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh-keygen</span> <span class="at">-t</span> ed25519 <span class="at">-C</span> <span class="st">&quot;nombre.apellido@empresa.com&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> ~/.ssh/id_ed25519.pub          <span class="co"># copia esta salida</span></span></code></pre></div>
+<p>Pega la llave en <strong>GitHub → Settings → SSH and GPG keys → New
+SSH key</strong>, y autorízala para el SSO de la organización.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-T</span> git@github.com              <span class="co"># verifica la conexión</span></span></code></pre></div>
+<blockquote>
+<p>🖼️ <strong>Pantallazo #2:</strong> pantalla de &quot;SSH and GPG keys&quot;
+mostrando dónde pegar la llave y el botón de &quot;Configure SSO&quot;.</p>
+</blockquote>
+<p><strong>Opción B — Personal Access Token:</strong></p>
+<p><strong>Settings → Developer settings → Personal access tokens →
+Fine-grained tokens</strong>. Expiración máxima 90 días. Guárdalo en tu
+gestor de contraseñas, <strong>nunca en un archivo del
+proyecto</strong>.</p>
+<blockquote>
+<p>🖼️ <strong>Pantallazo #3:</strong> creación de un fine-grained token
+con los permisos mínimos señalados.</p>
+</blockquote>
+<hr />
+<h2 id="-el-flujo-de-principio-a-fin">🚀 El flujo, de principio a
+fin</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Clona el repo (solo la primera vez)</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:banamex-payments/payments-transfers-api.git</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> payments-transfers-api</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Actualiza main</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout main <span class="kw">&amp;&amp;</span> <span class="fu">git</span> pull</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Crea tu rama (con la clave de Jira)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> feature/PAY-1234-transfer-limits</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Trabaja y haz commits pequeños</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(transfers): add daily limit validation&quot;</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Sincroniza (mínimo 1 vez al día)</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> fetch origin <span class="kw">&amp;&amp;</span> <span class="fu">git</span> rebase origin/main</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. Publica</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin feature/PAY-1234-transfer-limits</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 7. Abre el PR en GitHub → asigna revisores → atiende comentarios</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 8. Squash and merge (cuando esté aprobado y en verde)</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># 9. Limpia</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout main <span class="kw">&amp;&amp;</span> <span class="fu">git</span> pull <span class="kw">&amp;&amp;</span> <span class="fu">git</span> branch <span class="at">-d</span> feature/PAY-1234-transfer-limits</span></code></pre></div>
+<blockquote>
+<p>🖼️ <strong>Pantallazo #4:</strong> botón &quot;Code&quot; del repo mostrando la
+URL SSH lista para copiar.</p>
+</blockquote>
+<hr />
+<h2 id="-comandos-más-usados">💻 Comandos más usados</h2>
+<h3 id="clonar-y-empezar">Clonar y empezar</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="op">&lt;</span>url<span class="op">&gt;</span>                     # Clonar un repositorio</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone <span class="op">&lt;</span>url<span class="op">&gt;</span> <span class="op">&lt;</span>carpeta<span class="op">&gt;</span>           # Clonar en una carpeta con otro nombre</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote <span class="at">-v</span>                       <span class="co"># Ver a qué remoto apunta el repo</span></span></code></pre></div>
+<h3 id="ver-en-qué-voy">Ver en qué voy</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> status                          <span class="co"># Qué cambió, qué está preparado</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff                            <span class="co"># Cambios que aún NO preparé</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> diff <span class="at">--staged</span>                   <span class="co"># Cambios que YA preparé</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> log <span class="at">--oneline</span> <span class="at">--graph</span> <span class="at">--decorate</span> <span class="at">-10</span>   <span class="co"># Últimos 10 commits, visual</span></span></code></pre></div>
+<h3 id="preparar-y-confirmar-commit">Preparar y confirmar (commit)</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .                           <span class="co"># Preparar todos los cambios</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="op">&lt;</span>archivo<span class="op">&gt;</span>                   # Preparar un archivo específico</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-p</span>                          <span class="co"># Preparar por partes (revisas cada trozo)</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> restore <span class="at">--staged</span> <span class="op">&lt;</span>archivo<span class="op">&gt;</span>      # Sacar un archivo del staging</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat(scope): mensaje&quot;</span>        <span class="co"># Confirmar</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-am</span> <span class="st">&quot;fix(scope): mensaje&quot;</span>        <span class="co"># Preparar + confirmar (solo archivos ya rastreados)</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">--amend</span>                          <span class="co"># Corregir el último commit (solo si NO lo has pusheado)</span></span></code></pre></div>
+<h3 id="ramas">Ramas</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> branch                          <span class="co"># Ramas locales</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> branch <span class="at">-a</span>                       <span class="co"># Todas, incluidas las remotas</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="op">&lt;</span>rama<span class="op">&gt;</span>                 # Cambiar de rama</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> <span class="op">&lt;</span>rama-nueva<span class="op">&gt;</span>        # Crear y cambiar</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> branch <span class="at">-d</span> <span class="op">&lt;</span>rama<span class="op">&gt;</span>                # Borrar rama local</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push origin <span class="at">--delete</span> <span class="op">&lt;</span>rama<span class="op">&gt;</span>     # Borrar rama remota</span></code></pre></div>
+<h3 id="sincronizar">Sincronizar</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull                            <span class="co"># Traer y aplicar cambios</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> fetch origin                    <span class="co"># Traer referencias sin aplicar nada</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> rebase origin/main              <span class="co"># Reaplicar mis commits sobre main</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push                            <span class="co"># Publicar</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin <span class="op">&lt;</span>rama<span class="op">&gt;</span>           # Publicar rama nueva y vincularla</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote prune origin             <span class="co"># Limpiar referencias a ramas ya borradas</span></span></code></pre></div>
+<h3 id="guardar-trabajo-a-medias">Guardar trabajo a medias</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> stash                           <span class="co"># Guardar cambios sin commitear</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> stash list                      <span class="co"># Ver lo guardado</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> stash pop                       <span class="co"># Recuperar lo último guardado</span></span></code></pre></div>
+<h3 id="deshacer">Deshacer</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> restore <span class="op">&lt;</span>archivo<span class="op">&gt;</span>               # Descartar cambios locales de un archivo</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> reset <span class="at">--soft</span> HEAD~1             <span class="co"># Deshacer último commit, conservando los cambios</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> revert <span class="op">&lt;</span>hash<span class="op">&gt;</span>                   # Revertir un commit ya publicado <span class="er">(</span><span class="ex">seguro</span><span class="kw">)</span></span></code></pre></div>
+<p>⛔ <strong>Prohibido en ramas compartidas:</strong>
+<code>git push --force</code> y <code>git reset --hard</code>. En tu
+propia rama, usa <code>git push --force-with-lease</code>.</p>
+<hr />
+<h2 id="-nombres-de-ramas">🌿 Nombres de ramas</h2>
+<pre><code>&lt;tipo&gt;/&lt;CLAVE-JIRA&gt;-&lt;descripcion-corta-en-ingles&gt;</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>Tipo</th>
+<th>Cuándo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>feature/</code></td>
+<td>Funcionalidad nueva</td>
+</tr>
+<tr class="even">
+<td><code>bugfix/</code></td>
+<td>Defecto en desarrollo</td>
+</tr>
+<tr class="odd">
+<td><code>hotfix/</code></td>
+<td>Defecto <strong>en producción</strong>, urgente</td>
+</tr>
+<tr class="even">
+<td><code>refactor/</code></td>
+<td>Cambio interno, sin cambio funcional</td>
+</tr>
+<tr class="odd">
+<td><code>chore/</code></td>
+<td>Dependencias, configuración, mantenimiento</td>
+</tr>
+</tbody>
+</table>
+<p>✅ <code>feature/PAY-1234-transfer-limits</code> ❌
+<code>feature/nueva-funcionalidad</code> · <code>juan-fix</code> ·
+<code>PAY-1234</code></p>
+<p><strong>La clave de Jira en MAYÚSCULAS</strong> — es lo que vincula
+la rama al ticket automáticamente.</p>
+<hr />
+<h2 id="-mensajes-de-commit">📝 Mensajes de commit</h2>
+<pre><code>&lt;tipo&gt;(&lt;alcance&gt;): &lt;qué hace, en imperativo e inglés&gt;</code></pre>
+<p>✅ <code>feat(transfers): add daily limit validation</code> ✅
+<code>fix(auth): prevent session timeout on refresh</code> ❌
+<code>cambios</code> · <code>WIP</code> ·
+<code>arreglos varios v2</code></p>
+<p>Tipos: <code>feat</code> <code>fix</code> <code>refactor</code>
+<code>perf</code> <code>test</code> <code>docs</code> <code>build</code>
+<code>ci</code> <code>chore</code></p>
+<hr />
+<h2 id="-pull-requests">🔀 Pull Requests</h2>
+<p><strong>Título:</strong>
+<code>[PAY-1234] feat(transfers): add daily limit validation</code></p>
+<p><strong>Antes de abrirlo:</strong></p>
+<ul class="task-list">
+<li><label><input type="checkbox"></input>Rama sincronizada con
+<code>main</code></label></li>
+<li><label><input type="checkbox"></input>Build y pruebas pasan
+local</label></li>
+<li><label><input type="checkbox"></input>Sin credenciales, tokens ni datos de
+clientes</label></li>
+<li><label><input type="checkbox"></input>Sin <code>console.log</code> ni
+código comentado</label></li>
+</ul>
+<p><strong>Tamaño:</strong> menos de 400 líneas. Si es más, divídelo —
+un PR grande no se revisa, se aprueba.</p>
+<p><strong>Reglas:</strong></p>
+<ul>
+<li>2 revisores mínimo · SLA de revisión: 24h hábiles</li>
+<li>No apruebas tu propio PR</li>
+<li>No se hace merge con checks en rojo</li>
+<li><strong>Squash and merge</strong> siempre</li>
+</ul>
+<blockquote>
+<p>🖼️ <strong>Pantallazo #5:</strong> pantalla de creación del PR,
+señalando dónde va el título, revisores y labels.</p>
+</blockquote>
+<blockquote>
+<p>🖼️ <strong>Pantallazo #6:</strong> PR abierto mostrando los checks de
+CI en verde y el botón &quot;Squash and merge&quot; desplegado.</p>
+</blockquote>
+<hr />
+<h2 id="-las-5-reglas-que-no-se-rompen">⛔ Las 5 reglas que no se
+rompen</h2>
+<ol type="1">
+<li><strong>Nunca push directo a <code>main</code>.</strong> Todo pasa
+por PR, sin importar el tamaño del cambio.</li>
+<li><strong>Una rama = un ticket de Jira.</strong></li>
+<li><strong>Ramas cortas.</strong> Más de 5 días vivas = el alcance está
+mal dimensionado.</li>
+<li><strong>Cero secretos en el repo.</strong> Ni tokens, ni
+<code>.env</code> con valores reales, ni datos de clientes.</li>
+<li><strong>Sincroniza a diario</strong> con <code>main</code>.</li>
+</ol>
+<hr />
+<h2 id="-se-me-complicó-algo">🆘 Se me complicó algo</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Situación</th>
+<th>Qué hacer</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Conflictos con <code>main</code></strong></td>
+<td><code>git fetch origin</code> → <code>git rebase origin/main</code>
+→ resolver → <code>git add &lt;archivo&gt;</code> →
+<code>git rebase --continue</code> →
+<code>git push --force-with-lease</code></td>
+</tr>
+<tr class="even">
+<td><strong>Commiteé en <code>main</code> por error</strong></td>
+<td><code>git reset --soft HEAD~1</code> → crea la rama correcta →
+commitea ahí</td>
+</tr>
+<tr class="odd">
+<td><strong>Subí un secreto</strong></td>
+<td>🚨 <strong>Rota la credencial de inmediato</strong>, avisa a
+Seguridad y a tu Tech Lead. Borrarlo en un commit nuevo <strong>no lo
+elimina</strong> del historial.</td>
+</tr>
+<tr class="even">
+<td><strong>Me pide usuario y contraseña al hacer push</strong></td>
+<td>Estás usando HTTPS sin token. Cambia a SSH o genera un fine-grained
+token.</td>
+</tr>
+<tr class="odd">
+<td><strong>&quot;Permission denied (publickey)&quot;</strong></td>
+<td>Tu llave SSH no está registrada o no tiene SSO autorizado. Revisa el
+paso 5 de configuración inicial.</td>
+</tr>
+<tr class="even">
+<td><strong>Nadie revisa mi PR (&gt;24h)</strong></td>
+<td>Escala con tu Tech Lead</td>
+</tr>
+<tr class="odd">
+<td><strong>Necesito acceso a un repo</strong></td>
+<td>Ticket de Jira solicitando ingreso al Team. No se dan accesos por
+mensaje directo.</td>
+</tr>
+<tr class="even">
+<td><strong>Necesito un repo nuevo</strong></td>
+<td>Ticket de Jira. Nadie crea repos a mano.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>📖 <strong>Detalle completo:</strong> <a href="#">Estándares
+GitHub</a> · ❓ <strong>Dudas:</strong> canal
+<code>#devops-soporte</code></p>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GitHub ��� Est��ndares de la Organizaci��n</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style type="text/css">body{font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.6;color:#172B4D;max-width:1100px;margin:0 auto;padding:24px}
+h1{font-size:28px;color:#172B4D;border-bottom:2px solid #DFE1E6;padding-bottom:8px}
+h2{font-size:22px;color:#0052CC;margin-top:32px;border-bottom:1px solid #DFE1E6;padding-bottom:6px}
+h3{font-size:17px;color:#172B4D;margin-top:22px}
+h4{font-size:15px;color:#42526E}
+table{border-collapse:collapse;width:100%;margin:14px 0}
+th{background:#F4F5F7;border:1px solid #DFE1E6;padding:8px 10px;text-align:left;font-weight:600}
+td{border:1px solid #DFE1E6;padding:8px 10px;vertical-align:top}
+code{background:#F4F5F7;color:#172B4D;padding:2px 5px;border-radius:3px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+pre{background:#F4F5F7;border:1px solid #DFE1E6;border-radius:3px;padding:12px;overflow-x:auto}
+pre code{background:none;padding:0}
+blockquote{border-left:3px solid #0052CC;background:#DEEBFF;margin:14px 0;padding:10px 16px;color:#172B4D}
+hr{border:none;border-top:1px solid #DFE1E6;margin:28px 0}
+ul,ol{padding-left:24px}
+a{color:#0052CC}
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">GitHub ��� Est��ndares de la Organizaci��n</h1>
+</header>
+<h1 id="github--estándares-de-la-organización">GitHub — Estándares de la
+Organización</h1>
+<blockquote>
+<p><strong>Documento de consulta, no de lectura obligatoria.</strong>
+Para el trabajo diario usa la <a href="#">Guía Rápida</a>. Aquí está el
+&quot;por qué&quot; y las reglas que aplican a nivel de organización.</p>
+</blockquote>
+<p><strong>Owner:</strong> Equipo DevOps – Plataforma ·
+<strong>Versión:</strong> 1.0 · <strong>Actualizado:</strong>
+<em>(fecha)</em></p>
+<hr />
+<h2 id="1-estructura-organizacional">1. Estructura organizacional</h2>
+<pre><code>Enterprise (Banamex)
+└── Organization: banamex-&lt;dominio&gt;
+    ├── Teams (developers, devops, qa, owners)
+    └── Repositories</code></pre>
+<p><strong>Regla de oro: los permisos se otorgan a Teams, nunca a
+personas.</strong></p>
+<p>Cuando alguien entra o sale del proyecto se toca un solo lugar. Con
+accesos individuales el offboarding es imposible de auditar.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Team</th>
+<th>Permiso</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>&lt;dominio&gt;-owners</code></td>
+<td>Admin</td>
+</tr>
+<tr class="even">
+<td><code>&lt;dominio&gt;-devops</code></td>
+<td>Maintain</td>
+</tr>
+<tr class="odd">
+<td><code>&lt;dominio&gt;-developers</code></td>
+<td>Write</td>
+</tr>
+<tr class="even">
+<td><code>&lt;dominio&gt;-qa</code></td>
+<td>Write o Triage</td>
+</tr>
+<tr class="odd">
+<td><code>&lt;dominio&gt;-readonly</code></td>
+<td>Read</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-permisos">2. Permisos</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Nivel</th>
+<th>Puede</th>
+<th>Perfil</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Read</strong></td>
+<td>Ver, clonar, comentar</td>
+<td>Stakeholders, auditoría</td>
+</tr>
+<tr class="even">
+<td><strong>Triage</strong></td>
+<td>+ gestionar issues y PRs (sin escribir código)</td>
+<td>QA, soporte</td>
+</tr>
+<tr class="odd">
+<td><strong>Write</strong></td>
+<td>+ push, crear PRs, aprobar</td>
+<td>Desarrolladores</td>
+</tr>
+<tr class="even">
+<td><strong>Maintain</strong></td>
+<td>+ configurar el repo y sus secrets</td>
+<td>Tech leads, DevOps</td>
+</tr>
+<tr class="odd">
+<td><strong>Admin</strong></td>
+<td>Control total (borrar, cambiar visibilidad, accesos)</td>
+<td>Plataforma</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Principios:</strong></p>
+<ul>
+<li>Mínimo privilegio: el permiso más bajo que permita trabajar.</li>
+<li><code>Admin</code> es excepcional — máximo 2–3 personas por
+organización.</li>
+<li>Toda solicitud de acceso pasa por Jira.</li>
+<li>Revisión trimestral de accesos.</li>
+</ul>
+<p><strong>Obligatorio en toda cuenta:</strong> 2FA habilitado, acceso
+vía SSO corporativo, tokens fine-grained con expiración máxima de 90
+días. Prohibido compartir credenciales.</p>
+<hr />
+<h2 id="3-nombres-de-repositorios">3. Nombres de repositorios</h2>
+<pre><code>&lt;dominio&gt;-&lt;producto&gt;-&lt;tipo&gt;</code></pre>
+<p>Todo en minúsculas, <code>kebab-case</code>, en inglés, máximo 50
+caracteres.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Sufijo</th>
+<th>Para</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>-api</code></td>
+<td>Servicios expuestos</td>
+</tr>
+<tr class="even">
+<td><code>-service</code></td>
+<td>Microservicios internos</td>
+</tr>
+<tr class="odd">
+<td><code>-web</code> / <code>-mobile</code></td>
+<td>Aplicaciones</td>
+</tr>
+<tr class="even">
+<td><code>-lib</code></td>
+<td>Librerías reutilizables</td>
+</tr>
+<tr class="odd">
+<td><code>-infra</code></td>
+<td>Infraestructura como código</td>
+</tr>
+<tr class="even">
+<td><code>-docs</code></td>
+<td>Documentación</td>
+</tr>
+<tr class="odd">
+<td><code>-tools</code></td>
+<td>Utilidades internas</td>
+</tr>
+</tbody>
+</table>
+<p>✅ <code>payments-transfers-api</code> ·
+<code>cards-fraud-service</code> · <code>core-logging-lib</code> ❌
+<code>API_Pagos_Nueva</code> · <code>proyecto-juan</code> ·
+<code>backend2</code> · <code>repo-v2-final</code></p>
+<p><strong>Nunca:</strong> guiones bajos, mayúsculas, nombres de
+personas, sufijos de versión (<code>-v2</code>, <code>-new</code>,
+<code>-old</code>).</p>
+<hr />
+<h2 id="4-creación-de-repositorios">4. Creación de repositorios</h2>
+<p><strong>Ningún repositorio se crea manualmente desde GitHub.</strong>
+Todo nace de un ticket de Jira para asegurar trazabilidad y aplicación
+automática de estándares.</p>
+<h3 id="flujo">Flujo</h3>
+<p><code>Solicitud en Jira</code> → <code>Aprobación Tech Lead</code> →
+<code>Creación automatizada</code> → <code>Entrega</code></p>
+<h3 id="datos-obligatorios-del-ticket">Datos obligatorios del
+ticket</h3>
+<ul>
+<li>Nombre propuesto (según sección 3)</li>
+<li>Dominio dueño + Tech Lead aprobador</li>
+<li>Descripción funcional (2–3 líneas)</li>
+<li>Tipo de repo y stack principal</li>
+<li>Teams que requieren acceso y nivel</li>
+<li>¿Maneja datos sensibles o regulados?</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th>Campo Jira</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Proyecto</td>
+<td><code>_____</code></td>
+</tr>
+<tr class="even">
+<td>Tipo de issue</td>
+<td><code>_____</code></td>
+</tr>
+<tr class="odd">
+<td>Label</td>
+<td><code>_____</code></td>
+</tr>
+<tr class="even">
+<td>SLA</td>
+<td><code>_____</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="qué-se-aplica-automáticamente-al-crearlo">Qué se aplica
+automáticamente al crearlo</h3>
+<p><code>main</code> protegida · <code>README.md</code> ·
+<code>.gitignore</code> · <code>CODEOWNERS</code> · plantilla de PR ·
+labels estándar · teams asignados · secret scanning · Dependabot</p>
+<hr />
+<h2 id="5-estrategia-de-ramas">5. Estrategia de ramas</h2>
+<p><strong>Trunk-based con ramas de corta duración.</strong>
+<code>main</code> es la única fuente de verdad.</p>
+<pre><code>main ────●────────●────────●────────●──────▶
+          \      /          \      /
+           ●────●            ●────●
+       feature/PAY-1234   bugfix/PAY-1235</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th>Rama</th>
+<th>Duración</th>
+<th>Nace de</th>
+<th>Vuelve a</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>main</code></td>
+<td>Permanente</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><code>feature/*</code> <code>bugfix/*</code></td>
+<td>Máx. 5 días hábiles</td>
+<td><code>main</code></td>
+<td><code>main</code></td>
+</tr>
+<tr class="odd">
+<td><code>hotfix/*</code></td>
+<td>Horas</td>
+<td><code>main</code></td>
+<td><code>main</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Hotfix:</strong> nace de <code>main</code>, revisión
+acelerada (1 aprobador + Tech Lead), merge + tag patch.</p>
+<blockquote>
+<p><strong>Nota:</strong> si el dominio trabaja con ventanas de
+despliegue fijas o certificación previa, aplica el modelo con rama
+<code>develop</code>. Coordinar con el Tech Lead.</p>
+</blockquote>
+<hr />
+<h2 id="6-protección-de-ramas">6. Protección de ramas</h2>
+<p>Se aplica vía <strong>Rulesets a nivel de organización</strong> —
+ningún repo queda sin protección.</p>
+<p>Sobre <code>main</code>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Regla</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>PR obligatorio antes de merge</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>Aprobaciones requeridas</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>Descartar aprobaciones al subir commits nuevos</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>Revisión de Code Owners</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>Status checks (build, tests, SAST, lint)</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>Rama actualizada con <code>main</code></td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>Conversaciones resueltas</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>Historial lineal</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>Bloquear force push y borrado</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>Aplica también a administradores</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Estrategia de merge:</strong> Squash and merge por defecto.
+Rebase caso a caso. Merge commit deshabilitado.</p>
+<hr />
+<h2 id="7-labels-estándar">7. Labels estándar</h2>
+<p>Todos los repos se crean con el mismo set. Filtrado y reportería
+homogénea.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Grupo</th>
+<th>Labels</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Tipo</strong></td>
+<td><code>type: feature</code> · <code>type: bug</code> ·
+<code>type: hotfix</code> · <code>type: refactor</code> ·
+<code>type: docs</code> · <code>type: chore</code></td>
+</tr>
+<tr class="even">
+<td><strong>Prioridad</strong></td>
+<td><code>priority: critical</code> · <code>high</code> ·
+<code>medium</code> · <code>low</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Estado</strong></td>
+<td><code>status: wip</code> · <code>ready for review</code> ·
+<code>changes requested</code> · <code>blocked</code></td>
+</tr>
+<tr class="even">
+<td><strong>Área</strong></td>
+<td><code>area: backend</code> · <code>frontend</code> ·
+<code>infra</code> · <code>ci-cd</code> · <code>security</code> ·
+<code>database</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Especiales</strong></td>
+<td><code>breaking change</code> · <code>needs discussion</code> ·
+<code>dependencies</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Reglas:</strong> todo PR lleva mínimo un <code>type:</code> y
+un <code>priority:</code>. Los labels no se crean ad hoc por repo — se
+solicitan vía Jira para agregarlos al set de la organización.</p>
+<p><em>(Colores hex definidos en el script de
+aprovisionamiento.)</em></p>
+<hr />
+<h2 id="8-integración-con-jira">8. Integración con Jira</h2>
+<p>Cuando la clave de Jira aparece en la rama, el commit y el título del
+PR, Jira muestra automáticamente ramas, commits, estado del PR y
+despliegue. <strong>Esto elimina el reporte manual de
+avance.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>Evento en GitHub</th>
+<th>Estado en Jira</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Se crea la rama</td>
+<td>In Progress</td>
+</tr>
+<tr class="even">
+<td>Se abre el PR</td>
+<td>In Review</td>
+</tr>
+<tr class="odd">
+<td>Se aprueba</td>
+<td>Ready to Merge</td>
+</tr>
+<tr class="even">
+<td>Merge a <code>main</code></td>
+<td><code>_____</code></td>
+</tr>
+<tr class="odd">
+<td>Despliegue a producción</td>
+<td>Done</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-seguridad">9. Seguridad</h2>
+<h3 id="nunca-al-repositorio">Nunca al repositorio</h3>
+<p>Contraseñas, tokens, API keys, certificados privados,
+<code>.env</code> con valores reales, cadenas de conexión, datos de
+clientes reales, dumps de BD productiva, llaves SSH privadas.</p>
+<p>⚠️ <strong>Borrar un secreto en un commit posterior no lo
+elimina</strong> — queda en el historial. Si se sube: <strong>rotar la
+credencial de inmediato</strong> y reportar a Seguridad.</p>
+<h3 id="dónde-van-los-secretos">Dónde van los secretos</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Contexto</th>
+<th>Mecanismo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Local</td>
+<td><code>.env</code> en <code>.gitignore</code> +
+<code>.env.example</code> sin valores</td>
+</tr>
+<tr class="even">
+<td>CI/CD</td>
+<td>GitHub Secrets (org o repo)</td>
+</tr>
+<tr class="odd">
+<td>Runtime</td>
+<td>Gestor de secretos corporativo</td>
+</tr>
+</tbody>
+</table>
+<h3 id="controles-habilitados-por-defecto">Controles habilitados por
+defecto</h3>
+<p>Secret Scanning con Push Protection · Dependabot (alertas y updates)
+· Code Scanning (SAST) · Audit Log</p>
+<hr />
+<h2 id="10-versionamiento">10. Versionamiento</h2>
+<p><strong>SemVer:</strong> <code>MAJOR.MINOR.PATCH</code> → tag
+<code>v2.4.1</code></p>
+<ul>
+<li><strong>MAJOR</strong> — rompe compatibilidad</li>
+<li><strong>MINOR</strong> — funcionalidad compatible</li>
+<li><strong>PATCH</strong> — corrección sin cambio de contrato</li>
+</ul>
+<p>Cada liberación a producción genera un Release en GitHub con tag,
+notas (generadas desde los Conventional Commits) y tickets de Jira
+incluidos.</p>
+<hr />
+<h2 id="anexo--vengo-de-bitbucket">Anexo — Vengo de Bitbucket</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Bitbucket</th>
+<th>GitHub</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Project</td>
+<td>Organization / Teams</td>
+</tr>
+<tr class="even">
+<td>Pipelines</td>
+<td>GitHub Actions</td>
+</tr>
+<tr class="odd">
+<td>Branch permissions</td>
+<td>Branch protection / Rulesets</td>
+</tr>
+<tr class="even">
+<td>Default reviewers</td>
+<td>Archivo <code>CODEOWNERS</code></td>
+</tr>
+<tr class="odd">
+<td>Workspace</td>
+<td>Enterprise</td>
+</tr>
+</tbody>
+</table>
+<p>Repository, Branch, Pull Request, Reviewer, Merge y Commit funcionan
+igual. <strong>Los comandos de Git no cambian</strong> — solo cambia la
+plataforma que los aloja.</p>
+<hr />
+<h2 id="control-de-cambios">Control de cambios</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Versión</th>
+<th>Fecha</th>
+<th>Autor</th>
+<th>Cambios</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1.0</td>
+<td><em>(fecha)</em></td>
+<td><em>(autor)</em></td>
+<td>Versión inicial</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
