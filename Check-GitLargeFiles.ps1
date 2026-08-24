@@ -44,7 +44,9 @@ param(
     [int]   $ThresholdMB       = 50,
     [int]   $StripMB           = 100,
     [string]$OutputDir         = ".\reporte-migracion",
-    [switch]$SkipBranchMapping
+    [switch]$SkipBranchMapping,
+    [switch]$IncludePullRequestRefs,
+    [int]   $MaxRamasMostradas = 8
 )
 
 $ErrorActionPreference = "Stop"
@@ -62,6 +64,12 @@ function Write-Section($t) {
     Write-Host ("=" * 78) -ForegroundColor DarkGray
     Write-Host "  $t" -ForegroundColor Cyan
     Write-Host ("=" * 78) -ForegroundColor DarkGray
+}
+
+# Escape HTML sin depender de System.Web (no existe en PowerShell 7)
+function ConvertTo-HtmlSafe([string]$s) {
+    if ([string]::IsNullOrEmpty($s)) { return "" }
+    return $s.Replace('&','&amp;').Replace('<','&lt;').Replace('>','&gt;').Replace('"','&quot;')
 }
 
 # Encoding correcto para paths con tildes
@@ -116,6 +124,15 @@ $blobRefs = @{}   # sha -> HashSet de refs
 if (-not $SkipBranchMapping) {
     $refs = & git -C $RepoPath for-each-ref --format="%(refname)" refs/heads refs/remotes refs/tags |
             Where-Object { $_ -notmatch '/HEAD$' }
+
+    if (-not $IncludePullRequestRefs) {
+        $antes = $refs.Count
+        $refs = $refs | Where-Object { $_ -notmatch 'pull-requests?/' -and $_ -notmatch 'refs/pull/' }
+        $filtradas = $antes - $refs.Count
+        if ($filtradas -gt 0) {
+            Write-Host "      $filtradas refs de pull-requests excluidas (usa -IncludePullRequestRefs para incluirlas)" -ForegroundColor DarkGray
+        }
+    }
 
     Write-Host "[2/4] Cruzando contra $($refs.Count) refs..." -ForegroundColor Yellow
 
@@ -177,8 +194,17 @@ $reporte = $filas | Group-Object Path | ForEach-Object {
         if ($g.Refs) { foreach ($r in $g.Refs) { [void]$todasRefs.Add($r) } }
     }
 
-    $ramas = ($todasRefs | Where-Object { $_ -notlike 'tag:*' } | Sort-Object)
-    $tags  = ($todasRefs | Where-Object { $_ -like  'tag:*' } | Sort-Object)
+    $ramas = @($todasRefs | Where-Object { $_ -notlike 'tag:*' } | Sort-Object)
+    $tags  = @($todasRefs | Where-Object { $_ -like  'tag:*' } | Sort-Object)
+
+    $ramasTxt = if ($ramas.Count -gt $MaxRamasMostradas) {
+        (($ramas | Select-Object -First $MaxRamasMostradas) -join "; ") + " ... (+$($ramas.Count - $MaxRamasMostradas) mas)"
+    } else { $ramas -join "; " }
+
+    $tagsLimpios = $tags | ForEach-Object { $_ -replace '^tag:','' }
+    $tagsTxt = if ($tagsLimpios.Count -gt $MaxRamasMostradas) {
+        (($tagsLimpios | Select-Object -First $MaxRamasMostradas) -join "; ") + " ... (+$($tagsLimpios.Count - $MaxRamasMostradas) mas)"
+    } else { $tagsLimpios -join "; " }
 
     $estado = if     ($maxMB -ge $GH_BLOCK) { "BLOQUEA" }
               elseif ($maxMB -ge $GH_WARN)  { "ADVIERTE" }
@@ -198,9 +224,10 @@ $reporte = $filas | Group-Object Path | ForEach-Object {
         TotalHistMB  = $totalMB
         Versiones    = $grupo.Count
         EnHEAD       = if ($enHead) { "SI" } else { "NO" }
-        NumRamas     = @($ramas).Count
-        Ramas        = ($ramas -join "; ")
-        Tags         = (($tags | ForEach-Object { $_ -replace '^tag:','' }) -join "; ")
+        NumRamas     = $ramas.Count
+        Ramas        = $ramasTxt
+        Tags         = $tagsTxt
+        NumTags      = $tags.Count
         Extension    = if ($ext) { $ext } else { "(sin ext)" }
         Archivo      = Split-Path $_.Name -Leaf
         Ruta         = $_.Name
@@ -275,12 +302,11 @@ git push --mirror github
 # --- HTML -------------------------------------------------------------------
 $rows = ($reporte | ForEach-Object {
     $cls = switch ($_.Estado) { "BLOQUEA" { "bloquea" } "ADVIERTE" { "advierte" } default { "" } }
-    $ram = if ($_.Ramas) { [System.Web.HttpUtility]::HtmlEncode($_.Ramas) } else { "<em>solo historial</em>" }
-    $rt  = [System.Web.HttpUtility]::HtmlEncode($_.Ruta)
-    "<tr class='$cls'><td>$($_.Estado)</td><td class='n'>$($_.MaxMB)</td><td class='n'>$($_.TotalHistMB)</td><td class='n'>$($_.Versiones)</td><td>$($_.EnHEAD)</td><td class='r'>$ram</td><td class='p'>$rt</td><td>$($_.Accion)</td></tr>"
+    $ram = if ($_.Ramas) { ConvertTo-HtmlSafe $_.Ramas } else { "<em>solo historial</em>" }
+    $rt  = ConvertTo-HtmlSafe $_.Ruta
+    $tg  = ConvertTo-HtmlSafe $_.Tags
+    "<tr class='$cls'><td>$($_.Estado)</td><td class='n'>$($_.MaxMB)</td><td class='n'>$($_.TotalHistMB)</td><td class='n'>$($_.Versiones)</td><td>$($_.EnHEAD)</td><td class='r'>$ram</td><td class='r'>$tg</td><td class='p'>$rt</td><td>$($_.Accion)</td></tr>"
 }) -join "`n"
-
-Add-Type -AssemblyName System.Web
 
 $bloquean = @($reporte | Where-Object Estado -eq "BLOQUEA").Count
 $muertos  = @($reporte | Where-Object EnHEAD -eq "NO").Count
@@ -316,7 +342,7 @@ $html = @"
 </div>
 <input id="f" placeholder="Filtrar por ruta, rama o extension...">
 <table id="t"><thead><tr>
-<th>Estado</th><th>Max MB</th><th>Hist MB</th><th>Vers</th><th>HEAD</th><th>Ramas</th><th>Ruta</th><th>Accion</th>
+<th>Estado</th><th>Max MB</th><th>Hist MB</th><th>Vers</th><th>HEAD</th><th>Ramas</th><th>Tags</th><th>Ruta</th><th>Accion</th>
 </tr></thead><tbody>
 $rows
 </tbody></table>
