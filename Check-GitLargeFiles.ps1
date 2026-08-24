@@ -72,7 +72,12 @@ function ConvertTo-HtmlSafe([string]$s) {
     return $s.Replace('&','&amp;').Replace('<','&lt;').Replace('>','&gt;').Replace('"','&quot;')
 }
 
-# Encoding correcto para paths con tildes
+# Encoding correcto para paths con tildes.
+# Sin esto, PowerShell 5.1 decodifica la salida de git con la code page ANSI
+# y los acentos se convierten en '?' - lo que corrompe rutas-a-borrar.txt.
+$encodingPrevio = [Console]::OutputEncoding
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
 & git -C $RepoPath config core.quotepath false 2>$null | Out-Null
 
 Write-Section "Reporte de migracion  |  $RepoPath"
@@ -302,7 +307,9 @@ git push --mirror github
 # --- HTML -------------------------------------------------------------------
 $rows = ($reporte | ForEach-Object {
     $cls = switch ($_.Estado) { "BLOQUEA" { "bloquea" } "ADVIERTE" { "advierte" } default { "" } }
-    $ram = if ($_.Ramas) { ConvertTo-HtmlSafe $_.Ramas } else { "<em>solo historial</em>" }
+    $ram = if ($SkipBranchMapping) { "<span style='color:#888'>(no mapeado)</span>" }
+           elseif ($_.Ramas)      { ConvertTo-HtmlSafe $_.Ramas }
+           else                   { "<em>solo historial</em>" }
     $rt  = ConvertTo-HtmlSafe $_.Ruta
     $tg  = ConvertTo-HtmlSafe $_.Tags
     "<tr class='$cls'><td>$($_.Estado)</td><td class='n'>$($_.MaxMB)</td><td class='n'>$($_.TotalHistMB)</td><td class='n'>$($_.Versiones)</td><td>$($_.EnHEAD)</td><td class='r'>$ram</td><td class='r'>$tg</td><td class='p'>$rt</td><td>$($_.Accion)</td></tr>"
@@ -385,3 +392,15 @@ Write-Host "  reporte-migracion.csv"
 Write-Host "  blobs-a-borrar.txt       <- para --strip-blobs-with-ids"
 Write-Host "  rutas-a-borrar.txt       <- para --paths-from-file"
 Write-Host "  comandos-limpieza.txt    <- comandos listos para copiar"
+
+# Verificacion de encoding: si quedaron '?' en las rutas, el borrado fallaria en silencio
+$corruptas = @($reporte | Where-Object { $_.Ruta -match '\?' })
+if ($corruptas.Count -gt 0) {
+    Write-Host ""
+    Write-Warning "$($corruptas.Count) rutas contienen '?' - probable problema de encoding."
+    Write-Warning "Esas rutas NO coincidiran en git filter-repo. Ejemplo:"
+    Write-Warning "  $($corruptas[0].Ruta)"
+    Write-Warning "Usa PowerShell 7 (pwsh) o revisa la codepage de tu consola: chcp 65001"
+}
+
+[Console]::OutputEncoding = $encodingPrevio
