@@ -1,7 +1,18 @@
 $tags = @(git for-each-ref --format="%(refname)" refs/tags)
-for ($i = 0; $i -lt $tags.Count; $i += 500) {
-    $lote = $tags[$i..([math]::Min($i+499, $tags.Count-1))]
-    Write-Host "[$($i+1)-$($i+$lote.Count) de $($tags.Count)]" -ForegroundColor Cyan
-    $lote | ForEach-Object { "${_}:${_}" } | git push github --stdin
+$maxChars = 28000
+$i = 0
+$lote = 0
+
+while ($i -lt $tags.Count) {
+    $acum = @()
+    $len = 0
+    while ($i -lt $tags.Count -and ($len + $tags[$i].Length + 1) -lt $maxChars) {
+        $acum += $tags[$i]
+        $len += $tags[$i].Length + 1
+        $i++
+    }
+    $lote++
+    Write-Host "[Lote $lote - $($acum.Count) tags - hasta $i de $($tags.Count)]" -ForegroundColor Cyan
+    git push github @acum
     Start-Sleep -Seconds 2
 }
