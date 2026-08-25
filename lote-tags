@@ -1,8 +1,7 @@
 $tags = @(git for-each-ref --format="%(refname)" refs/tags)
-for ($i = 0; $i -lt $tags.Count; $i += 25) {
-    $lote = $tags[$i..([math]::Min($i+24, $tags.Count-1))]
-    $specs = $lote | ForEach-Object { "${_}:${_}" }
+for ($i = 0; $i -lt $tags.Count; $i += 500) {
+    $lote = $tags[$i..([math]::Min($i+499, $tags.Count-1))]
     Write-Host "[$($i+1)-$($i+$lote.Count) de $($tags.Count)]" -ForegroundColor Cyan
-    git push github @specs
+    $lote | ForEach-Object { "${_}:${_}" } | git push github --stdin
     Start-Sleep -Seconds 2
 }
