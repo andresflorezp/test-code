@@ -1,0 +1,536 @@
+<h1>&#128640; Migración de repositorios &mdash; Bitbucket &rarr; GitHub</h1>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:22%;"><strong>&#127919; Objetivo</strong></td>
+      <td>Migrar un repositorio de Bitbucket a GitHub conservando ramas, tags y PRs, limpiando previamente del historial los archivos mayores a 100&nbsp;MB.</td>
+    </tr>
+    <tr>
+      <td style="background-color:#F4F5F7;"><strong>&#128207; Alcance</strong></td>
+      <td>Un repositorio por ejecución. No cubre migración de pipelines ni de permisos.</td>
+    </tr>
+    <tr>
+      <td style="background-color:#F4F5F7;"><strong>&#128100; Owner</strong></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style="background-color:#F4F5F7;"><strong>&#9201; Duración</strong></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style="background-color:#F4F5F7;"><strong>&#128260; Actualizado</strong></td>
+      <td>&nbsp;</td>
+    </tr>
+  </tbody>
+</table>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#DEEBFF;">
+        <p><strong>&#8505;&#65039; Antes de empezar</strong></p>
+        <p>Los valores entre <code>&lt;&nbsp;&gt;</code> son variables que debes reemplazar. Todos los comandos se ejecutan desde <strong>PowerShell</strong>, dentro del repositorio a migrar. Repo de ejemplo: <code>real-estate-furnishings-and-values-management</code>.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#128203; Prerrequisitos</h2>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:35%;"><strong>Accesos</strong></td>
+      <td>
+        <ul>
+          <li>Lectura sobre el repositorio origen en Bitbucket</li>
+          <li>Permiso para solicitar creación de repos en GitHub</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#F4F5F7;"><strong>Herramientas</strong></td>
+      <td>
+        <ul>
+          <li><code>git</code> autenticado contra Bitbucket y GitHub</li>
+          <li><code>git filter-repo</code></li>
+          <li><code>Check-GitLargeFiles.ps1</code> &rarr; <code>I:\repos\tools\</code></li>
+          <li>PowerShell (Windows)</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color:#F4F5F7;"><strong>Infraestructura</strong></td>
+      <td>Espacio en disco para el mirror <strong>+</strong> la copia de respaldo</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Variables de esta ejecución</h3>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:35%;"><strong>Variable</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Valor</strong></td>
+    </tr>
+    <tr><td><code>&lt;nombre-repo&gt;</code></td><td>&nbsp;</td></tr>
+    <tr><td><code>&lt;url-bitbucket&gt;</code></td><td>&nbsp;</td></tr>
+    <tr><td><code>&lt;url-github&gt;</code></td><td>&nbsp;</td></tr>
+    <tr><td><code>&lt;csi&gt;</code></td><td>&nbsp;</td></tr>
+    <tr><td><code>&lt;key_project&gt;</code></td><td>&nbsp;</td></tr>
+    <tr><td>Ruta de trabajo</td><td><code>I:\repos\bitbucket\</code></td></tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#128506; El flujo completo</h2>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:8%;"><strong>#</strong></td>
+      <td style="background-color:#F4F5F7; width:22%;"><strong>Fase</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Qué pasa aquí</strong></td>
+      <td style="background-color:#F4F5F7; width:15%;"><strong>Reversible</strong></td>
+    </tr>
+    <tr>
+      <td><strong>A</strong></td><td>&#128229; Preparación</td>
+      <td>Clonar el repo como mirror</td>
+      <td>&#9989; Sí</td>
+    </tr>
+    <tr>
+      <td><strong>B</strong></td><td>&#128269; Diagnóstico</td>
+      <td>Detectar archivos &gt; 100&nbsp;MB</td>
+      <td>&#9989; Sí</td>
+    </tr>
+    <tr>
+      <td><strong>C</strong></td><td>&#128190; Respaldo</td>
+      <td>Copia de seguridad del mirror</td>
+      <td>&#9989; Sí</td>
+    </tr>
+    <tr>
+      <td><strong>D</strong></td><td>&#129529; Limpieza</td>
+      <td>Reescritura de historial con <code>git filter-repo</code></td>
+      <td>&#10060; <strong>No</strong></td>
+    </tr>
+    <tr>
+      <td><strong>E</strong></td><td>&#127919; Destino</td>
+      <td>Solicitud y creación del repo en GitHub</td>
+      <td>&#9989; Sí</td>
+    </tr>
+    <tr>
+      <td><strong>F</strong></td><td>&#128640; Migración</td>
+      <td>Push de ramas y tags</td>
+      <td>&#9888;&#65039; Parcial</td>
+    </tr>
+    <tr>
+      <td><strong>G</strong></td><td>&#127937; Cierre</td>
+      <td>Limpieza local y actualización de pipelines</td>
+      <td>&#10060; <strong>No</strong></td>
+    </tr>
+  </tbody>
+</table>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#FFEBE6;">
+        <p><strong>&#128721; Punto de no retorno</strong></p>
+        <p>La <strong>Fase D</strong> reescribe el historial y cambia todos los SHAs. No la ejecutes sin haber completado la copia de respaldo de la <strong>Fase C</strong>.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#128229; Fase A &mdash; Preparación</h2>
+
+<h3>A1 &middot; Acceder al repositorio en Bitbucket</h3>
+
+<p>Ingresa a la URL del repo origen y confirma que tienes acceso y que es el repositorio correcto.</p>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; text-align:center;">
+        <p>&#128247;</p>
+        <p><em>IMAGEN &mdash; Vista del repositorio en Bitbucket</em></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>A2 &middot; Clonar en modo mirror</h3>
+
+<pre>git clone --mirror &lt;url-bitbucket&gt;/&lt;nombre-repo&gt;.git</pre>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#DEEBFF;">
+        <p><strong>&#8505;&#65039; Por qué <code>--mirror</code></strong></p>
+        <p>Baja <strong>todo</strong>: ramas, tags y referencias de PRs. Un <code>git clone</code> normal solo trae la rama por defecto y perderías el resto de la historia.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Resultado esperado &rarr;</strong> se crea el directorio <code>&lt;nombre-repo&gt;.git</code> (repositorio <em>bare</em>).</p>
+
+<h3>A3 &middot; Posicionarte en el repositorio</h3>
+
+<pre>cd I:\repos\bitbucket\&lt;nombre-repo&gt;.git</pre>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#FFFAE6;">
+        <p><strong>&#9888;&#65039; Verifica el prompt</strong></p>
+        <p>Todo lo que sigue se ejecuta <strong>dentro del repo a migrar</strong>. Correr el script desde otra ruta genera reportes vacíos y te hace creer que el repo está limpio.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#128269; Fase B &mdash; Diagnóstico de archivos grandes</h2>
+
+<h3>B1 &middot; Ejecutar el script de reporte</h3>
+
+<pre>I:\repos\tools\Check-GitLargeFiles.ps1 -RepoPath . -ThresholdMB 100 -SkipBranchMapping -OutputDir .\reporte-100mb-clean</pre>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:28%;"><strong>Parámetro</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Para qué sirve</strong></td>
+    </tr>
+    <tr><td><code>-RepoPath</code></td><td>Ruta del repo a analizar. <code>.</code> = directorio actual.</td></tr>
+    <tr><td><code>-ThresholdMB</code></td><td>Umbral en MB. GitHub rechaza blobs mayores a 100.</td></tr>
+    <tr><td><code>-SkipBranchMapping</code></td><td>Omite el mapeo de ramas &rarr; análisis mucho más rápido.</td></tr>
+    <tr><td><code>-OutputDir</code></td><td>Carpeta de salida del reporte HTML.</td></tr>
+  </tbody>
+</table>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; text-align:center;">
+        <p>&#128247;</p>
+        <p><em>IMAGEN &mdash; Salida del script en consola</em></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>B2 &middot; Analizar el reporte</h3>
+
+<p>Abre el HTML generado en <code>.\reporte-100mb-clean</code> e identifica dos cosas:</p>
+
+<ol>
+  <li>Los <strong>archivos</strong> que deben eliminarse del historial.</li>
+  <li>Los <strong>blobs (hashes)</strong> asociados &mdash; son los que se usan en la Fase D.</li>
+</ol>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; text-align:center;">
+        <p>&#128247;</p>
+        <p><em>IMAGEN &mdash; Reporte HTML con archivos y blobs identificados</em></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Registro de la ejecución:</strong></p>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7;"><strong>Archivo</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Tamaño</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Blob / hash</strong></td>
+    </tr>
+    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+  </tbody>
+</table>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#E3FCEF;">
+        <p><strong>&#9989; Atajo</strong></p>
+        <p>Si el reporte sale en cero, el repo ya está limpio: salta las fases <strong>C</strong> y <strong>D</strong> y ve directo a la <strong>Fase E</strong>.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#128190; Fase C &mdash; Respaldo</h2>
+
+<h3>C1 &middot; Copia de seguridad del mirror</h3>
+
+<p>Duplica el mirror con otro nombre. El trabajo se sigue haciendo sobre el <strong>mirror inicial</strong>; la copia queda intacta como respaldo.</p>
+
+<pre>Copy-Item -Path "I:\repos\bitbucket\&lt;nombre-repo&gt;.git" `
+          -Destination "I:\repos\bitbucket\&lt;nombre-repo&gt;-backup.git" `
+          -Recurse</pre>
+
+<p><strong>Validación &rarr;</strong> la carpeta de backup existe y pesa aproximadamente lo mismo que el original.</p>
+
+<hr />
+
+<h2>&#129529; Fase D &mdash; Limpieza del historial</h2>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#FFEBE6;">
+        <p><strong>&#128721; Operación destructiva</strong></p>
+        <p>Este comando reescribe todos los commits afectados y cambia sus SHAs. Confirma que el backup de <strong>C1</strong> existe antes de ejecutarlo.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>D1 &middot; Ejecutar <code>git filter-repo</code></h3>
+
+<p>Usando los blobs identificados en <strong>B2</strong>:</p>
+
+<pre>&lt;COMPLETAR — comando git filter-repo utilizado&gt;</pre>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; text-align:center;">
+        <p>&#128247;</p>
+        <p><em>IMAGEN &mdash; Ejecución de git filter-repo</em></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#127919; Fase E &mdash; Creación del repositorio destino</h2>
+
+<h3>E1 &middot; Convención de nombres</h3>
+
+<p>Usa la convención de <strong>Super Sonic</strong>. Si no la tienes a la mano, aplica el patrón:</p>
+
+<pre>CSI.key_proyecto.nombre_proyecto</pre>
+
+<h3>E2 &middot; Plantilla de solicitud</h3>
+
+<pre>csi,key_project,repository_name,ruleset,owners,reviewers,developers
+145800,real,real-estate-furnishings-and-values-management,default-protection,,,</pre>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:28%;"><strong>Campo</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Descripción</strong></td>
+    </tr>
+    <tr><td><code>csi</code></td><td>Código CSI de la aplicación.</td></tr>
+    <tr><td><code>key_project</code></td><td>Llave del proyecto.</td></tr>
+    <tr><td><code>repository_name</code></td><td>Nombre del repositorio destino.</td></tr>
+    <tr><td><code>ruleset</code></td><td>Reglas de protección. Por defecto <code>default-protection</code>.</td></tr>
+    <tr><td><code>owners</code></td><td>Usuarios owner. Puede ir vacío.</td></tr>
+    <tr><td><code>reviewers</code></td><td>Revisores. Puede ir vacío.</td></tr>
+    <tr><td><code>developers</code></td><td>Desarrolladores. Puede ir vacío.</td></tr>
+  </tbody>
+</table>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#FFFAE6;">
+        <p><strong>&#9203; Bloqueante</strong></p>
+        <p>No avances a la Fase F hasta que el repositorio destino esté creado y tengas su URL.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#128640; Fase F &mdash; Migración</h2>
+
+<h3>F1 &middot; Agregar el remote de GitHub</h3>
+
+<pre>git remote add github &lt;url-github&gt;
+git remote -v</pre>
+
+<h3>F2 &middot; Revalidar archivos grandes</h3>
+
+<p>Mismo script de B1, ahora como control de calidad post-limpieza:</p>
+
+<pre>I:\repos\tools\Check-GitLargeFiles.ps1 -RepoPath . -ThresholdMB 100 -SkipBranchMapping -OutputDir .\reporte-100mb-clean</pre>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#E3FCEF; width:50%;">
+        <p><strong>&#9989; Reporte en cero</strong></p>
+        <p>Continúa a F3.</p>
+      </td>
+      <td style="background-color:#FFEBE6;">
+        <p><strong>&#10060; Aún hay archivos &gt; 100&nbsp;MB</strong></p>
+        <p>Regresa a la <strong>Fase D</strong>.</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>F3 &middot; Verificar las ramas</h3>
+
+<p>Confirma que exista únicamente <code>master</code> y no <code>main</code>.</p>
+
+<pre>git branch -a</pre>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; text-align:center;">
+        <p>&#128247;</p>
+        <p><em>IMAGEN &mdash; Listado de ramas verificado</em></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>F4 &middot; Push de ramas</h3>
+
+<pre>git push github --all</pre>
+
+<h3>F5 &middot; Push de tags</h3>
+
+<pre>git push github --tags</pre>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; text-align:center;">
+        <p>&#128247;</p>
+        <p><em>IMAGEN &mdash; Repositorio migrado en GitHub</em></p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#127937; Fase G &mdash; Cierre</h2>
+
+<h3>G1 &middot; Eliminar el mirror local</h3>
+
+<p>Por seguridad, borra el mirror una vez confirmada la migración.</p>
+
+<pre>&lt;COMPLETAR — ruta / comando de eliminación&gt;</pre>
+
+<h3>G2 &middot; Notificar al owner</h3>
+
+<p>Contacta al owner de la aplicación para que actualice el job del pipeline apuntando al nuevo repositorio de GitHub.</p>
+
+<hr />
+
+<h2>&#9989; Checklist de validación</h2>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:8%;"><strong>&nbsp;</strong></td>
+      <td style="background-color:#F4F5F7; width:10%;"><strong>Fase</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Verificación</strong></td>
+    </tr>
+    <tr><td>&#9744;</td><td>A</td><td>Mirror clonado con ramas, tags y PRs</td></tr>
+    <tr><td>&#9744;</td><td>B</td><td>Reporte de archivos &gt; 100&nbsp;MB generado y revisado</td></tr>
+    <tr><td>&#9744;</td><td>C</td><td>Copia de respaldo creada y verificada</td></tr>
+    <tr><td>&#9744;</td><td>D</td><td>Historial limpiado con <code>git filter-repo</code></td></tr>
+    <tr><td>&#9744;</td><td>E</td><td>Repositorio destino creado con la convención correcta</td></tr>
+    <tr><td>&#9744;</td><td>F</td><td>Segundo reporte sin archivos &gt; 100&nbsp;MB</td></tr>
+    <tr><td>&#9744;</td><td>F</td><td>Solo existe la rama <code>master</code> (no <code>main</code>)</td></tr>
+    <tr><td>&#9744;</td><td>F</td><td>Ramas pusheadas (<code>--all</code>)</td></tr>
+    <tr><td>&#9744;</td><td>F</td><td>Tags pusheados (<code>--tags</code>)</td></tr>
+    <tr><td>&#9744;</td><td>F</td><td>Conteo de ramas y tags coincide entre origen y destino</td></tr>
+    <tr><td>&#9744;</td><td>G</td><td>Mirror local eliminado</td></tr>
+    <tr><td>&#9744;</td><td>G</td><td>Owner notificado para actualizar el pipeline</td></tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#8617;&#65039; Rollback</h2>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:35%;"><strong>Si falla&hellip;</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Qué hacer</strong></td>
+    </tr>
+    <tr>
+      <td>La reescritura de historial (Fase D)</td>
+      <td>
+        <ol>
+          <li>Elimina el mirror corrupto.</li>
+          <li>Restaura el backup de <strong>C1</strong> y renómbralo al nombre original.</li>
+          <li>Reinicia desde la <strong>Fase B</strong>.</li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <td>El push a GitHub (Fase F)</td>
+      <td>El repositorio origen en Bitbucket permanece intacto hasta el cierre formal. Corrige y reintenta el push.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#128295; Troubleshooting</h2>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:35%;"><strong>Síntoma</strong></td>
+      <td style="background-color:#F4F5F7; width:25%;"><strong>Causa</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Solución</strong></td>
+    </tr>
+    <tr>
+      <td><code>remote: error: File ... is over 100.00 MB</code></td>
+      <td>Quedaron blobs grandes en el historial</td>
+      <td>Volver a Fase B &rarr; D</td>
+    </tr>
+    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2>&#128279; Referencias</h2>
+
+<table data-layout="default">
+  <tbody>
+    <tr>
+      <td style="background-color:#F4F5F7; width:40%;"><strong>Recurso</strong></td>
+      <td style="background-color:#F4F5F7;"><strong>Enlace</strong></td>
+    </tr>
+    <tr><td>Script <code>Check-GitLargeFiles.ps1</code></td><td>&nbsp;</td></tr>
+    <tr><td>Convención de nombres Super Sonic</td><td>&nbsp;</td></tr>
+    <tr><td>Canal de solicitud de repositorios</td><td>&nbsp;</td></tr>
+    <tr><td>Documentación <code>git filter-repo</code></td><td>&nbsp;</td></tr>
+  </tbody>
+</table>
