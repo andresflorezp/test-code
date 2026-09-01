@@ -1,3 +1,5 @@
-Get-ChildItem .\objects\pack\
-git config --list | Select-String 'precious|keep|repack'
-Get-Content .\objects\info\alternates -ErrorAction SilentlyContinue
+cd C:\Users\AF84303\Documents\my_repos\mirrors
+git clone --mirror .\weblogic-tuxedo-adapter-bussiness-presentation-component.git .\wtabpc-clean.git
+cd .\wtabpc-clean.git
+git count-objects -vH
+git rev-list --objects --all | Select-String 'wlfullclient'
