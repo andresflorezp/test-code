@@ -1,0 +1,5 @@
+# 1) ¿qué blobs gigantes hay realmente en la base de objetos?
+git cat-file --batch-all-objects --batch-check='%(objectname) %(objecttype) %(objectsize)' |
+  Where-Object { $_ -match ' blob ' } |
+  ForEach-Object { $p=$_.Split(' '); [pscustomobject]@{Sha=$p[0];MB=[math]::Round([int64]$p[2]/1MB,2)} } |
+  Sort-Object MB -Descending | Select-Object -First 5
