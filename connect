@@ -1,0 +1,12 @@
+ssh-keygen -t ed25519 -C "AF84303@bnmx" -f $env:USERPROFILE\.ssh\id_ed25519_bnmx
+Get-Content $env:USERPROFILE\.ssh\id_ed25519_bnmx.pub | Set-Clipboard
+
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_bnmx
+    IdentitiesOnly yes
+
+ssh -T git@github.com
+
+git remote set-url github git@github.com:BnmxInternal/145759.ead.embossing-and-delivery.git
