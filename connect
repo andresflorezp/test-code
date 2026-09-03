@@ -1,4 +1,4 @@
-ssh-keygen -t ed25519 -C "AF84303@bnmx" -f $env:USERPROFILE\.ssh\id_ed25519_bnmx
+& "C:\Program Files\Git\usr\bin\ssh-keygen.exe" -t ed25519 -C "tu-correo@banamex.com"
 Get-Content $env:USERPROFILE\.ssh\id_ed25519_bnmx.pub | Set-Clipboard
 
 Host github.com
