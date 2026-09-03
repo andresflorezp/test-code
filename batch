@@ -1,0 +1,46 @@
+$remote = "github"
+$step   = 100
+
+# ramas ordenadas por cantidad de commits, de mayor a menor
+$ramas = git for-each-ref --format='%(refname:short)' refs/heads |
+    ForEach-Object {
+        [PSCustomObject]@{
+            Nombre  = $_
+            Commits = (git rev-list --count "refs/heads/$_")
+        }
+    } | Sort-Object { [int]$_.Commits } -Descending
+
+Write-Host "Ramas a subir:"
+$ramas | ForEach-Object { Write-Host "  $($_.Nombre) - $($_.Commits) commits" }
+
+foreach ($rama in $ramas) {
+    $b = $rama.Nombre
+    Write-Host "`n===== RAMA: $b =====" -ForegroundColor Cyan
+
+    # ¿pasa de una?
+    git push $remote "refs/heads/$b" 2>&1 | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "  OK de una" -ForegroundColor Green
+        continue
+    }
+
+    Write-Host "  muy pesada, va por tandas..." -ForegroundColor Yellow
+    $commits = git rev-list --reverse "refs/heads/$b"
+    $total = $commits.Count
+
+    for ($i = $step; $i -lt $total; $i += $step) {
+        $sha = $commits[$i]
+        Write-Host "    $($i+1)/$total"
+        git push $remote "${sha}:refs/heads/$b"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "    FALLO en $sha - baja `$step y volvé a correr" -ForegroundColor Red
+            exit 1
+        }
+    }
+
+    git push $remote "refs/heads/$b"
+    if ($LASTEXITCODE -eq 0) { Write-Host "  OK" -ForegroundColor Green }
+}
+
+Write-Host "`n===== TAGS =====" -ForegroundColor Cyan
+git push $remote --tags
