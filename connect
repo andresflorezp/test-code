@@ -1,12 +1,6 @@
-& "C:\Program Files\Git\usr\bin\ssh-keygen.exe" -t ed25519 -C "tu-correo@banamex.com"
-Get-Content $env:USERPROFILE\.ssh\id_ed25519_bnmx.pub | Set-Clipboard
-
 Host github.com
-    HostName github.com
+    HostName ssh.github.com
+    Port 443
     User git
-    IdentityFile ~/.ssh/id_ed25519_bnmx
-    IdentitiesOnly yes
-
-ssh -T git@github.com
-
-git remote set-url github git@github.com:BnmxInternal/145759.ead.embossing-and-delivery.git
+    IdentityFile ~/.ssh/id_ed25519
+    ProxyCommand "C:/Program Files/Git/mingw64/bin/connect.exe" -H lacwebproxy.wlb2.nam.nsroot.net:8080 %h %p
