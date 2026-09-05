@@ -1,0 +1,14 @@
+$sha = git rev-list --objects --all |
+  Where-Object { $_ -like "*Tuxedo/data/s707.tar" } |
+  ForEach-Object { ($_ -split ' ')[0] }
+
+$sha
+
+# qué commits lo contienen
+git rev-list --all --objects | Select-String $sha
+
+# qué refs alcanzan esos commits
+git for-each-ref --format='%(refname) %(objectname)' | ForEach-Object {
+    $r = $_ -split ' '
+    if (git rev-list $r[1] --objects 2>$null | Select-String $sha -Quiet) { $r[0] }
+}
