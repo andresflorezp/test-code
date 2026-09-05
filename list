@@ -1,0 +1,14 @@
+git rev-list --objects --all |
+  git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' |
+  Where-Object { $_ -like 'blob *' } |
+  ForEach-Object {
+      $p = $_ -split ' ', 4
+      [PSCustomObject]@{
+          SHA  = $p[1]
+          MB   = [math]::Round([long]$p[2]/1MB, 1)
+          Path = $p[3]
+      }
+  } |
+  Where-Object { $_.MB -gt 100 } |
+  Sort-Object MB -Descending |
+  Format-Table -AutoSize
