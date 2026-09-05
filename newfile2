@@ -1,0 +1,11 @@
+cd C:\Users\AF84303\Documents\my_repos\mirrors\electronic-payments-collecting.git
+
+git rev-list --objects --all |
+  git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' |
+  Where-Object { $_.StartsWith('blob ') } |
+  ForEach-Object {
+      $p = $_ -split ' ', 4
+      if ([long]$p[2] -gt 100000000) {
+          "{0:N2} MB  {1}" -f ([long]$p[2]/1MB), $p[3]
+      }
+  }
