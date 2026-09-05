@@ -1,0 +1,54 @@
+cd C:\Users\AF84303\Documents\my_repos\mirrors\embossing-and-delivery.git
+
+Write-Host "=== 1. Buscando blobs > 100 MB ===" -ForegroundColor Cyan
+
+$blobs = git rev-list --objects --all |
+  git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' |
+  Where-Object { $_.StartsWith('blob ') } |
+  ForEach-Object {
+      $p = $_ -split ' ', 4
+      if ([long]$p[2] -gt 100000000) {
+          [PSCustomObject]@{
+              SHA  = $p[1]
+              MB   = [math]::Round([long]$p[2]/1MB, 2)
+              Path = $p[3]
+          }
+      }
+  }
+
+Write-Host "Encontrados: $($blobs.Count) blobs"
+$blobs | Sort-Object MB -Descending | Format-Table MB, Path -AutoSize
+
+Write-Host "`n=== 2. Mapeando tags (esto tarda) ===" -ForegroundColor Cyan
+
+$shas = $blobs.SHA | Sort-Object -Unique
+$tagsMalos = @{}
+
+$tags = git tag
+$i = 0
+foreach ($t in $tags) {
+    $i++
+    Write-Progress -Activity "Revisando tags" -Status "$i/$($tags.Count) - $t" -PercentComplete ($i*100/$tags.Count)
+
+    $objetos = git rev-list "refs/tags/$t" --objects 2>$null | ForEach-Object { ($_ -split ' ')[0] }
+    $hit = $objetos | Where-Object { $shas -contains $_ } | Select-Object -First 1
+
+    if ($hit) { $tagsMalos[$t] = $hit }
+}
+Write-Progress -Activity "Revisando tags" -Completed
+
+Write-Host "`n=== RESULTADO ===" -ForegroundColor Cyan
+Write-Host "Tags totales:      $($tags.Count)"
+Write-Host "Tags bloqueados:   $($tagsMalos.Count)" -ForegroundColor Yellow
+Write-Host "Tags migrables:    $($tags.Count - $tagsMalos.Count)" -ForegroundColor Green
+
+Write-Host "`nTags bloqueados:"
+$tagsMalos.Keys | Sort-Object | ForEach-Object { Write-Host "  $_" }
+
+# guardar evidencia
+$tagsMalos.Keys | Sort-Object | Set-Content "$env:USERPROFILE\tags-bloqueados-ead.txt"
+$blobs | Sort-Object MB -Descending | Export-Csv "$env:USERPROFILE\blobs-grandes-ead.csv" -NoTypeInformation -Encoding UTF8
+
+Write-Host "`nGuardado en:"
+Write-Host "  $env:USERPROFILE\tags-bloqueados-ead.txt"
+Write-Host "  $env:USERPROFILE\blobs-grandes-ead.csv"
