@@ -1,0 +1,3 @@
+& "C:\Program Files\Git\bin\bash.exe" -c "cd /c/Users/AF84303/Documents/my_repos/mirrors/electronic-payments-collecting.git && git for-each-ref --format='delete %(refname)' refs/replace/ | git update-ref --stdin && git reflog expire --expire=now --all && git gc --prune=now --aggressive"
+git for-each-ref refs/replace/ | Measure-Object -Line
+& "C:\Program Files\Git\bin\bash.exe" -c "cd /c/Users/AF84303/Documents/my_repos/mirrors/electronic-payments-collecting.git && git rev-list --objects --all | git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' | awk '\$1==\"blob\" && \$3>100000000 {print \$3\"  \"\$4}'"
