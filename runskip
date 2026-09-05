@@ -1,0 +1,12 @@
+$remote = "github"
+$excluir = Get-Content "$env:USERPROFILE\tags-bloqueados-ead.txt"
+$buenos = git tag | Where-Object { $excluir -notcontains $_ }
+
+Write-Host "Subiendo $($buenos.Count) tags"
+
+for ($i = 0; $i -lt $buenos.Count; $i += 25) {
+    $lote = $buenos[$i..([Math]::Min($i+24, $buenos.Count-1))]
+    $refs = $lote | ForEach-Object { "refs/tags/$_" }
+    Write-Host "lote $i"
+    git push $remote @refs
+}
