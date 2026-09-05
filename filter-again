@@ -1,0 +1,8 @@
+# generar lista de blobs >100MB
+git rev-list --objects --all |
+  git cat-file --batch-check='%(objecttype) %(objectname) %(objectsize) %(rest)' |
+  Where-Object { $_ -match '^blob' } |
+  ForEach-Object { $p = $_ -split ' ', 4; if ([int]$p[2] -gt 100MB) { $p[1] } } |
+  Set-Content "$env:USERPROFILE\blobs-grandes.txt"
+
+& $py $fr --strip-blobs-with-ids "$env:USERPROFILE\blobs-grandes.txt" --force
