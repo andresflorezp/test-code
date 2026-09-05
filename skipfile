@@ -1,0 +1,13 @@
+$remote = "github"
+$excluir = @("25mtp002")
+
+$tags = git tag | Where-Object { $excluir -notcontains $_ }
+$total = $tags.Count
+Write-Host "Subiendo $total tags (excluyendo $($excluir -join ', '))"
+
+for ($i = 0; $i -lt $tags.Count; $i += 25) {
+    $lote = $tags[$i..([Math]::Min($i+24, $tags.Count-1))]
+    $refs = $lote | ForEach-Object { "refs/tags/$_" }
+    Write-Host "lote $i..$([Math]::Min($i+24, $tags.Count-1))"
+    git push $remote @refs
+}
