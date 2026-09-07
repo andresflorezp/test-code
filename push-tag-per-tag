@@ -1,0 +1,109 @@
+# push-tags.ps1  -- ejecutar parado dentro del repo mirror (.git)
+param(
+    [string]$Remote = "github",
+    [int64]$MaxFileSizeMB = 100,
+    [switch]$SkipExisting
+)
+
+$okFile      = "tags-migrados.txt"
+$failedFile  = "tags-no-migrados.txt"
+$limitBytes  = $MaxFileSizeMB * 1MB
+
+$tags = @(git tag -l)
+if ($tags.Count -eq 0) { Write-Host "No hay tags en el repo"; exit 1 }
+
+# ---------- 1. blobs que exceden el limite ----------
+Write-Host "Buscando blobs > $MaxFileSizeMB MB ..." -ForegroundColor Cyan
+
+$bigBlobs = @{}
+git cat-file --batch-all-objects --batch-check="%(objecttype) %(objectname) %(objectsize)" |
+    ForEach-Object {
+        $p = $_ -split ' '
+        if ($p[0] -eq 'blob' -and [int64]$p[2] -gt $limitBytes) {
+            $bigBlobs[$p[1]] = [math]::Round([int64]$p[2] / 1MB, 2)
+        }
+    }
+
+Write-Host "  -> $($bigBlobs.Count) blobs grandes encontrados"
+
+# ---------- 2. tags contaminados ----------
+$dirtyTags = @{}
+
+if ($bigBlobs.Count -gt 0) {
+    Write-Host "Revisando que tags los arrastran ..." -ForegroundColor Cyan
+    $n = 0
+    foreach ($tag in $tags) {
+        $n++
+        Write-Progress -Activity "Analizando tags" -Status $tag -PercentComplete (($n / $tags.Count) * 100)
+
+        $hits = @()
+        git rev-list --objects $tag | ForEach-Object {
+            $parts = $_ -split ' ', 2
+            if ($bigBlobs.ContainsKey($parts[0])) {
+                $name = if ($parts.Count -gt 1) { $parts[1] } else { $parts[0] }
+                $hits += "$name ($($bigBlobs[$parts[0]]) MB)"
+            }
+        }
+        if ($hits.Count -gt 0) { $dirtyTags[$tag] = ($hits | Select-Object -Unique) -join '; ' }
+    }
+    Write-Progress -Activity "Analizando tags" -Completed
+}
+
+Write-Host "  -> $($dirtyTags.Count) tags se van a omitir por archivos grandes" -ForegroundColor Yellow
+
+# ---------- 3. tags ya presentes en el remoto ----------
+$remoteTags = @{}
+if ($SkipExisting) {
+    git ls-remote --tags $Remote | ForEach-Object {
+        if ($_ -match 'refs/tags/(.+?)(\^\{\})?$') { $remoteTags[$Matches[1]] = $true }
+    }
+}
+
+# ---------- 4. push ----------
+$stamp = Get-Date -Format 'yyyy-MM-dd HH:mm'
+"# Tags migrados OK  - $stamp"  | Out-File $okFile     -Encoding utf8
+"# Tags NO migrados  - $stamp"  | Out-File $failedFile -Encoding utf8
+"# formato: tag <TAB> motivo"   | Add-Content $failedFile
+
+$pushable = $tags | Where-Object { -not $dirtyTags.ContainsKey($_) }
+$i = 0; $okCount = 0; $failCount = 0; $skipCount = 0
+
+# los descartados van directo al txt, sin tocar la red
+foreach ($tag in ($tags | Where-Object { $dirtyTags.ContainsKey($_) })) {
+    Add-Content $failedFile ("{0}`tarchivo excede {1} MB: {2}" -f $tag, $MaxFileSizeMB, $dirtyTags[$tag])
+    $failCount++
+}
+
+foreach ($tag in $pushable) {
+    $i++
+    Write-Host ("[{0}/{1}] {2} ... " -f $i, $pushable.Count, $tag) -NoNewline
+
+    if ($SkipExisting -and $remoteTags.ContainsKey($tag)) {
+        Write-Host "ya existe en remoto" -ForegroundColor DarkGray
+        $skipCount++
+        continue
+    }
+
+    $output = & git push $Remote "refs/tags/${tag}:refs/tags/${tag}" 2>&1 | Out-String
+
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "OK" -ForegroundColor Green
+        Add-Content $okFile $tag
+        $okCount++
+    } else {
+        Write-Host "FALLO" -ForegroundColor Red
+        $reason = ($output -split "`n" |
+                   Where-Object { $_ -match 'exceeds|GH\d{3}|rejected|error:' } |
+                   Select-Object -First 3) -join ' | '
+        Add-Content $failedFile ("{0}`t{1}" -f $tag, ($reason -replace '\s+', ' ').Trim())
+        $failCount++
+    }
+}
+
+# ---------- 5. resumen ----------
+Write-Host ""
+Write-Host "Total tags:       $($tags.Count)"
+Write-Host "Migrados:         $okCount"  -ForegroundColor Green
+Write-Host "Ya existian:      $skipCount" -ForegroundColor DarkGray
+Write-Host "No migrados:      $failCount" -ForegroundColor Yellow
+Write-Host "Detalle en: $((Resolve-Path $failedFile).Path)"
