@@ -1,0 +1,216 @@
+<#
+    migrate-repo.ps1
+    Migra un repo mirror completo (ramas + tags) a GitHub.
+    Ejecutar parado dentro del repo mirror (.git)
+
+    Uso:
+        .\migrate-repo.ps1 -Remote github
+        .\migrate-repo.ps1 -Remote github -MainBranch master -ChunkCount 8
+#>
+param(
+    [string]$Remote      = "github",
+    [string]$MainBranch  = "",        # vacio = autodetecta desde HEAD
+    [int]$Retries        = 3,
+    [int]$ChunkCount     = 6,         # tramos si una rama es muy pesada
+    [int]$MaxFileSizeMB  = 100,
+    [switch]$SkipPreflight
+)
+
+$ErrorActionPreference = "Continue"
+$stamp   = Get-Date -Format 'yyyyMMdd-HHmmss'
+$logFile = "migracion-$stamp.log"
+$okFile  = "migrados-ok.txt"
+$failFile= "no-migrados.txt"
+$stateFile = ".migracion-estado.json"
+
+function Log {
+    param([string]$Msg, [string]$Color = "Gray")
+    $line = "[{0}] {1}" -f (Get-Date -Format 'HH:mm:ss'), $Msg
+    Write-Host $line -ForegroundColor $Color
+    Add-Content $logFile $line
+}
+
+# ---------- estado reanudable ----------
+$state = @{ done = @(); failed = @() }
+if (Test-Path $stateFile) {
+    try {
+        $loaded = Get-Content $stateFile -Raw | ConvertFrom-Json
+        $state.done   = @($loaded.done)
+        $state.failed = @($loaded.failed)
+        Log "Estado previo cargado: $($state.done.Count) refs ya migrados" "Cyan"
+    } catch { Log "No se pudo leer el estado previo, arrancando de cero" "Yellow" }
+}
+function Save-State {
+    @{ done = $state.done; failed = $state.failed } |
+        ConvertTo-Json -Depth 3 | Set-Content $stateFile -Encoding utf8
+}
+
+# ---------- configuracion de red ----------
+Log "Ajustando parametros de transferencia..." "Cyan"
+git config http.postBuffer 524288000
+git config http.version HTTP/1.1
+git config http.lowSpeedLimit 0
+git config http.lowSpeedTime 999999
+
+# ---------- verificaciones ----------
+if (-not (Test-Path "HEAD")) { Log "No parece un repo bare. Ejecuta esto dentro del .git" "Red"; exit 1 }
+
+$remoteUrl = git remote get-url $Remote 2>$null
+if (-not $remoteUrl) { Log "El remoto '$Remote' no existe. Agregalo con git remote add $Remote <url>" "Red"; exit 1 }
+Log "Remoto: $remoteUrl" "Cyan"
+
+if (-not $MainBranch) {
+    $headRef = git symbolic-ref --short HEAD 2>$null
+    $MainBranch = if ($headRef) { $headRef } else { "master" }
+}
+Log "Rama principal: $MainBranch" "Cyan"
+
+# ---------- preflight: blobs grandes ----------
+$dirtyRefs = @{}
+if (-not $SkipPreflight) {
+    Log "Preflight: buscando blobs > $MaxFileSizeMB MB..." "Cyan"
+    $limit = $MaxFileSizeMB * 1MB
+    $bigBlobs = @{}
+    git cat-file --batch-all-objects --batch-check="%(objecttype) %(objectname) %(objectsize)" |
+        ForEach-Object {
+            $p = $_ -split ' '
+            if ($p[0] -eq 'blob' -and [int64]$p[2] -gt $limit) {
+                $bigBlobs[$p[1]] = [math]::Round([int64]$p[2]/1MB, 1)
+            }
+        }
+    Log "  -> $($bigBlobs.Count) blobs grandes" $(if ($bigBlobs.Count) {"Yellow"} else {"Green"})
+
+    if ($bigBlobs.Count -gt 0) {
+        $allRefs = @(git for-each-ref --format='%(refname)' refs/heads refs/tags)
+        $n = 0
+        foreach ($ref in $allRefs) {
+            $n++
+            Write-Progress -Activity "Preflight" -Status $ref -PercentComplete (($n/$allRefs.Count)*100)
+            $hits = @()
+            git rev-list --objects $ref 2>$null | ForEach-Object {
+                $parts = $_ -split ' ', 2
+                if ($bigBlobs.ContainsKey($parts[0])) {
+                    $name = if ($parts.Count -gt 1) { $parts[1] } else { $parts[0] }
+                    $hits += "$name ($($bigBlobs[$parts[0]]) MB)"
+                }
+            }
+            if ($hits.Count) { $dirtyRefs[$ref] = ($hits | Select-Object -Unique) -join '; ' }
+        }
+        Write-Progress -Activity "Preflight" -Completed
+        Log "  -> $($dirtyRefs.Count) refs se omitiran por archivos grandes" "Yellow"
+    }
+}
+
+# ---------- funcion de push con reintentos ----------
+function Push-Ref {
+    param([string]$Ref, [string]$Label)
+
+    for ($try = 1; $try -le $Retries; $try++) {
+        if ($try -gt 1) {
+            $wait = 10 * $try
+            Log "    reintento $try/$Retries en ${wait}s..." "DarkYellow"
+            Start-Sleep -Seconds $wait
+        }
+        $out = & git push $Remote "${Ref}:${Ref}" 2>&1 | Out-String
+        if ($LASTEXITCODE -eq 0) { return @{ ok = $true; out = $out } }
+
+        # errores que no vale la pena reintentar
+        if ($out -match 'exceeds .* file size limit|GH001|pre-receive hook declined') {
+            return @{ ok = $false; out = $out; fatal = $true }
+        }
+    }
+    return @{ ok = $false; out = $out; fatal = $false }
+}
+
+# ---------- push troceado (plan B para ramas pesadas) ----------
+function Push-Chunked {
+    param([string]$Branch)
+
+    Log "    push directo fallo, intentando por tramos..." "Yellow"
+    $commits = @(git rev-list --reverse $Branch)
+    if ($commits.Count -lt 2) { return $false }
+
+    $step = [math]::Max(1, [math]::Ceiling($commits.Count / $ChunkCount))
+    for ($i = $step; $i -lt $commits.Count; $i += $step) {
+        $sha = $commits[$i]
+        Log "      tramo hasta commit $($i+1)/$($commits.Count)" "DarkCyan"
+        $out = & git push $Remote "${sha}:refs/heads/$($Branch -replace '^refs/heads/','')" 2>&1 | Out-String
+        if ($LASTEXITCODE -ne 0) {
+            Log "      tramo fallo: $(($out -split "`n" | Select-Object -First 2) -join ' ')" "Red"
+            return $false
+        }
+    }
+    $out = & git push $Remote "${Branch}:${Branch}" 2>&1 | Out-String
+    return ($LASTEXITCODE -eq 0)
+}
+
+# ---------- armar la lista de trabajo ----------
+$branches = @(git for-each-ref --format='%(refname)' refs/heads)
+$tags     = @(git for-each-ref --format='%(refname)' refs/tags)
+
+# la rama principal va primero: sube el grueso de los objetos
+$mainRef = "refs/heads/$MainBranch"
+$ordered = @()
+if ($branches -contains $mainRef) { $ordered += $mainRef }
+$ordered += ($branches | Where-Object { $_ -ne $mainRef })
+$ordered += $tags
+
+Log "" 
+Log "Total: $($branches.Count) ramas, $($tags.Count) tags" "Cyan"
+Log "=======================================" "Cyan"
+
+# refs sucios directo al archivo de fallos
+foreach ($ref in $dirtyRefs.Keys) {
+    if ($state.failed -notcontains $ref) {
+        Add-Content $failFile ("{0}`tarchivo > {1} MB: {2}" -f $ref, $MaxFileSizeMB, $dirtyRefs[$ref])
+        $state.failed += $ref
+    }
+}
+Save-State
+
+# ---------- loop principal ----------
+$work = $ordered | Where-Object { -not $dirtyRefs.ContainsKey($_) -and $state.done -notcontains $_ }
+$i = 0; $ok = 0; $bad = 0
+$startTime = Get-Date
+
+foreach ($ref in $work) {
+    $i++
+    $short = $ref -replace '^refs/(heads|tags)/',''
+    $kind  = if ($ref -like 'refs/heads/*') { 'rama' } else { 'tag' }
+    Log ("[{0}/{1}] {2} {3}" -f $i, $work.Count, $kind, $short) "White"
+
+    $r = Push-Ref -Ref $ref
+
+    if (-not $r.ok -and -not $r.fatal -and $kind -eq 'rama') {
+        if (Push-Chunked -Branch $ref) { $r = @{ ok = $true } }
+    }
+
+    if ($r.ok) {
+        Log "    OK" "Green"
+        Add-Content $okFile $ref
+        $state.done += $ref
+        $ok++
+    } else {
+        $reason = ($r.out -split "`n" |
+                   Where-Object { $_ -match 'exceeds|GH\d{3}|rejected|error:|fatal:' } |
+                   Select-Object -First 3) -join ' | '
+        $reason = ($reason -replace '\s+',' ').Trim()
+        Log "    FALLO: $reason" "Red"
+        Add-Content $failFile ("{0}`t{1}" -f $ref, $reason)
+        $state.failed += $ref
+        $bad++
+    }
+
+    Save-State
+}
+
+# ---------- resumen ----------
+$elapsed = (Get-Date) - $startTime
+Log ""
+Log "=======================================" "Cyan"
+Log "Duracion:      $($elapsed.ToString('hh\:mm\:ss'))" "Cyan"
+Log "Migrados:      $ok" "Green"
+Log "Fallidos:      $bad" $(if ($bad) {"Yellow"} else {"Green"})
+Log "Ya estaban:    $($ordered.Count - $work.Count - $dirtyRefs.Count)" "DarkGray"
+Log "Log completo:  $((Resolve-Path $logFile).Path)" "Cyan"
+if ($bad -or $dirtyRefs.Count) { Log "Fallos en:     $((Resolve-Path $failFile).Path)" "Yellow" }
