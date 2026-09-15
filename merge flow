@@ -1,0 +1,4 @@
+La idea de fondo: los dos merges revisan cosas distintas, entonces merecen reglas distintas.
+
+feature → development es donde se revisa el código nuevo. Aquí queremos ser estrictos: que quien escribió el cambio no sea quien lo aprueba.
+development → main es una decisión de release sobre código que ya fue revisado. Aquí no queremos volver a aplicar filtros de autoría, porque todo el equipo ya tocó development y se auto-descalifica.
