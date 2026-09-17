@@ -474,7 +474,7 @@ FIELDS = [
     "gh_url_construida", "gh_url_excel", "url_coincide",
     "estado", "repo_existe", "default_branch", "ramas_revisadas",
     "tiene_gitmodules", "ramas_con_gitmodules", "submodulos", "n_submodulos",
-    "gitlinks_sin_declarar", "archivado", "ultimo_push",
+    "submodulos_fuera_github", "gitlinks_sin_declarar", "archivado", "ultimo_push",
     "sugerencias", "detalle", "accion",
 ]
 
@@ -542,6 +542,24 @@ def normalize_repo_url(url):
     path = urlparse(url).path if "://" in url else url
     parts = [p for p in path.split("/") if p]
     return "/".join(parts[-2:]).lower() if len(parts) >= 2 else url.lower()
+
+
+def submodulos_fuera_de_github(submodulos, web_base):
+    """Submódulos con url ABSOLUTA que no apunta al host de GitHub.
+
+    Las urls relativas ('./x', '../x.git') se resuelven contra el remoto del repo padre,
+    así que esas se migran solas y no se marcan.
+    """
+    host = (urlparse(web_base).netloc or "").lower()
+    fuera = []
+    for ruta, url in sorted(submodulos.items()):
+        u = (url or "").strip()
+        if not u or not ("://" in u or "@" in u):
+            continue                                    # relativa: no hay nada que corregir
+        if host and host in u.lower():
+            continue                                    # ya apunta a GitHub
+        fuera.append("%s -> %s" % (ruta, u))
+    return fuera
 
 
 def parse_gitmodules(text):
@@ -696,9 +714,15 @@ def analyze_repo(gh, item, org, web_base, all_branches, deep, key_case, fetch_co
     res.n_submodulos = len(submodulos)
     res.gitlinks_sin_declarar = ", ".join(sorted(g for g in gitlinks if g not in submodulos))
 
+    fuera = submodulos_fuera_de_github(submodulos, web_base)
+    res.submodulos_fuera_github = " | ".join(fuera)
+
     if ramas_con:
         res.estado, res.tiene_gitmodules = ST_OK_CON, "SI"
-        res.accion = "OK: tiene .gitmodules — validar que las urls de los submódulos apunten a GitHub"
+        if fuera:
+            res.accion = ("ACCION: %d submódulo(s) apuntan fuera de GitHub — hay que reapuntar las urls" % len(fuera))
+        else:
+            res.accion = "OK: tiene .gitmodules y las urls ya apuntan a GitHub"
     else:
         res.estado, res.tiene_gitmodules = ST_OK_SIN, "NO"
         res.accion = ("ALERTA: hay submódulos en el árbol (gitlinks) pero NO existe .gitmodules"
@@ -778,7 +802,8 @@ class GitRunner(object):
 
     def clone_ligero(self, url, dest, all_branches):
         """Clon bare, sin blobs y a profundidad 1: baja casi nada."""
-        args = ["clone", "--bare", "--quiet", "--depth", "1"]
+        # --no-tags importa: estos repos traen decenas de tags snapshot.* que no usamos
+        args = ["clone", "--bare", "--quiet", "--depth", "1", "--no-tags"]
         if self.soporta_filter:
             args.append("--filter=blob:none")
         if all_branches:
@@ -904,9 +929,15 @@ def analyze_repo_git(git, item, org, web_base, all_branches, deep, key_case, fet
         res.n_submodulos = len(submodulos)
         res.gitlinks_sin_declarar = ", ".join(sorted(g for g in gitlinks if g not in submodulos))
 
+        fuera = submodulos_fuera_de_github(submodulos, web_base)
+        res.submodulos_fuera_github = " | ".join(fuera)
+
         if ramas_con:
             res.estado, res.tiene_gitmodules = ST_OK_CON, "SI"
-            res.accion = "OK: tiene .gitmodules — validar que las urls de los submódulos apunten a GitHub"
+            if fuera:
+                res.accion = ("ACCION: %d submódulo(s) apuntan fuera de GitHub — hay que reapuntar las urls" % len(fuera))
+            else:
+                res.accion = "OK: tiene .gitmodules y las urls ya apuntan a GitHub"
         else:
             res.estado, res.tiene_gitmodules = ST_OK_SIN, "NO"
             res.accion = ("ALERTA: hay submódulos en el árbol (gitlinks) pero NO existe .gitmodules"
@@ -1066,6 +1097,7 @@ def write_markdown(results, path, org, args):
     nores = sel(ST_NO_REPO)
     otros = sel(ST_VACIO, ST_SIN_URL, ST_ERROR, ST_SIN_PERMISO)
     rotos = [r for r in results if r.gitlinks_sin_declarar]
+    apuntan_fuera = [r for r in results if r.submodulos_fuera_github]
     dif = [r for r in results if r.url_coincide == "NO"]
 
     L = []
@@ -1094,6 +1126,18 @@ def write_markdown(results, path, org, args):
         A("|---:|---|---|")
         for r in rotos:
             A("| %d | `%s` | `%s` |" % (r.fila, r.gh_repo, r.gitlinks_sin_declarar))
+        A("")
+
+    if apuntan_fuera:
+        A("## 🚩 Submódulos que siguen apuntando fuera de GitHub\n")
+        A("El repo ya está en GitHub pero su `.gitmodules` todavía referencia el origen viejo "
+          "(Bitbucket). Un `git clone --recurse-submodules` desde GitHub falla o trae el "
+          "contenido equivocado. Hay que reapuntar estas urls.\n")
+        A("| Fila | Repo | Submódulo -> url actual |")
+        A("|---:|---|---|")
+        for r in apuntan_fuera:
+            for entrada in r.submodulos_fuera_github.split(" | "):
+                A("| %d | `%s` | `%s` |" % (r.fila, r.gh_repo, entrada))
         A("")
 
     if nores:
@@ -1126,12 +1170,13 @@ def write_markdown(results, path, org, args):
 
     if con:
         A("## ✅ Repos con `.gitmodules`\n")
-        A("| Fila | Repo | Ramas donde aparece | # submódulos | Submódulos |")
-        A("|---:|---|---|---:|---|")
+        A("| Fila | Repo | Ramas donde aparece | # submódulos | Fuera de GitHub | Submódulos |")
+        A("|---:|---|---|---:|---:|---|")
         for r in con:
-            A("| %d | `%s` | %s | %d | %s |" % (r.fila, r.gh_repo,
-                                                r.ramas_con_gitmodules or r.default_branch,
-                                                r.n_submodulos, r.submodulos or "—"))
+            n_fuera = len(r.submodulos_fuera_github.split(" | ")) if r.submodulos_fuera_github else 0
+            A("| %d | `%s` | %s | %d | %s | %s |"
+              % (r.fila, r.gh_repo, r.ramas_con_gitmodules or r.default_branch,
+                 r.n_submodulos, ("🚩 %d" % n_fuera) if n_fuera else "0", r.submodulos or "—"))
         A("")
 
     if otros:
@@ -1166,7 +1211,8 @@ def main():
     p.add_argument("--token", default=os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN"),
                    help="Token (o variable GITHUB_TOKEN)")
     p.add_argument("--out", default="./salida", help="Carpeta de salida")
-    p.add_argument("--all-branches", action="store_true", help="Revisar TODAS las ramas")
+    p.add_argument("--all-branches", action="store_true",
+                   help="Revisar TODAS las ramas (refs/heads/), no solo la default")
     p.add_argument("--deep", action="store_true", help="Buscar también en subdirectorios (árbol recursivo)")
     p.add_argument("--no-content", action="store_true",
                    help="No descargar el .gitmodules (más rápido, sin lista de submódulos)")
