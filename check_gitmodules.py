@@ -35,7 +35,7 @@ Flujo:
         - resultados.xlsx   (lo mismo, escrito a mano sin librerías)
         - reporte.md        (resumen ejecutivo + listas para revisión manual)
 
-Requisitos: Python 3.8+. Nada más.
+Requisitos: Python 3.6+. Nada más (sin pip install).
 
 Uso típico:
     export GITHUB_TOKEN=xxxxx
@@ -46,8 +46,6 @@ Uso típico:
 GitHub Enterprise:
     --api-base https://github.nam.nsroot.net/api/v3 --web-base https://github.nam.nsroot.net
 """
-
-from __future__ import annotations
 
 import argparse
 import base64
@@ -65,7 +63,6 @@ import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from difflib import get_close_matches
 from urllib.parse import urlparse
@@ -443,49 +440,49 @@ def write_xlsx(path, headers, rows, sheet_name="auditoria"):
 # Modelo
 # --------------------------------------------------------------------------- #
 
-@dataclass
-class RepoInput:
-    fila: int
-    number: str = ""
-    csi: str = ""
-    owner: str = ""
-    soid: str = ""
-    bb_url: str = ""
-    gh_url_excel: str = ""
+class RepoInput(object):
+    """Una fila de la hoja de entrada."""
+
+    __slots__ = ("fila", "number", "csi", "owner", "soid", "bb_url", "gh_url_excel")
+
+    def __init__(self, fila, number="", csi="", owner="", soid="", bb_url="", gh_url_excel=""):
+        self.fila = fila
+        self.number = number
+        self.csi = csi
+        self.owner = owner
+        self.soid = soid
+        self.bb_url = bb_url
+        self.gh_url_excel = gh_url_excel
 
 
-@dataclass
-class RepoResult:
-    fila: int
-    number: str = ""
-    csi: str = ""
-    owner: str = ""
-    soid: str = ""
-    bb_url: str = ""
-    project_key: str = ""
-    repo_slug: str = ""
-    gh_org: str = ""
-    gh_repo: str = ""
-    gh_url_construida: str = ""
-    gh_url_excel: str = ""
-    url_coincide: str = ""
-    estado: str = ""
-    repo_existe: str = ""
-    default_branch: str = ""
-    ramas_revisadas: int = 0
-    tiene_gitmodules: str = ""
-    ramas_con_gitmodules: str = ""
-    submodulos: str = ""
-    n_submodulos: int = 0
-    gitlinks_sin_declarar: str = ""
-    archivado: str = ""
-    ultimo_push: str = ""
-    sugerencias: str = ""
-    detalle: str = ""
-    accion: str = ""
+# columnas del reporte, en orden
+FIELDS = [
+    "fila", "number", "csi", "owner", "soid", "bb_url",
+    "project_key", "repo_slug", "gh_org", "gh_repo",
+    "gh_url_construida", "gh_url_excel", "url_coincide",
+    "estado", "repo_existe", "default_branch", "ramas_revisadas",
+    "tiene_gitmodules", "ramas_con_gitmodules", "submodulos", "n_submodulos",
+    "gitlinks_sin_declarar", "archivado", "ultimo_push",
+    "sugerencias", "detalle", "accion",
+]
+
+_DEFAULTS = {"fila": 0, "ramas_revisadas": 0, "n_submodulos": 0}
 
 
-FIELDS = list(RepoResult.__dataclass_fields__.keys())
+class RepoResult(object):
+    """El resultado del análisis de un repo (una fila del reporte)."""
+
+    __slots__ = tuple(FIELDS)
+
+    def __init__(self, **kw):
+        for f in FIELDS:
+            setattr(self, f, kw.get(f, _DEFAULTS.get(f, "")))
+
+    def to_dict(self):
+        return dict((f, getattr(self, f)) for f in FIELDS)
+
+    def row(self):
+        return [getattr(self, f) for f in FIELDS]
 
 
 # --------------------------------------------------------------------------- #
@@ -829,7 +826,7 @@ def write_csv(results, path):
         w = csv.DictWriter(fh, fieldnames=FIELDS)
         w.writeheader()
         for r in results:
-            w.writerow(asdict(r))
+            w.writerow(r.to_dict())
 
 
 def write_markdown(results, path, org, args):
@@ -1019,7 +1016,7 @@ def main():
     write_csv(results, csv_path)
     write_markdown(results, md_path, args.org, args)
     try:
-        write_xlsx(xlsx_path, FIELDS, [[asdict(r)[f] for f in FIELDS] for r in results])
+        write_xlsx(xlsx_path, FIELDS, [r.row() for r in results])
         xlsx_ok = True
     except Exception as exc:                                        # noqa: BLE001
         sys.stderr.write("[!] No pude escribir el xlsx (%s). Usa el CSV.\n" % exc)
