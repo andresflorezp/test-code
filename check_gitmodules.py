@@ -20,7 +20,15 @@ Flujo:
                                                               key            slug
      CSI = 163950  ->  BnmxInternal/163950.sbs.mx.local.oneeclipse.balance
 
-  3. Contra la API de GitHub (urllib) valida, por cada repo:
+  3. Valida, por cada repo (dos backends intercambiables):
+        --backend api  -> API REST de GitHub vía urllib. Rápido, pero necesita que la red
+                          deje salir a la API (falla con proxies que piden NTLM/Kerberos).
+        --backend git  -> usa el ejecutable de git con un clon bare, sin blobs y a
+                          profundidad 1 (`--filter=blob:none --depth 1`). Baja casi nada y
+                          aprovecha las credenciales/proxy que git ya tiene configurados.
+                          Es la salida cuando la API da 407 Proxy Authentication Required.
+
+     En ambos casos revisa:
         - si el repo EXISTE
         - si está VACÍO / archivado
         - si tiene `.gitmodules` en la rama por defecto (o en TODAS con --all-branches)
@@ -53,8 +61,12 @@ import csv
 import json
 import os
 import re
+import shutil
 import ssl
+import stat
+import subprocess
 import sys
+import tempfile
 import threading
 import time
 import urllib.error
@@ -556,12 +568,12 @@ def parse_gitmodules(text):
 # Análisis de un repo
 # --------------------------------------------------------------------------- #
 
-def analyze_repo(gh, item, org, web_base, all_branches, deep, key_case, fetch_content):
+def preparar(item, org, web_base, key_case):
+    """Arma el RepoResult con la url de GitHub ya construida. Común a los dos backends."""
     res = RepoResult(fila=item.fila, number=item.number, csi=item.csi, owner=item.owner,
                      soid=item.soid, bb_url=item.bb_url, gh_url_excel=item.gh_url_excel,
                      gh_org=org)
 
-    # 1) armar la url --------------------------------------------------------
     key, slug = parse_bitbucket(item.bb_url)
     if key and slug and item.csi:
         res.project_key, res.repo_slug = key, slug
@@ -584,6 +596,14 @@ def analyze_repo(gh, item, org, web_base, all_branches, deep, key_case, fetch_co
                                    normalize_repo_url(item.gh_url_excel) else "NO"
     else:
         res.url_coincide = "N/A"
+    return res
+
+
+def analyze_repo(gh, item, org, web_base, all_branches, deep, key_case, fetch_content):
+    """Backend API (necesita que urllib pueda salir a la API)."""
+    res = preparar(item, org, web_base, key_case)
+    if res.estado == ST_SIN_URL:
+        return res
 
     # 2) ¿existe? ------------------------------------------------------------
     data, status, _ = gh.get("/repos/%s/%s" % (org, urllib.parse.quote(res.gh_repo)))
@@ -687,6 +707,216 @@ def analyze_repo(gh, item, org, web_base, all_branches, deep, key_case, fetch_co
     if errores:
         res.detalle = "; ".join(filter(None, [res.detalle] + errores))
     return res
+
+
+# --------------------------------------------------------------------------- #
+# Backend GIT — para redes donde la API HTTP está bloqueada (proxy con NTLM, etc.)
+# --------------------------------------------------------------------------- #
+
+def _rmtree(path):
+    """rmtree que no se atora con los objetos de solo-lectura de git en Windows."""
+    def onerror(func, p, _exc):
+        try:
+            os.chmod(p, stat.S_IWRITE)
+            func(p)
+        except Exception:                                   # noqa: BLE001
+            pass
+    shutil.rmtree(path, onerror=onerror)
+
+
+class GitRunner(object):
+    """Envoltura mínima sobre el ejecutable de git."""
+
+    def __init__(self, git_exe="git", timeout=300, workdir=None, insecure=False):
+        self.git = git_exe
+        self.timeout = timeout
+        self.workdir = workdir
+        self.insecure = insecure
+        self.soporta_filter = None
+        self._lock = threading.Lock()
+        self.calls = 0
+
+    def run(self, args, cwd=None, timeout=None):
+        """Devuelve (returncode, stdout, stderr) como texto."""
+        env = dict(os.environ)
+        env["GIT_TERMINAL_PROMPT"] = "0"        # que falle en vez de quedarse pidiendo usuario
+        env["GIT_PAGER"] = "cat"
+        env["LC_ALL"] = "C"
+        if self.insecure:
+            env["GIT_SSL_NO_VERIFY"] = "true"
+        try:
+            proc = subprocess.Popen([self.git] + args, cwd=cwd, env=env,
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = proc.communicate(timeout=timeout or self.timeout)
+            rc = proc.returncode
+        except subprocess.TimeoutExpired:
+            try:
+                proc.kill()
+                proc.communicate()
+            except Exception:                               # noqa: BLE001
+                pass
+            return 124, "", "timeout de %ss ejecutando git %s" % (timeout or self.timeout, args[0])
+        except OSError as exc:
+            return 127, "", "no pude ejecutar '%s': %s" % (self.git, exc)
+        with self._lock:
+            self.calls += 1
+        dec = lambda b: (b or b"").decode("utf-8", "replace")   # noqa: E731
+        return rc, dec(out), dec(err)
+
+    def version_ok(self):
+        rc, out, err = self.run(["--version"], timeout=30)
+        if rc != 0:
+            return False, err or out
+        m = re.search(r"(\d+)\.(\d+)", out)
+        if m:
+            mayor, menor = int(m.group(1)), int(m.group(2))
+            # --filter=blob:none necesita git >= 2.19
+            self.soporta_filter = (mayor, menor) >= (2, 19)
+        else:
+            self.soporta_filter = False
+        return True, out.strip()
+
+    def clone_ligero(self, url, dest, all_branches):
+        """Clon bare, sin blobs y a profundidad 1: baja casi nada."""
+        args = ["clone", "--bare", "--quiet", "--depth", "1"]
+        if self.soporta_filter:
+            args.append("--filter=blob:none")
+        if all_branches:
+            args.append("--no-single-branch")
+        args += [url, dest]
+        rc, out, err = self.run(args)
+        if rc != 0 and self.soporta_filter and "filter" in (err or "").lower():
+            # el servidor no acepta partial clone: reintenta sin el filtro
+            args = [a for a in args if a != "--filter=blob:none"]
+            rc, out, err = self.run(args)
+        return rc, out, err
+
+
+def _clasificar_error_git(err):
+    """(estado, detalle) a partir del stderr de git."""
+    e = (err or "").lower()
+    if "407" in e or "proxy authentication" in e:
+        return ST_ERROR, "El proxy pide autenticación (407) — git no pudo negociar"
+    if ("repository not found" in e or "not found" in e or "does not exist" in e
+            or "not appear to be a git repository" in e):
+        return ST_NO_REPO, "git: repositorio no encontrado"
+    if ("authentication failed" in e or "could not read username" in e
+            or "permission denied" in e or "403" in e or "terminal prompts disabled" in e):
+        return ST_SIN_PERMISO, "git: sin credenciales o sin permisos sobre el repo"
+    if "empty repository" in e:
+        return ST_VACIO, "git: repositorio vacío"
+    if "timeout" in e:
+        return ST_ERROR, "git: timeout"
+    return ST_ERROR, ("git: " + (err or "").strip().replace("\n", " ")[:300])
+
+
+def analyze_repo_git(git, item, org, web_base, all_branches, deep, key_case, fetch_content):
+    """Mismo análisis que el backend API, pero usando el ejecutable de git."""
+    res = preparar(item, org, web_base, key_case)
+    if res.estado == ST_SIN_URL:
+        return res
+
+    url = res.gh_url_construida
+    tmp = tempfile.mkdtemp(prefix="gm_", dir=git.workdir)
+    dest = os.path.join(tmp, "r.git")
+    try:
+        rc, _out, err = git.clone_ligero(url, dest, all_branches)
+        if rc != 0:
+            estado, detalle = _clasificar_error_git(err)
+            res.estado = estado
+            res.repo_existe = "NO" if estado == ST_NO_REPO else "?"
+            res.detalle = "; ".join(filter(None, [res.detalle, detalle]))
+            res.accion = {
+                ST_NO_REPO: "REVISAR MANUALMENTE: no existe con ese nombre (mal nombrado o sin migrar)",
+                ST_SIN_PERMISO: "REVISAR MANUALMENTE: validar credenciales / permisos sobre el repo",
+                ST_VACIO: "REVISAR MANUALMENTE: repo vacío (sin commits)",
+            }.get(estado, "REVISAR MANUALMENTE: error ejecutando git")
+            return res
+
+        res.repo_existe = "SI"
+
+        rc, out, _e = git.run(["-C", dest, "symbolic-ref", "--short", "HEAD"])
+        res.default_branch = out.strip() if rc == 0 else ""
+
+        rc, out, _e = git.run(["-C", dest, "for-each-ref",
+                               "--format=%(refname:short)\t%(objectname)", "refs/heads/"])
+        ramas = []
+        for line in (out or "").splitlines():
+            if "\t" in line:
+                nombre, sha = line.split("\t", 1)
+                ramas.append((nombre.strip(), sha.strip()))
+        if not ramas:
+            res.estado, res.tiene_gitmodules = ST_VACIO, "NO"
+            res.accion = "REVISAR MANUALMENTE: repo vacío o sin ramas"
+            return res
+        res.ramas_revisadas = len(ramas)
+
+        # fecha del último commit de la rama por defecto
+        sha_def = dict(ramas).get(res.default_branch) or ramas[0][1]
+        rc, out, _e = git.run(["-C", dest, "log", "-1", "--format=%cI", sha_def])
+        if rc == 0:
+            res.ultimo_push = out.strip()[:10]
+
+        por_sha = {}
+        for nombre, sha in ramas:
+            por_sha.setdefault(sha, []).append(nombre)
+
+        ramas_con, submodulos, gitlinks, errores = [], {}, set(), []
+        for sha, nombres in por_sha.items():
+            args = ["-C", dest, "ls-tree"] + (["-r"] if deep else []) + [sha]
+            rc, out, err = git.run(args)
+            if rc != 0:
+                errores.append("%s: ls-tree falló (%s)" % (nombres[0], (err or "").strip()[:120]))
+                continue
+
+            tiene = False
+            for line in (out or "").splitlines():
+                # formato: "<modo> <tipo> <sha>\t<ruta>"
+                if "\t" not in line:
+                    continue
+                meta, ruta = line.split("\t", 1)
+                campos = meta.split()
+                if len(campos) < 3:
+                    continue
+                modo, tipo = campos[0], campos[1]
+                ruta = ruta.strip().strip('"')
+                if modo == GITLINK_MODE or tipo == "commit":
+                    gitlinks.add(ruta)
+                if ruta == GITMODULES or (deep and ruta.endswith("/" + GITMODULES)):
+                    tiene = True
+                elif ruta.lower() == GITMODULES and ruta != GITMODULES:
+                    tiene = True
+                    errores.append("%s: archivo '%s' con mayúsculas raras" % (nombres[0], ruta))
+
+            if tiene:
+                ramas_con.extend(nombres)
+                if fetch_content:
+                    rc, out, err = git.run(["-C", dest, "show", "%s:%s" % (sha, GITMODULES)])
+                    if rc == 0:
+                        for m in parse_gitmodules(out):
+                            submodulos[m.get("path") or m.get("name")] = m.get("url", "")
+                    else:
+                        errores.append("%s: no pude leer el .gitmodules (%s)"
+                                       % (nombres[0], (err or "").strip()[:120]))
+
+        res.ramas_con_gitmodules = ", ".join(sorted(set(ramas_con))[:25])
+        res.submodulos = " | ".join("%s -> %s" % (k, v) for k, v in sorted(submodulos.items()))
+        res.n_submodulos = len(submodulos)
+        res.gitlinks_sin_declarar = ", ".join(sorted(g for g in gitlinks if g not in submodulos))
+
+        if ramas_con:
+            res.estado, res.tiene_gitmodules = ST_OK_CON, "SI"
+            res.accion = "OK: tiene .gitmodules — validar que las urls de los submódulos apunten a GitHub"
+        else:
+            res.estado, res.tiene_gitmodules = ST_OK_SIN, "NO"
+            res.accion = ("ALERTA: hay submódulos en el árbol (gitlinks) pero NO existe .gitmodules"
+                          if gitlinks else "OK: no usa submódulos")
+
+        if errores:
+            res.detalle = "; ".join(filter(None, [res.detalle] + errores))
+        return res
+    finally:
+        _rmtree(tmp)
 
 
 # --------------------------------------------------------------------------- #
@@ -944,6 +1174,14 @@ def main():
                    help="Indexar la org para sugerir nombres cuando el repo no existe")
     p.add_argument("--key-case", choices=["lower", "upper", "asis"], default="lower",
                    help="Cómo escribir el project key (default: lower)")
+    p.add_argument("--backend", choices=["api", "git"], default="api",
+                   help="api = API REST de GitHub (rápido). git = usa el ejecutable de git, "
+                        "para redes donde la API está bloqueada por proxy (default: api)")
+    p.add_argument("--git-exe", default="git", help="Ruta del ejecutable de git (backend git)")
+    p.add_argument("--workdir", default=None,
+                   help="Carpeta para los clones temporales (backend git). Default: temp del sistema")
+    p.add_argument("--git-timeout", type=int, default=300,
+                   help="Timeout por comando de git, en segundos (default: 300)")
     p.add_argument("--workers", type=int, default=6, help="Hilos en paralelo (default: 6)")
     p.add_argument("--limit", type=int, default=0, help="Procesar solo las primeras N filas")
     p.add_argument("--dry-run", action="store_true", help="Solo construir e imprimir las URLs")
@@ -972,20 +1210,36 @@ def main():
                 print("%5d  %-10s %-9s no pude parsear: %r" % (it.fila, it.csi, "ERROR", it.bb_url))
         return
 
-    if not args.token:
-        sys.stderr.write("[!] Sin token: vas a chocar con el rate limit y no verás repos privados. "
-                         "Exporta GITHUB_TOKEN.\n")
-
-    gh = GitHubClient(args.token, args.api_base, verify_ssl=not args.insecure)
-    indice = index_org(gh, args.org) if args.index_org else {}
+    if args.backend == "git":
+        motor = GitRunner(args.git_exe, timeout=args.git_timeout,
+                          workdir=args.workdir, insecure=args.insecure)
+        ok, info = motor.version_ok()
+        if not ok:
+            sys.exit("No pude ejecutar git (%s). Usa --git-exe con la ruta completa." % info)
+        sys.stderr.write("[i] Backend git: %s%s\n"
+                         % (info, "" if motor.soporta_filter else
+                            " (sin soporte de --filter, los clones serán más pesados)"))
+        if args.index_org:
+            sys.stderr.write("[!] --index-org solo aplica al backend api; lo ignoro.\n")
+        indice = {}
+        analizar = analyze_repo_git
+        if args.workdir:
+            os.makedirs(args.workdir, exist_ok=True)
+    else:
+        if not args.token:
+            sys.stderr.write("[!] Sin token: vas a chocar con el rate limit y no verás repos "
+                             "privados. Exporta GITHUB_TOKEN.\n")
+        motor = GitHubClient(args.token, args.api_base, verify_ssl=not args.insecure)
+        indice = index_org(motor, args.org) if args.index_org else {}
+        analizar = analyze_repo
 
     results, hechos, total = [], 0, len(items)
     lock = threading.Lock()
 
     def tarea(it):
         try:
-            return analyze_repo(gh, it, args.org, args.web_base, args.all_branches,
-                                args.deep, args.key_case, not args.no_content)
+            return analizar(motor, it, args.org, args.web_base, args.all_branches,
+                            args.deep, args.key_case, not args.no_content)
         except Exception as exc:                                    # noqa: BLE001
             return RepoResult(fila=it.fila, number=it.number, csi=it.csi, owner=it.owner,
                               soid=it.soid, bb_url=it.bb_url, gh_url_excel=it.gh_url_excel,
@@ -1003,7 +1257,8 @@ def main():
             with lock:
                 hechos += 1
                 if hechos % 10 == 0 or hechos == total:
-                    sys.stderr.write("  [%d/%d] (%d llamadas API)\n" % (hechos, total, gh.calls))
+                    sys.stderr.write("  [%d/%d] (%d llamadas %s)\n"
+                                     % (hechos, total, motor.calls, args.backend))
                     sys.stderr.flush()
 
     results.sort(key=lambda r: r.fila)
