@@ -1,0 +1,9 @@
+# 1. Proxy del navegador (lo que netsh winhttp NO ve)
+Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings' |
+  Select-Object ProxyEnable, ProxyServer, AutoConfigURL
+
+# 2. ¿Git tiene proxy configurado?
+git config --global --get-regexp proxy
+
+# 3. ¿Git llega a los repos? (esto es la prueba de fuego)
+git ls-remote https://github.com/BnmxInternal/163950.sbs.mx.local.oneeclipse.balance.git
