@@ -55,6 +55,8 @@ if (-not (Get-Command tar -ErrorAction SilentlyContinue)) { throw "No encuentro 
 foreach ($f in $ListaRepos) { if (-not (Test-Path $f)) { throw "No encuentro $f" } }
 
 New-Item -ItemType Directory -Force -Path $Destino | Out-Null
+# Absoluta: git -C cambia de directorio, asi que una ruta relativa se resolveria dentro del mirror
+$Destino = (Resolve-Path $Destino).Path
 $MirrorDir = Join-Path $Destino "_mirrors"
 New-Item -ItemType Directory -Force -Path $MirrorDir | Out-Null
 
@@ -372,7 +374,14 @@ foreach ($fila in $filas) {
 
 # ---------- Resumen ----------
 $reporte = Join-Path $Destino "reporte_migracion.csv"
-$resultados | Export-Csv $reporte -NoTypeInformation -Encoding UTF8
+try {
+    $resultados | Export-Csv $reporte -NoTypeInformation -Encoding UTF8 -ErrorAction Stop
+} catch {
+    # Tipico: el CSV esta abierto en Excel. Guardo en uno con fecha y hora.
+    $reporte = Join-Path $Destino "reporte_migracion_$(Get-Date -Format 'yyyyMMdd_HHmmss').csv"
+    $resultados | Export-Csv $reporte -NoTypeInformation -Encoding UTF8
+    Write-Host "El reporte anterior estaba abierto (Excel?), guarde en uno nuevo." -ForegroundColor Yellow
+}
 
 Write-Host "`n================ RESUMEN ================" -ForegroundColor Cyan
 $resultados | Format-Table Repo, Estado, Ramas, Tags, Default -AutoSize
