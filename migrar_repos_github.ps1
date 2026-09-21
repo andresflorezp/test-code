@@ -31,6 +31,17 @@ param(
     [string]$Org        = "BnmxInternal",   # org de GitHub para las URLs derivadas
     [string]$GitHubHost = "github.com",
     [string]$AppId      = "",               # vacio = usar el prefijo del nombre del repo
+    [string]$Solo       = "",               # procesa solo los repos cuyo nombre contenga esto (ej: pdmgm003)
+
+    # Que hacer cuando el repo de GitHub ya trae commits (provisionado con .gitignore / CONTRIBUTING.md):
+    #   fusionar = merge --allow-unrelated-histories, NO usa --force (sirve con rulesets)  [default]
+    #   forzar   = git push --force, pisa lo que haya (falla si el ruleset lo bloquea)
+    #   fallar   = no hace nada, reporta el error y sigue con el siguiente
+    [ValidateSet('fusionar','forzar','fallar')]
+    [string]$Estrategia   = 'fusionar',
+    [string]$MergeNombre  = 'migracion-bitbucket',
+    [string]$MergeEmail   = 'migracion@noreply.local',
+    [string]$MergeMensaje = 'Merge del repo provisionado con la historia migrada desde Bitbucket',
     [switch]$DryRun,
     [switch]$BorrarMasterRemoto   # borra 'master' en GitHub si ya existia y el default quedo en main
 )
@@ -58,6 +69,23 @@ function Invoke-Git {
 
 function Short([string]$texto) {
     (($texto -split "`n") | Where-Object { $_.Trim() } | Select-Object -Last 4) -join ' | '
+}
+
+# Traduce los errores tipicos de push a algo accionable
+function Explain-Push([string]$salida) {
+    $causa = switch -Regex ($salida) {
+        'protected branch|ruleset|rule violations|cannot force-push|force pushes.*blocked' {
+            'BLOQUEADO POR RULESET de GitHub (rama protegida). Con -Estrategia fusionar no se usa --force'; break
+        }
+        'non-fast-forward|fetch first|behind its remote' {
+            'La rama en GitHub tiene commits que no estan en Bitbucket. Usa -Estrategia fusionar'; break
+        }
+        'pre-receive hook declined' { 'Un hook del servidor rechazo el push (politica de la org)'; break }
+        'exceeds.*file size limit|GH001'  { 'Hay archivos > 100 MB en la historia: se necesita Git LFS'; break }
+        'Permission.*denied|403'          { 'Sin permisos de escritura (revisa el SSO de la org)'; break }
+        default { $null }
+    }
+    if ($causa) { "$causa >> $(Short $salida)" } else { Short $salida }
 }
 
 function Test-Ref([string]$repo, [string]$ref) {
@@ -141,6 +169,12 @@ $filas = foreach ($x in $repos) {
 }
 $filas = @($filas)
 if ($filas.Count -eq 0) { throw "No encontre URLs de Bitbucket ni de .tar.gz en: $($ListaRepos -join ', ')" }
+
+if ($Solo) {
+    $filas = @($filas | Where-Object { $_.Repo -like "*$Solo*" })
+    if ($filas.Count -eq 0) { throw "Ningun repo coincide con -Solo '$Solo'" }
+    Write-Host "Filtro -Solo '$Solo': $($filas.Count) repo(s)" -ForegroundColor Yellow
+}
 
 $sinDescarga = @($filas | Where-Object { -not $_.Descarga }).Count
 Write-Host "Repos detectados: $($filas.Count)$(if ($sinDescarga) { " ($sinDescarga sin .tar.gz)" })" -ForegroundColor DarkGray
@@ -247,25 +281,58 @@ foreach ($fila in $filas) {
             $r.Estado = 'DRYRUN'
             $avisos.Add($(if ($remotoVacio) { "Acceso OK, repo vacio" } else { "Acceso OK" }))
         } else {
-            # 8. main primero -> en un repo vacio GitHub la toma como default
-            if ($tieneMain) {
-                Write-Host "  Subiendo main..."
-                $g = Invoke-Git @('-C', $work, 'push', $gh, 'refs/heads/main:refs/heads/main')
-                if (-not $g.Ok) { throw "Push de main fallo: $(Short $g.Out)" }
+            # 8. Reconciliar main con lo que ya exista en GitHub (repo provisionado con commit inicial)
+            if ($Estrategia -eq 'fusionar' -and $tieneMain -and -not $remotoVacio) {
+                $g = Invoke-Git @('-C', $work, 'fetch', '--quiet', $gh, '+refs/heads/main:refs/gh/main')
+                if ($g.Ok -and (Test-Ref $work 'refs/gh/main')) {
+                    $yaIntegrado = (Invoke-Git @('-C', $work, 'merge-base', '--is-ancestor', 'refs/gh/main', 'refs/heads/main')).Ok
+                    if (-not $yaIntegrado) {
+                        Write-Host "  Fusionando el commit inicial de GitHub en main..." -ForegroundColor Yellow
+                        $wt = Join-Path $MirrorDir "$nombre.wt"
+                        if (Test-Path $wt) { Remove-Item $wt -Recurse -Force }
+                        $g = Invoke-Git @('-C', $work, 'worktree', 'add', '--quiet', $wt, 'main')
+                        if (-not $g.Ok) { throw "No pude preparar el worktree para fusionar: $(Short $g.Out)" }
+                        try {
+                            # -X ours: ante conflicto gana el contenido de Bitbucket; los archivos que solo
+                            # existen en GitHub (CONTRIBUTING.md, etc.) se conservan igual
+                            $g = Invoke-Git @('-C', $wt,
+                                '-c', "user.name=$MergeNombre", '-c', "user.email=$MergeEmail",
+                                'merge', '--allow-unrelated-histories', '-X', 'ours', '--no-edit',
+                                '-m', $MergeMensaje, 'refs/gh/main')
+                            if (-not $g.Ok) { throw "La fusion con el repo provisionado fallo: $(Short $g.Out)" }
+                            $avisos.Add("main fusionado con el commit inicial del repo provisionado")
+                        } finally {
+                            Invoke-Git @('-C', $work, 'worktree', 'remove', '--force', $wt) | Out-Null
+                        }
+                    } else {
+                        $avisos.Add("El commit inicial de GitHub ya estaba integrado")
+                    }
+                } else {
+                    $avisos.Add("No pude traer main de GitHub para fusionar: $(Short $g.Out)")
+                }
             }
 
-            # 9. Resto de ramas
-            Write-Host "  Subiendo todas las ramas..."
-            $g = Invoke-Git @('-C', $work, 'push', $gh, 'refs/heads/*:refs/heads/*')
-            if (-not $g.Ok) { throw "Push de ramas fallo: $(Short $g.Out)" }
+            $fuerza = if ($Estrategia -eq 'forzar') { @('--force') } else { @() }
 
-            # 10. Tags
+            # 9. main primero -> en un repo vacio GitHub la toma como default
+            if ($tieneMain) {
+                Write-Host "  Subiendo main..."
+                $g = Invoke-Git (@('-C', $work, 'push') + $fuerza + @($gh, 'refs/heads/main:refs/heads/main'))
+                if (-not $g.Ok) { throw "Push de main fallo: $(Explain-Push $g.Out)" }
+            }
+
+            # 10. Resto de ramas
+            Write-Host "  Subiendo todas las ramas..."
+            $g = Invoke-Git (@('-C', $work, 'push') + $fuerza + @($gh, 'refs/heads/*:refs/heads/*'))
+            if (-not $g.Ok) { throw "Push de ramas fallo: $(Explain-Push $g.Out)" }
+
+            # 11. Tags
             if ($r.Tags -gt 0) {
                 Write-Host "  Subiendo tags..."
-                $g = Invoke-Git @('-C', $work, 'push', $gh, 'refs/tags/*:refs/tags/*')
+                $g = Invoke-Git (@('-C', $work, 'push') + $fuerza + @($gh, 'refs/tags/*:refs/tags/*'))
                 if (-not $g.Ok) {
                     $r.Estado = 'PARCIAL'
-                    $avisos.Add("Ramas OK pero push de tags fallo: $(Short $g.Out)")
+                    $avisos.Add("Ramas OK pero push de tags fallo: $(Explain-Push $g.Out)")
                 }
             }
 
