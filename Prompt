@@ -1,0 +1,39 @@
+Te voy a pasar 3 insumos de una ejecución de RLM para el módulo <MÓDULO>: las variables de entorno, el script y el log. Analiza SOLO lo que está en esos 3 insumos y crúzalos entre sí.
+
+Contexto mínimo: el script lo ejecuta `rlm_federated.sh` en el paso 2.5 (Deploy) de RLM, como el usuario kfkusr, según el `PDeployType` que viene en `CITI_DEST_SCRIPT_PARAMS1`.
+
+## 1. Cómo funciona el módulo
+Resume en 5 a 8 pasos numerados qué hace el módulo, basándote en lo que hace el script y en lo que muestra el log. Usa lenguaje sencillo.
+
+## 2. Variables de entorno
+Para CADA variable que te pasé, arma una tabla agrupada por categoría con estas columnas:
+| Variable | Valor | Para qué sirve | ¿La usa el script? | ¿Aparece en el log? |
+- **¿La usa el script?**: "Sí" + cómo la usa (por ejemplo "se parsea con awk para sacar installPath") o "No".
+- **¿Aparece en el log?**: "Sí" + qué muestra, o "No".
+- Descompón las variables compuestas (como `CITI_DEST_SCRIPT_PARAMS1`) en sus subparámetros.
+- Al final, lista aparte:
+  - las variables que el script usa y **no** vienen en las variables de entorno (dime de dónde parecen salir);
+  - las variables de entorno que el script **no** usa (probablemente son contexto de RLM).
+
+## 3. El script bloque por bloque
+Divide el script en bloques lógicos. Para cada bloque:
+- qué hace;
+- qué variables usa;
+- qué archivos lee o escribe (rutas);
+- qué comandos o servicios llama (kafka CLI, curl/REST, openssl, etc.);
+- qué línea o líneas del log corresponden a ese bloque.
+
+## 4. El log como línea de tiempo
+Recorre el log en orden y explica cada fase: qué pasó, a qué parte del script corresponde y cuánto tardó, si se ve la hora.
+Luego haz una tabla de errores y warnings:
+| Línea del log | Qué significa | Qué parte del script lo produce | Impacto (Crítico / Revisar / Ruido) |
+
+## 5. Lo que no cuadra o falta
+- Cosas del log que no se explican con el script que te pasé.
+- Partes del script que no se ven ejecutadas en el log.
+- Qué debo pegarte para completar el análisis.
+
+## Reglas
+- No inventes. Si deduces algo que no está explícito en los insumos, márcalo con *(inferido)*.
+- No repitas valores sensibles: `*_enc`, `__SS__...`, tokens, contraseñas ni URLs con token. Escribe solo el nombre y "valor sensible".
+- Responde en español, directo, con tablas.
