@@ -1,0 +1,227 @@
+<mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1200" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="c124" value="Desarrollador" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;participant=umlActor;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+      <mxGeometry x="75.0" y="20" width="40" height="1230" as="geometry"/>
+    </mxCell>
+    <mxCell id="c125" value="GitHub kafka" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="220" y="20" width="150" height="1230" as="geometry"/>
+    </mxCell>
+    <mxCell id="c126" value="Jenkins" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="420" y="20" width="150" height="1230" as="geometry"/>
+    </mxCell>
+    <mxCell id="c127" value="Artifactory" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="620" y="20" width="150" height="1230" as="geometry"/>
+    </mxCell>
+    <mxCell id="c128" value="RLM" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="820" y="20" width="150" height="1230" as="geometry"/>
+    </mxCell>
+    <mxCell id="c129" value="Server (kfkusr)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="1020" y="20" width="150" height="1230" as="geometry"/>
+    </mxCell>
+    <mxCell id="c130" value="Kafka Connect" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1220" y="20" width="150" height="1230" as="geometry"/>
+    </mxCell>
+    <mxCell id="c131" value="Kafka" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1420" y="20" width="150" height="1230" as="geometry"/>
+    </mxCell>
+    <mxCell id="c132" value="ServiceNow" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+      <mxGeometry x="1620" y="20" width="150" height="1230" as="geometry"/>
+    </mxCell>
+    <mxCell id="c133" value="Edita file.ctl y definition.json (push)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="95.0" y="110" as="sourcePoint"/>
+        <mxPoint x="295.0" y="110" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c134" value="Checkout repo" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="495.0" y="150" as="sourcePoint"/>
+        <mxPoint x="295.0" y="150" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c135" value="pipeline.yml → assembly.xml" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="495.0" y="175" as="sourcePoint"/>
+        <mxPoint x="495.0" y="199" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="525.0" y="175"/>
+          <mxPoint x="525.0" y="199"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c136" value="Publica el paquete del build" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="495.0" y="240" as="sourcePoint"/>
+        <mxPoint x="695.0" y="240" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c137" value="Crea Template + Component (server = DEV)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="495.0" y="280" as="sourcePoint"/>
+        <mxPoint x="895.0" y="280" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c138" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="605.0" y="310" width="1190.0" height="870" as="geometry"/>
+    </mxCell>
+    <mxCell id="c139" value="[Por cada ambiente: DEV → SIT → UAT → PERF → PROD]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="661.0" y="310" width="460" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="c140" value="1.0 Carga y valida variables" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="350" as="sourcePoint"/>
+        <mxPoint x="895.0" y="374" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="925.0" y="350"/>
+          <mxPoint x="925.0" y="374"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c141" value="2.1 Propiedades extra y referencia del script" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="395" as="sourcePoint"/>
+        <mxPoint x="895.0" y="419" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="925.0" y="395"/>
+          <mxPoint x="925.0" y="419"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c142" value="2.2 Descarga scripts Unify" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="455" as="sourcePoint"/>
+        <mxPoint x="695.0" y="455" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c143" value="scripts" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="695.0" y="485" as="sourcePoint"/>
+        <mxPoint x="895.0" y="485" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c144" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="620.0" y="510" width="1160.0" height="150" as="geometry"/>
+    </mxCell>
+    <mxCell id="c145" value="[Ambiente = PROD]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="676.0" y="510" width="460" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="c146" value="2.3 Valida CR" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="560" as="sourcePoint"/>
+        <mxPoint x="1695.0" y="560" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c147" value="CR válido" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1695.0" y="590" as="sourcePoint"/>
+        <mxPoint x="895.0" y="590" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c148" value="" style="endArrow=none;dashed=1;html=1;edgeStyle=none;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="620.0" y="610" as="sourcePoint"/>
+        <mxPoint x="1780.0" y="610" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c149" value="[Non-prod]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="626.0" y="612" width="220" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="c150" value="2.3 Se omite" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="625" as="sourcePoint"/>
+        <mxPoint x="895.0" y="649" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="925.0" y="625"/>
+          <mxPoint x="925.0" y="649"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c151" value="2.4 Copia scripts" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="700" as="sourcePoint"/>
+        <mxPoint x="1095.0" y="700" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c152" value="2.5 Ejecuta rlm_federated.sh" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="740" as="sourcePoint"/>
+        <mxPoint x="1095.0" y="740" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c153" value="Descarga el paquete del build" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1095.0" y="780" as="sourcePoint"/>
+        <mxPoint x="695.0" y="780" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c154" value="paquete" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="695.0" y="810" as="sourcePoint"/>
+        <mxPoint x="1095.0" y="810" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c155" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="620.0" y="835" width="1160.0" height="120" as="geometry"/>
+    </mxCell>
+    <mxCell id="c156" value="[PDeployType = KAFKA_CONNECTOR]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="676.0" y="835" width="460" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="c157" value="Aplica conectores (REST :8083)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1095.0" y="885" as="sourcePoint"/>
+        <mxPoint x="1295.0" y="885" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c158" value="" style="endArrow=none;dashed=1;html=1;edgeStyle=none;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="620.0" y="905" as="sourcePoint"/>
+        <mxPoint x="1780.0" y="905" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c159" value="[Resto de módulos]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="626.0" y="907" width="220" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="c160" value="Aplica cambios (topics, ACLs, schemas…)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1095.0" y="940" as="sourcePoint"/>
+        <mxPoint x="1495.0" y="940" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c161" value="Publica resultado en topic de auditoría" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1095.0" y="995" as="sourcePoint"/>
+        <mxPoint x="1495.0" y="995" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c162" value="Resultado del deploy" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1095.0" y="1030" as="sourcePoint"/>
+        <mxPoint x="895.0" y="1030" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c163" value="3.0 Promoción + 4.1 elegir destino" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="1050" as="sourcePoint"/>
+        <mxPoint x="895.0" y="1074" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="925.0" y="1050"/>
+          <mxPoint x="925.0" y="1074"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="c164" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="620.0" y="1090" width="1160.0" height="75" as="geometry"/>
+    </mxCell>
+    <mxCell id="c165" value="[Destino = PROD]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="676.0" y="1090" width="460" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="c166" value="5.0 Crea CR automáticamente" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="1140" as="sourcePoint"/>
+        <mxPoint x="1695.0" y="1140" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+  </root>
+</mxGraphModel>
