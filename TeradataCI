@@ -1,0 +1,138 @@
+<mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1200" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="tdb-49" value="CI en Jenkins: etapas del pipeline" style="text;html=1;fontSize=22;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="20" y="20" width="800" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-50" value="1 · Preparación" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="20" y="90" width="260" height="510" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-51" value="&lt;b&gt;4&lt;/b&gt; · Configuring Unify Patterns&lt;br&gt;detecta assembly.xml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="40" y="140" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-52" value="&lt;b&gt;5&lt;/b&gt; · Integrity check del pipeline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="40" y="230" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-53" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-51" target="tdb-52">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-54" value="&lt;b&gt;6&lt;/b&gt; · Unify test framework" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="40" y="320" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-55" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-52" target="tdb-54">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-56" value="&lt;b&gt;8&lt;/b&gt; · Configure THOR&lt;br&gt;Maven · Java · Artifactory" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="40" y="410" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-57" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-54" target="tdb-56">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-58" value="2 · Build" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="310" y="90" width="260" height="510" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-59" value="&lt;b&gt;10&lt;/b&gt; · Execute Maven&lt;br&gt;mvn clean install" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="330" y="140" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-60" value="&lt;b&gt;11.1&lt;/b&gt; · Audit del proyecto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="330" y="230" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-61" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-59" target="tdb-60">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-62" value="&lt;b&gt;11.3&lt;/b&gt; · Prepare deployable&lt;br&gt;package (zip)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="330" y="320" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-63" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-60" target="tdb-62">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-64" value="3 · Calidad y seguridad" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="600" y="90" width="260" height="510" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-65" value="&lt;b&gt;11.2&lt;/b&gt; · SonarQube&lt;br&gt;análisis estático" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="620" y="140" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-66" value="Checkmarx&lt;br&gt;no habilitado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="620" y="230" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-67" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-65" target="tdb-66">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-68" value="&lt;b&gt;12&lt;/b&gt; · BlackDuck scan&lt;br&gt;no habilitado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="620" y="320" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-69" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-66" target="tdb-68">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-70" value="&lt;b&gt;16&lt;/b&gt; · Snyk&lt;br&gt;vulnerabilidades" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="620" y="410" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-71" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-68" target="tdb-70">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-72" value="CD Gate · Gating service&lt;br&gt;WARN no bloquea" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="620" y="500" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-73" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-70" target="tdb-72">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-74" value="4 · Publicación" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="890" y="90" width="260" height="510" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-75" value="Descarga dependencias&lt;br&gt;de Artifactory" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="910" y="140" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-76" value="&lt;b&gt;13&lt;/b&gt; · Upload a Artifactory&lt;br&gt;no sube librerías" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="910" y="230" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-77" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-75" target="tdb-76">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-78" value="&lt;b&gt;15&lt;/b&gt; · EB Package link&lt;br&gt;registra el paquete" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="910" y="320" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-79" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-76" target="tdb-78">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-80" value="5 · Despliegue" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1180" y="90" width="260" height="510" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-81" value="&lt;b&gt;17&lt;/b&gt; · RLM Integration&lt;br&gt;Template · ENVIRONMENT=DEV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1200" y="140" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-82" value="&lt;b&gt;18&lt;/b&gt; · Crea request en RLM&lt;br&gt;EXECUTE_NOW=true" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1200" y="230" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-83" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-81" target="tdb-82">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-84" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-50" target="tdb-58">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-85" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-58" target="tdb-64">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-86" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-64" target="tdb-74">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-87" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-74" target="tdb-80">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-88" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="20" y="620" width="40" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-89" value="Habilitado" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="70" y="620" width="120" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-90" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="200" y="620" width="40" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-91" value="No habilitado" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="250" y="620" width="150" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-92" value="Los números son las etapas del log de Jenkins (~~4~~, ~~5~~…)." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="20" y="655" width="700" height="24" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>
