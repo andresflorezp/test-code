@@ -1,0 +1,36 @@
+Archivos del repo
+Los 5 archivos que mueven el despliegue. ‹AMB› es el prefijo del ambiente (ej. COB_).
+
+Archivo	Qué hace	Cuándo se usa
+‹AMB›_….sql	Definición de la creación o el cambio de las tablas.	Deploy (2.5)
+‹AMB›_…_rollback.sql	Revierte lo que hace el .sql.	Rollback (4.0)
+‹AMB›_bomfile.txt	Lista qué .sql se ejecutan.	Deploy (2.5)
+‹AMB›_bomfile_rollback.txt	Lista qué .sql de rollback se ejecutan.	Rollback (4.0)
+‹AMB›_release_mload_tables.txt	Lista las tablas que se van a crear o cargar.	No lo lee teradata.sh (por confirmar quién lo usa)
+
+
+
+Ambiente	Servidor Teradata	CR (ServiceNow)	Nota
+DEV	edwdev.nam.nsroot.net	—	DEV, SIT y UAT comparten el mismo servidor.
+SIT	edwdev.nam.nsroot.net	—
+UAT	edwdev.nam.nsroot.net	—
+PROD	edwmexp.lac.nsroot.net	CTM0000089335	Requiere CR.
+COB (DR)	edwmexc.nam.nsroot.net	CTM0000008356	Solo si PROD falla. Tiene su propio CR.
+
+
+general
+Jenkins valida y publica el paquete; RLM orquesta; el server descarga el paquete y ejecuta los SQL en Teradata. COB es el ambiente de respaldo (DR): solo se despliega si PROD falla. La contraseña de la base sale de CyberArk.
+
+Ci
+Verde: habilitado. Rojo punteado: no habilitado (se habilita a necesidad). Azul punteado: propuesto. El CD Gate es NON_ENFORCING: un WARN avisa pero no detiene el pipeline.
+
+rlm
+El script de Teradata saca la contraseña de CyberArk, valida el login con bteq y ejecuta los .sql del bomfile. Después el usuario decide: promover (3.0) o, si no, hacer rollback (4.0). COB solo si PROD falla.
+
+secuencia
+
+
+El server descarga el paquete, pide la contraseña a CyberArk y ejecuta los SQL en Teradata con bteq. El rollback usa bomfile_rollback.txt.
+
+
+https://enterprisebuild.citigroup.net:8643/EbService
