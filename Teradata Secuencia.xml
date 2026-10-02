@@ -2,46 +2,46 @@
   <root>
     <mxCell id="0"/>
     <mxCell id="1" parent="0"/>
-    <mxCell id="kfkc-124" value="Desarrollador" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;participant=umlActor;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
-      <mxGeometry x="75.0" y="20" width="40" height="1230" as="geometry"/>
+    <mxCell id="tdd-152" value="Desarrollador" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;participant=umlActor;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+      <mxGeometry x="75.0" y="20" width="40" height="1480" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-125" value="GitHub kafka" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="220" y="20" width="150" height="1230" as="geometry"/>
+    <mxCell id="tdd-153" value="GitHub" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="220" y="20" width="150" height="1480" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-126" value="Jenkins" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="420" y="20" width="150" height="1230" as="geometry"/>
+    <mxCell id="tdd-154" value="Jenkins" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="420" y="20" width="150" height="1480" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-127" value="Artifactory" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-      <mxGeometry x="620" y="20" width="150" height="1230" as="geometry"/>
+    <mxCell id="tdd-155" value="EB / Artifactory" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="620" y="20" width="150" height="1480" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-128" value="RLM" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
-      <mxGeometry x="820" y="20" width="150" height="1230" as="geometry"/>
+    <mxCell id="tdd-156" value="RLM" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="820" y="20" width="150" height="1480" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-129" value="Server (kfkusr)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="1020" y="20" width="150" height="1230" as="geometry"/>
+    <mxCell id="tdd-157" value="Server" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="1020" y="20" width="150" height="1480" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-130" value="Kafka Connect" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="1220" y="20" width="150" height="1230" as="geometry"/>
+    <mxCell id="tdd-158" value="CyberArk" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="1220" y="20" width="150" height="1480" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-131" value="Kafka" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="1420" y="20" width="150" height="1230" as="geometry"/>
+    <mxCell id="tdd-159" value="Teradata" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1420" y="20" width="150" height="1480" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-132" value="ServiceNow" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-      <mxGeometry x="1620" y="20" width="150" height="1230" as="geometry"/>
+    <mxCell id="tdd-160" value="ServiceNow" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+      <mxGeometry x="1620" y="20" width="150" height="1480" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-133" value="Edita file.ctl y definition.json (push)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-161" value="Edita .sql, rollback y bomfiles (push)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
         <mxPoint x="95.0" y="110" as="sourcePoint"/>
         <mxPoint x="295.0" y="110" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-134" value="Checkout repo" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-162" value="Checkout repo" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
         <mxPoint x="495.0" y="150" as="sourcePoint"/>
         <mxPoint x="295.0" y="150" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-135" value="pipeline.yml → assembly.xml" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-163" value="CI: valida, analiza y empaqueta" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
         <mxPoint x="495.0" y="175" as="sourcePoint"/>
         <mxPoint x="495.0" y="199" as="targetPoint"/>
@@ -51,176 +51,204 @@
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-136" value="Publica el paquete del build" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-164" value="Registra el paquete del build en EB" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="495.0" y="240" as="sourcePoint"/>
-        <mxPoint x="695.0" y="240" as="targetPoint"/>
+        <mxPoint x="495.0" y="250" as="sourcePoint"/>
+        <mxPoint x="695.0" y="250" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-137" value="Crea Template + Component (server = DEV)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-165" value="Crea request (ENVIRONMENT = DEV)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="495.0" y="280" as="sourcePoint"/>
-        <mxPoint x="895.0" y="280" as="targetPoint"/>
+        <mxPoint x="495.0" y="290" as="sourcePoint"/>
+        <mxPoint x="895.0" y="290" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-138" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
-      <mxGeometry x="605.0" y="310" width="1190.0" height="870" as="geometry"/>
+    <mxCell id="tdd-166" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="605.0" y="320" width="1185.0" height="1110" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-139" value="[Por cada ambiente: DEV → SIT → UAT → PERF → PROD]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
-      <mxGeometry x="661.0" y="310" width="460" height="24" as="geometry"/>
+    <mxCell id="tdd-167" value="[Por ambiente: DEV → SIT → UAT → PROD (COB si PROD falla)]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="661.0" y="320" width="520" height="24" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-140" value="1.0 Carga y valida variables" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-168" value="1.0 Mapea y carga variables" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="895.0" y="350" as="sourcePoint"/>
-        <mxPoint x="895.0" y="374" as="targetPoint"/>
+        <mxPoint x="895.0" y="359" as="sourcePoint"/>
+        <mxPoint x="895.0" y="383" as="targetPoint"/>
         <Array as="points">
-          <mxPoint x="925.0" y="350"/>
-          <mxPoint x="925.0" y="374"/>
+          <mxPoint x="925.0" y="359"/>
+          <mxPoint x="925.0" y="383"/>
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-141" value="2.1 Propiedades extra y referencia del script" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-169" value="2.1 Propiedades extra y referencia del script" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="895.0" y="395" as="sourcePoint"/>
-        <mxPoint x="895.0" y="419" as="targetPoint"/>
+        <mxPoint x="895.0" y="404" as="sourcePoint"/>
+        <mxPoint x="895.0" y="428" as="targetPoint"/>
         <Array as="points">
-          <mxPoint x="925.0" y="395"/>
-          <mxPoint x="925.0" y="419"/>
+          <mxPoint x="925.0" y="404"/>
+          <mxPoint x="925.0" y="428"/>
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-142" value="2.2 Descarga scripts Unify" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-170" value="2.2 Descarga scripts Unify" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="895.0" y="455" as="sourcePoint"/>
-        <mxPoint x="695.0" y="455" as="targetPoint"/>
+        <mxPoint x="895.0" y="464" as="sourcePoint"/>
+        <mxPoint x="695.0" y="464" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-143" value="scripts" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-171" value="scripts" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="695.0" y="485" as="sourcePoint"/>
-        <mxPoint x="895.0" y="485" as="targetPoint"/>
+        <mxPoint x="695.0" y="494" as="sourcePoint"/>
+        <mxPoint x="895.0" y="494" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-144" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
-      <mxGeometry x="620.0" y="510" width="1160.0" height="150" as="geometry"/>
+    <mxCell id="tdd-172" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="620.0" y="520" width="1155.0" height="150" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-145" value="[Ambiente = PROD]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
-      <mxGeometry x="676.0" y="510" width="460" height="24" as="geometry"/>
+    <mxCell id="tdd-173" value="[Ambiente = PROD]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="676.0" y="520" width="520" height="24" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-146" value="2.3 Valida CR" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-174" value="2.3 Valida CR" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="895.0" y="560" as="sourcePoint"/>
-        <mxPoint x="1695.0" y="560" as="targetPoint"/>
+        <mxPoint x="895.0" y="569" as="sourcePoint"/>
+        <mxPoint x="1695.0" y="569" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-147" value="CR válido" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-175" value="CR válido" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="1695.0" y="590" as="sourcePoint"/>
-        <mxPoint x="895.0" y="590" as="targetPoint"/>
+        <mxPoint x="1695.0" y="599" as="sourcePoint"/>
+        <mxPoint x="895.0" y="599" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-148" value="" style="endArrow=none;dashed=1;html=1;edgeStyle=none;" edge="1" parent="1">
+    <mxCell id="tdd-176" value="" style="endArrow=none;dashed=1;html=1;edgeStyle=none;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="620.0" y="610" as="sourcePoint"/>
-        <mxPoint x="1780.0" y="610" as="targetPoint"/>
+        <mxPoint x="620.0" y="620" as="sourcePoint"/>
+        <mxPoint x="1775.0" y="620" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-149" value="[Non-prod]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
-      <mxGeometry x="626.0" y="612" width="220" height="20" as="geometry"/>
+    <mxCell id="tdd-177" value="[Non-prod]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="626.0" y="622" width="220" height="20" as="geometry"/>
     </mxCell>
-    <mxCell id="kfkc-150" value="2.3 Se omite" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-178" value="2.3 Se omite" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="895.0" y="625" as="sourcePoint"/>
-        <mxPoint x="895.0" y="649" as="targetPoint"/>
+        <mxPoint x="895.0" y="634" as="sourcePoint"/>
+        <mxPoint x="895.0" y="658" as="targetPoint"/>
         <Array as="points">
-          <mxPoint x="925.0" y="625"/>
-          <mxPoint x="925.0" y="649"/>
+          <mxPoint x="925.0" y="634"/>
+          <mxPoint x="925.0" y="658"/>
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-151" value="2.4 Copia scripts" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-179" value="2.4 Copia scripts" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="895.0" y="700" as="sourcePoint"/>
-        <mxPoint x="1095.0" y="700" as="targetPoint"/>
+        <mxPoint x="895.0" y="709" as="sourcePoint"/>
+        <mxPoint x="1095.0" y="709" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-152" value="2.5 Ejecuta rlm_federated.sh" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-180" value="2.5 wrapper → rlm_federated.sh" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="895.0" y="740" as="sourcePoint"/>
-        <mxPoint x="1095.0" y="740" as="targetPoint"/>
+        <mxPoint x="895.0" y="749" as="sourcePoint"/>
+        <mxPoint x="1095.0" y="749" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-153" value="Descarga el paquete del build" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-181" value="Descarga el paquete del build" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="1095.0" y="780" as="sourcePoint"/>
-        <mxPoint x="695.0" y="780" as="targetPoint"/>
+        <mxPoint x="1095.0" y="789" as="sourcePoint"/>
+        <mxPoint x="695.0" y="789" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-154" value="paquete" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-182" value="paquete" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="695.0" y="810" as="sourcePoint"/>
-        <mxPoint x="1095.0" y="810" as="targetPoint"/>
+        <mxPoint x="695.0" y="819" as="sourcePoint"/>
+        <mxPoint x="1095.0" y="819" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-155" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
-      <mxGeometry x="620.0" y="835" width="1160.0" height="120" as="geometry"/>
-    </mxCell>
-    <mxCell id="kfkc-156" value="[PDeployType = KAFKA_CONNECTOR]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
-      <mxGeometry x="676.0" y="835" width="460" height="24" as="geometry"/>
-    </mxCell>
-    <mxCell id="kfkc-157" value="Aplica conectores (REST :8083)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-183" value="Pide la contraseña (GetPassword)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="1095.0" y="885" as="sourcePoint"/>
-        <mxPoint x="1295.0" y="885" as="targetPoint"/>
+        <mxPoint x="1095.0" y="859" as="sourcePoint"/>
+        <mxPoint x="1295.0" y="859" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-158" value="" style="endArrow=none;dashed=1;html=1;edgeStyle=none;" edge="1" parent="1">
+    <mxCell id="tdd-184" value="contraseña" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="620.0" y="905" as="sourcePoint"/>
-        <mxPoint x="1780.0" y="905" as="targetPoint"/>
+        <mxPoint x="1295.0" y="889" as="sourcePoint"/>
+        <mxPoint x="1095.0" y="889" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-159" value="[Resto de módulos]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
-      <mxGeometry x="626.0" y="907" width="220" height="20" as="geometry"/>
-    </mxCell>
-    <mxCell id="kfkc-160" value="Aplica cambios (topics, ACLs, schemas…)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-185" value="bteq: login" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="1095.0" y="940" as="sourcePoint"/>
-        <mxPoint x="1495.0" y="940" as="targetPoint"/>
+        <mxPoint x="1095.0" y="929" as="sourcePoint"/>
+        <mxPoint x="1495.0" y="929" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-161" value="Publica resultado en topic de auditoría" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-186" value="Ejecuta cada .sql de bomfile.txt" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="1095.0" y="995" as="sourcePoint"/>
-        <mxPoint x="1495.0" y="995" as="targetPoint"/>
+        <mxPoint x="1095.0" y="969" as="sourcePoint"/>
+        <mxPoint x="1495.0" y="969" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-162" value="Resultado del deploy" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-187" value="Reporta a Atlas / EB&lt;br&gt;y envía logs por correo" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="1095.0" y="1030" as="sourcePoint"/>
-        <mxPoint x="895.0" y="1030" as="targetPoint"/>
-      </mxGeometry>
-    </mxCell>
-    <mxCell id="kfkc-163" value="3.0 Promoción + 4.1 elegir destino" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
-      <mxGeometry relative="1" as="geometry">
-        <mxPoint x="895.0" y="1050" as="sourcePoint"/>
-        <mxPoint x="895.0" y="1074" as="targetPoint"/>
+        <mxPoint x="1095.0" y="989" as="sourcePoint"/>
+        <mxPoint x="1095.0" y="1013" as="targetPoint"/>
         <Array as="points">
-          <mxPoint x="925.0" y="1050"/>
-          <mxPoint x="925.0" y="1074"/>
+          <mxPoint x="1125.0" y="989"/>
+          <mxPoint x="1125.0" y="1013"/>
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="kfkc-164" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
-      <mxGeometry x="620.0" y="1090" width="1160.0" height="75" as="geometry"/>
-    </mxCell>
-    <mxCell id="kfkc-165" value="[Destino = PROD]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
-      <mxGeometry x="676.0" y="1090" width="460" height="24" as="geometry"/>
-    </mxCell>
-    <mxCell id="kfkc-166" value="5.0 Crea CR automáticamente" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+    <mxCell id="tdd-188" value="Resultado" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
       <mxGeometry relative="1" as="geometry">
-        <mxPoint x="895.0" y="1140" as="sourcePoint"/>
-        <mxPoint x="1695.0" y="1140" as="targetPoint"/>
+        <mxPoint x="1095.0" y="1059" as="sourcePoint"/>
+        <mxPoint x="895.0" y="1059" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="tdd-189" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="620.0" y="1090" width="1155.0" height="320" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdd-190" value="[3.0 Se promueve]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="676.0" y="1090" width="520" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdd-191" value="Siguiente ambiente" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="1134" as="sourcePoint"/>
+        <mxPoint x="895.0" y="1158" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="925.0" y="1134"/>
+          <mxPoint x="925.0" y="1158"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="tdd-192" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="635.0" y="1175" width="1125.0" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdd-193" value="[Destino = PROD]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="691.0" y="1175" width="520" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdd-194" value="5.0 Crea CR" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="1229" as="sourcePoint"/>
+        <mxPoint x="1695.0" y="1229" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="tdd-195" value="" style="endArrow=none;dashed=1;html=1;edgeStyle=none;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="620.0" y="1275" as="sourcePoint"/>
+        <mxPoint x="1775.0" y="1275" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="tdd-196" value="[4.0 Rollback]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="626.0" y="1277" width="220" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdd-197" value="Ejecuta rollback" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="895.0" y="1329" as="sourcePoint"/>
+        <mxPoint x="1095.0" y="1329" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="tdd-198" value="Ejecuta los .sql de bomfile_rollback.txt" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1095.0" y="1379" as="sourcePoint"/>
+        <mxPoint x="1495.0" y="1379" as="targetPoint"/>
       </mxGeometry>
     </mxCell>
   </root>
