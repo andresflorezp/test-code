@@ -2,120 +2,132 @@
   <root>
     <mxCell id="0"/>
     <mxCell id="1" parent="0"/>
-    <mxCell id="tda-2" value="Flujo CI/CD Teradata" style="text;html=1;fontSize=22;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+    <mxCell id="kfka-2" value="Flujo CI/CD de configuración Kafka" style="text;html=1;fontSize=22;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
       <mxGeometry x="20" y="20" width="800" height="40" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-3" value="GitHub (repo de la app)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+    <mxCell id="kfka-3" value="GitHub kafka" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
       <mxGeometry x="20" y="90" width="420" height="200" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-4" value="Desarrollador" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+    <mxCell id="kfka-4" value="Desarrollador" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
       <mxGeometry x="40" y="150" width="40" height="70" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-5" value="&lt;b&gt;Archivos por ambiente&lt;/b&gt;&lt;br&gt;‹AMB›.sql&lt;br&gt;‹AMB›_rollback.sql&lt;br&gt;bomfile.txt · bomfile_rollback.txt&lt;br&gt;release_mload_tables.txt" style="shape=note;whiteSpace=wrap;html=1;size=14;align=left;spacingLeft=10;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="120" y="125" width="300" height="120" as="geometry"/>
+    <mxCell id="kfka-5" value="file.ctl&lt;br&gt;definition.json" style="shape=note;whiteSpace=wrap;html=1;size=14;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="110" y="145" width="120" height="80" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-6" value="edita" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-4" target="tda-5">
+    <mxCell id="kfka-6" value="Carpetas por ambiente&lt;br&gt;DEV · SIT · UAT · PERF · PROD" style="shape=folder;whiteSpace=wrap;html=1;tabWidth=50;tabHeight=14;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="260" y="140" width="165" height="90" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-7" value="edita /&lt;br&gt;define" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-4" target="kfka-5">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-7" value="Jenkins (CI)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+    <mxCell id="kfka-8" value="push" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-5" target="kfka-6">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-9" value="Jenkins" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
       <mxGeometry x="480" y="90" width="500" height="200" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-8" value="Gates de seguridad&lt;br&gt;Sonar · Snyk · CD Gate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="500" y="160" width="140" height="60" as="geometry"/>
+    <mxCell id="kfka-10" value="Checkout repo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="500" y="160" width="100" height="60" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-9" value="Build Maven&lt;br&gt;pipeline.yml +&lt;br&gt;assembly.xml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="670" y="155" width="140" height="70" as="geometry"/>
+    <mxCell id="kfka-11" value="pipeline.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="620" y="160" width="100" height="60" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-10" value="Empaqueta&lt;br&gt;zip" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-      <mxGeometry x="840" y="160" width="120" height="60" as="geometry"/>
+    <mxCell id="kfka-12" value="assembly.xml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="740" y="160" width="100" height="60" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-11" value="push" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-5" target="tda-8">
+    <mxCell id="kfka-13" value="Empaqueta&lt;br&gt;el build" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="860" y="160" width="100" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-6" target="kfka-10">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-8" target="tda-9">
+    <mxCell id="kfka-15" value="lee" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-10" target="kfka-11">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-9" target="tda-10">
+    <mxCell id="kfka-16" value="llama" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-11" target="kfka-12">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-14" value="Artifactory" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+    <mxCell id="kfka-17" value="lee" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-12" target="kfka-13">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-18" value="Artifactory" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
       <mxGeometry x="1020" y="90" width="200" height="200" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-15" value="Paquete del build&lt;br&gt;(uno por app y build)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="1">
+    <mxCell id="kfka-19" value="Paquete del build&lt;br&gt;(uno por app y build)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="1">
       <mxGeometry x="1040" y="118" width="160" height="72" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-16" value="Scripts Unify&lt;br&gt;(comunes a todas las apps)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="1">
+    <mxCell id="kfka-20" value="Scripts Unify&lt;br&gt;(comunes a todas las apps)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#ffffff;strokeColor=#d6b656;" vertex="1" parent="1">
       <mxGeometry x="1040" y="205" width="160" height="72" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-17" value="publica" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-10" target="tda-15">
+    <mxCell id="kfka-21" value="publica" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-13" target="kfka-19">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-18" value="RLM" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+    <mxCell id="kfka-22" value="RLM" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
       <mxGeometry x="1260" y="90" width="520" height="200" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-19" value="Template&lt;br&gt;(variables del&lt;br&gt;otro equipo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+    <mxCell id="kfka-23" value="Template&lt;br&gt;(variables del&lt;br&gt;otro equipo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
       <mxGeometry x="1280" y="155" width="150" height="70" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-20" value="Component&lt;br&gt;server = ambiente" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+    <mxCell id="kfka-24" value="Component&lt;br&gt;server = ambiente" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
       <mxGeometry x="1450" y="160" width="150" height="60" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-21" value="Proceso RLM&lt;br&gt;1.0 → 5.0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+    <mxCell id="kfka-25" value="Proceso RLM&lt;br&gt;pasos 1.0 a 5.0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
       <mxGeometry x="1620" y="160" width="140" height="60" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-22" value="crea request (ENVIRONMENT=DEV)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="tda-10" target="tda-19">
+    <mxCell id="kfka-26" value="crea Template" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=0.5;exitY=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="kfka-13" target="kfka-23">
       <mxGeometry relative="1" as="geometry">
         <Array as="points">
-          <mxPoint x="900" y="70"/>
+          <mxPoint x="910" y="70"/>
           <mxPoint x="1355" y="70"/>
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="tda-23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-19" target="tda-20">
+    <mxCell id="kfka-27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-23" target="kfka-24">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-20" target="tda-21">
+    <mxCell id="kfka-28" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-24" target="kfka-25">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-25" value="2.2 scripts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.8;" edge="1" parent="1" source="tda-16" target="tda-18">
+    <mxCell id="kfka-29" value="2.2 scripts" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;exitX=1;exitY=0.5;entryX=0;entryY=0.8;" edge="1" parent="1" source="kfka-20" target="kfka-22">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-26" value="Ambientes (server del Component)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+    <mxCell id="kfka-30" value="Ambientes (server del Component)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
       <mxGeometry x="480" y="370" width="680" height="170" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-27" value="DEV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+    <mxCell id="kfka-31" value="DEV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
       <mxGeometry x="500" y="420" width="90" height="50" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-28" value="SIT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+    <mxCell id="kfka-32" value="SIT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
       <mxGeometry x="630" y="420" width="90" height="50" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-29" value="UAT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+    <mxCell id="kfka-33" value="UAT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
       <mxGeometry x="760" y="420" width="90" height="50" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-30" value="PROD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+    <mxCell id="kfka-34" value="PERF" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
       <mxGeometry x="890" y="420" width="90" height="50" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-31" value="COB&lt;br&gt;(DR)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+    <mxCell id="kfka-35" value="PROD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
       <mxGeometry x="1020" y="420" width="90" height="50" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-32" value="promueve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-27" target="tda-28">
+    <mxCell id="kfka-36" value="promueve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-31" target="kfka-32">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-33" value="promueve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-28" target="tda-29">
+    <mxCell id="kfka-37" value="promueve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-32" target="kfka-33">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-34" value="promueve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tda-29" target="tda-30">
+    <mxCell id="kfka-38" value="promueve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-33" target="kfka-34">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-35" value="si PROD&lt;br&gt;falla" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="tda-30" target="tda-31">
+    <mxCell id="kfka-39" value="promueve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-34" target="kfka-35">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-36" value="ServiceNow&lt;br&gt;5.0 crea CR · 2.3 valida CR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-      <mxGeometry x="780" y="590" width="200" height="60" as="geometry"/>
+    <mxCell id="kfka-40" value="ServiceNow&lt;br&gt;5.0 crea CR · 2.3 valida CR" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+      <mxGeometry x="920" y="590" width="200" height="60" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-37" value="solo PROD" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="tda-30" target="tda-36">
+    <mxCell id="kfka-41" value="solo PROD" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="kfka-35" target="kfka-40">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-38" value="despliega en" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="tda-20" target="tda-26">
+    <mxCell id="kfka-42" value="despliega en" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="kfka-24" target="kfka-30">
       <mxGeometry relative="1" as="geometry">
         <Array as="points">
           <mxPoint x="1525" y="320"/>
@@ -123,22 +135,34 @@
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="tda-39" value="Server destino" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="1260" y="370" width="520" height="270" as="geometry"/>
+    <mxCell id="kfka-43" value="Server destino (usuario kfkusr)" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1260" y="370" width="520" height="250" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-40" value="rlm_federated.sh (scripts Unify)&lt;br&gt;descarga el paquete · PDeployType = Teradata" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
-      <mxGeometry x="1280" y="405" width="480" height="55" as="geometry"/>
+    <mxCell id="kfka-44" value="rlm_federated.sh (scripts Unify)&lt;br&gt;descarga el paquete y elige el módulo según PDeployType" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="1280" y="410" width="480" height="60" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-41" value="&lt;b&gt;db/teradata.sh&lt;/b&gt;&lt;br&gt;1. obtiene la contraseña de CyberArk&lt;br&gt;2. bteq: login y ejecuta los .sql de bomfile.txt&lt;br&gt;(rollback: bomfile_rollback.txt)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="1280" y="475" width="480" height="85" as="geometry"/>
+    <mxCell id="kfka-45" value="Topic-Acl" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1280" y="495" width="150" height="40" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-42" value="Reporta estado a Atlas / EB y envía logs por correo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
-      <mxGeometry x="1280" y="575" width="480" height="45" as="geometry"/>
+    <mxCell id="kfka-46" value="Schema-Registry" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1445" y="495" width="150" height="40" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-43" value="ejecuta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.83;entryY=0;" edge="1" parent="1" source="tda-21" target="tda-39">
+    <mxCell id="kfka-47" value="kafka-connect" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1610" y="495" width="150" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-48" value="Ksql" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1280" y="550" width="150" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-49" value="Commands" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="1445" y="550" width="150" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-50" value="Stream Properties" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="1610" y="550" width="150" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-51" value="ejecuta como kfkusr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=0.5;exitY=1;entryX=0.83;entryY=0;" edge="1" parent="1" source="kfka-25" target="kfka-43">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-44" value="descarga el paquete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;exitX=1;exitY=0.5;entryX=0.08;entryY=0;" edge="1" parent="1" source="tda-15" target="tda-39">
+    <mxCell id="kfka-52" value="descarga el paquete" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;exitX=1;exitY=0.5;entryX=0.08;entryY=0;" edge="1" parent="1" source="kfka-19" target="kfka-43">
       <mxGeometry relative="1" as="geometry">
         <Array as="points">
           <mxPoint x="1240" y="154"/>
@@ -147,17 +171,38 @@
         </Array>
       </mxGeometry>
     </mxCell>
-    <mxCell id="tda-45" value="Teradata&lt;br&gt;creación y cambio&lt;br&gt;de tablas" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=10;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="1830" y="400" width="190" height="110" as="geometry"/>
+    <mxCell id="kfka-53" value="Kafka" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1830" y="370" width="270" height="250" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-46" value="CyberArk&lt;br&gt;contraseña de la BD" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-      <mxGeometry x="1830" y="560" width="190" height="60" as="geometry"/>
+    <mxCell id="kfka-54" value="Kafka brokers :9094&lt;br&gt;SASL_SSL + Kerberos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="1850" y="400" width="230" height="60" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-47" value="aplica SQL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=1;exitY=0.3;entryX=0;entryY=0.5;" edge="1" parent="1" source="tda-39" target="tda-45">
+    <mxCell id="kfka-55" value="Kafka Connect&lt;br&gt;REST :8083" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="1850" y="475" width="230" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-56" value="Topic de auditoría" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="1850" y="545" width="230" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-57" value="aplica conectores" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kfka-47" target="kfka-55">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tda-48" value="obtiene contraseña" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;exitX=1;exitY=0.85;entryX=0;entryY=0.5;" edge="1" parent="1" source="tda-39" target="tda-46">
+    <mxCell id="kfka-58" value="resto de módulos" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=1;exitY=0.15;entryX=0;entryY=0.5;" edge="1" parent="1" source="kfka-43" target="kfka-54">
       <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-59" value="publica resultado" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;exitX=1;exitY=0.9;entryX=0;entryY=0.5;" edge="1" parent="1" source="kfka-43" target="kfka-56">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-60" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="20" y="690" width="40" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-61" value="Módulo parcialmente creado" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="70" y="690" width="200" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-62" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="280" y="690" width="40" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="kfka-63" value="Módulo creado" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="330" y="690" width="150" height="24" as="geometry"/>
     </mxCell>
   </root>
 </mxGraphModel>
