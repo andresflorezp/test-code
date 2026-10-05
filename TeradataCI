@@ -8,155 +8,236 @@
     <mxCell id="tdb-49" value="Qué valida y construye Jenkins antes de crear el request en RLM, y qué está habilitado hoy." style="text;html=1;fontSize=13;align=left;verticalAlign=middle;fontColor=#555555;" vertex="1" parent="1">
       <mxGeometry x="20" y="46" width="1200" height="24" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-50" value="Preparación" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="20" y="90" width="260" height="780" as="geometry"/>
+    <mxCell id="tdb-50" value="1 · Inicio" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="20" y="90" width="230" height="780" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-51" value="Configuring Unify Patterns&lt;br&gt;detecta assembly.xml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="40" y="140" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-51" value="&lt;b&gt;Checkout del repo&lt;/b&gt;&lt;br&gt;Baja el código de la app&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="32" y="140" width="206" height="70" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-52" value="Integrity check del pipeline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="40" y="228" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-52" value="&lt;b&gt;Descarga Unify CI&lt;/b&gt;&lt;br&gt;Baja el motor de Unify&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="32" y="230" width="206" height="70" as="geometry"/>
     </mxCell>
     <mxCell id="tdb-53" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-51" target="tdb-52">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-54" value="Unify test framework" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="40" y="316" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-54" value="&lt;b&gt;Initialize Pipeline&lt;/b&gt;&lt;br&gt;Carga la config de la app&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="32" y="320" width="206" height="70" as="geometry"/>
     </mxCell>
     <mxCell id="tdb-55" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-52" target="tdb-54">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-56" value="Configure THOR&lt;br&gt;Maven · Java · Artifactory" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="40" y="404" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-56" value="2 · Validaciones de Unify" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="270" y="90" width="230" height="780" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-57" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-54" target="tdb-56">
+    <mxCell id="tdb-57" value="&lt;b&gt;CD Gate&lt;/b&gt;&lt;br&gt;Revisa políticas de seguridad&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="282" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-58" value="&lt;b&gt;API Governance&lt;/b&gt;&lt;br&gt;Valida APIs (no aplica)&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#555555;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="282" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-59" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-57" target="tdb-58">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-58" value="Build" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="310" y="90" width="260" height="780" as="geometry"/>
+    <mxCell id="tdb-60" value="&lt;b&gt;Unify Patterns&lt;/b&gt;&lt;br&gt;Identifica el tipo de proyecto&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="282" y="320" width="206" height="70" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-59" value="Build con Maven" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="330" y="140" width="220" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-60" value="Audit del proyecto" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="330" y="228" width="220" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-61" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-59" target="tdb-60">
+    <mxCell id="tdb-61" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-58" target="tdb-60">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-62" value="Prepara el paquete (zip)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="330" y="316" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-62" value="&lt;b&gt;Integrity check&lt;/b&gt;&lt;br&gt;Valida el pipeline.yml&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="282" y="410" width="206" height="70" as="geometry"/>
     </mxCell>
     <mxCell id="tdb-63" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-60" target="tdb-62">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-64" value="Calidad y seguridad" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="600" y="90" width="260" height="780" as="geometry"/>
+    <mxCell id="tdb-64" value="&lt;b&gt;Test framework&lt;/b&gt;&lt;br&gt;Registra pruebas&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="282" y="500" width="206" height="70" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-65" value="Lint de SQL&lt;br&gt;(ej. SQLFluff)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
-      <mxGeometry x="620" y="140" width="220" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-66" value="Valida bomfiles&lt;br&gt;.sql y rollback existen" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
-      <mxGeometry x="620" y="228" width="220" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-67" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-65" target="tdb-66">
+    <mxCell id="tdb-65" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-62" target="tdb-64">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-68" value="Secret scanning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
-      <mxGeometry x="620" y="316" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-66" value="&lt;b&gt;SCM info&lt;/b&gt;&lt;br&gt;Lista cambios desde el último build&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="282" y="590" width="206" height="70" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-69" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-66" target="tdb-68">
+    <mxCell id="tdb-67" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-64" target="tdb-66">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-70" value="SonarQube&lt;br&gt;análisis estático" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="620" y="404" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-68" value="3 · Configuración" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="520" y="90" width="230" height="780" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-71" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-68" target="tdb-70">
+    <mxCell id="tdb-69" value="&lt;b&gt;Configure THOR&lt;/b&gt;&lt;br&gt;Prepara herramientas&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="532" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-70" value="&lt;b&gt;Pipeline config&lt;/b&gt;&lt;br&gt;Lee el pipeline.yml&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="532" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-71" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-69" target="tdb-70">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-72" value="Checkmarx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
-      <mxGeometry x="620" y="492" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-72" value="4 · Build en EB" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="770" y="90" width="230" height="780" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-73" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-70" target="tdb-72">
+    <mxCell id="tdb-73" value="&lt;b&gt;Build&lt;/b&gt;&lt;br&gt;Construye el proyecto&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-74" value="&lt;b&gt;Golden archive&lt;/b&gt;&lt;br&gt;Guarda copia del código&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-75" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-73" target="tdb-74">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-74" value="BlackDuck scan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
-      <mxGeometry x="620" y="580" width="220" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-75" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-72" target="tdb-74">
-      <mxGeometry relative="1" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-76" value="Snyk&lt;br&gt;vulnerabilidades" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="620" y="668" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-76" value="&lt;b&gt;BOM scan&lt;/b&gt;&lt;br&gt;Inventario de dependencias&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="320" width="206" height="70" as="geometry"/>
     </mxCell>
     <mxCell id="tdb-77" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-74" target="tdb-76">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-78" value="CD Gate · Gating service&lt;br&gt;WARN no bloquea" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="620" y="756" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-78" value="&lt;b&gt;Empaqueta&lt;/b&gt;&lt;br&gt;Arma el zip&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="410" width="206" height="70" as="geometry"/>
     </mxCell>
     <mxCell id="tdb-79" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-76" target="tdb-78">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-80" value="Publicación" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="890" y="90" width="260" height="780" as="geometry"/>
+    <mxCell id="tdb-80" value="&lt;b&gt;Archiva el paquete&lt;/b&gt;&lt;br&gt;Guarda el zip en EB&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="500" width="206" height="70" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-81" value="Descarga dependencias&lt;br&gt;de Artifactory" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="910" y="140" width="220" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-82" value="Upload de librerías&lt;br&gt;a Artifactory" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
-      <mxGeometry x="910" y="228" width="220" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-83" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-81" target="tdb-82">
+    <mxCell id="tdb-81" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-78" target="tdb-80">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-84" value="Registra el paquete&lt;br&gt;en EB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="910" y="316" width="220" height="60" as="geometry"/>
+    <mxCell id="tdb-82" value="5 · Calidad y seguridad" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1020" y="90" width="230" height="780" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-85" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-82" target="tdb-84">
+    <mxCell id="tdb-83" value="&lt;b&gt;Lint de SQL&lt;/b&gt;&lt;br&gt;Revisa sintaxis SQL&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-84" value="&lt;b&gt;Valida bomfiles&lt;/b&gt;&lt;br&gt;Revisa los bomfiles&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-85" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-83" target="tdb-84">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-86" value="Despliegue" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="1180" y="90" width="260" height="780" as="geometry"/>
+    <mxCell id="tdb-86" value="&lt;b&gt;Secret scanning&lt;/b&gt;&lt;br&gt;Busca contraseñas&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="320" width="206" height="70" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-87" value="Integración con RLM&lt;br&gt;Template · ENVIRONMENT=DEV" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="1200" y="140" width="220" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-88" value="Crea request en RLM" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
-      <mxGeometry x="1200" y="228" width="220" height="60" as="geometry"/>
-    </mxCell>
-    <mxCell id="tdb-89" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-87" target="tdb-88">
+    <mxCell id="tdb-87" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-84" target="tdb-86">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-90" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-50" target="tdb-58">
+    <mxCell id="tdb-88" value="&lt;b&gt;SonarQube&lt;/b&gt;&lt;br&gt;Revisa calidad del código&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="410" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-89" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-86" target="tdb-88">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-91" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-58" target="tdb-64">
+    <mxCell id="tdb-90" value="&lt;b&gt;Checkmarx&lt;/b&gt;&lt;br&gt;Busca fallas de seguridad&lt;br&gt;&lt;i&gt;GHA: A necesidad&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="500" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-91" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-88" target="tdb-90">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-92" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-64" target="tdb-80">
+    <mxCell id="tdb-92" value="&lt;b&gt;BlackDuck&lt;/b&gt;&lt;br&gt;Revisa licencias y librerías&lt;br&gt;&lt;i&gt;GHA: A necesidad&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="590" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-93" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-90" target="tdb-92">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-93" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-80" target="tdb-86">
+    <mxCell id="tdb-94" value="&lt;b&gt;Snyk&lt;/b&gt;&lt;br&gt;Busca librerías vulnerables&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="680" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-95" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-92" target="tdb-94">
       <mxGeometry relative="1" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-94" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+    <mxCell id="tdb-96" value="6 · Publicación" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1270" y="90" width="230" height="780" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-97" value="&lt;b&gt;Dependencias&lt;/b&gt;&lt;br&gt;Descarga librerías&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1282" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-98" value="&lt;b&gt;Upload a Artifactory&lt;/b&gt;&lt;br&gt;Sube librerías (apagado)&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1282" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-99" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-97" target="tdb-98">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-100" value="&lt;b&gt;Registro en EB&lt;/b&gt;&lt;br&gt;Deja el paquete localizable&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1282" y="320" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-101" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-98" target="tdb-100">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-102" value="7 · Despliegue" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1520" y="90" width="230" height="780" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-103" value="&lt;b&gt;RLM Integration&lt;/b&gt;&lt;br&gt;Prepara el deploy&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1532" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-104" value="&lt;b&gt;Crea request en RLM&lt;/b&gt;&lt;br&gt;Dispara el deploy en DEV&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1532" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-105" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-103" target="tdb-104">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-106" value="8 · Cierre" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1770" y="90" width="230" height="780" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-107" value="&lt;b&gt;Post build&lt;/b&gt;&lt;br&gt;Actualiza info del build&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1782" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-108" value="&lt;b&gt;Tag del repo&lt;/b&gt;&lt;br&gt;Marca la versión en Git&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1782" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-109" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-107" target="tdb-108">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-110" value="&lt;b&gt;Logs a Splunk&lt;/b&gt;&lt;br&gt;Envía resultados a Splunk&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1782" y="320" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-111" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-108" target="tdb-110">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-112" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-50" target="tdb-56">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-113" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-56" target="tdb-68">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-114" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-68" target="tdb-72">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-115" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-72" target="tdb-82">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-116" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-82" target="tdb-96">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-117" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-96" target="tdb-102">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-118" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="tdb-102" target="tdb-106">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-119" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
       <mxGeometry x="20" y="890" width="40" height="24" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-95" value="Habilitado" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="70" y="890" width="120" height="24" as="geometry"/>
+    <mxCell id="tdb-120" value="Habilitado" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="70" y="890" width="260" height="24" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-96" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
-      <mxGeometry x="200" y="890" width="40" height="24" as="geometry"/>
+    <mxCell id="tdb-121" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="340" y="890" width="40" height="24" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-97" value="No habilitado (se habilita a necesidad)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="250" y="890" width="280" height="24" as="geometry"/>
+    <mxCell id="tdb-122" value="No habilitado (se habilita a necesidad)" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="390" y="890" width="260" height="24" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-98" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
-      <mxGeometry x="560" y="890" width="40" height="24" as="geometry"/>
+    <mxCell id="tdb-123" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#555555;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="660" y="890" width="40" height="24" as="geometry"/>
     </mxCell>
-    <mxCell id="tdb-99" value="Propuesto" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
-      <mxGeometry x="610" y="890" width="150" height="24" as="geometry"/>
+    <mxCell id="tdb-124" value="No aplica" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="710" y="890" width="260" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-125" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="980" y="890" width="40" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="tdb-126" value="Propuesto" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1030" y="890" width="260" height="24" as="geometry"/>
     </mxCell>
   </root>
 </mxGraphModel>
