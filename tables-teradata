@@ -1,0 +1,67 @@
+## Herramientas de CI
+| Herramienta | Estado | Evidencia |
+|---|---|---|
+| GitHub | ✅ Habilitado | Repo de la app con los .sql y bomfiles |
+| Jenkins | ✅ Habilitado | pipeline.yml + assembly.xml |
+| Enterprise Build (EB) | ✅ Habilitado | Build, archivo y registro del paquete |
+| Checkmarx | ⛔ No habilitado | CheckMarx flag vacío en el pipeline.yml |
+| SonarQube | ✅ Habilitado | sonarqube04.nam.nsroot.net |
+| BlackDuck | ⛔ No habilitado | Solo genera el manifest; el scan no está habilitado |
+| Snyk | ✅ Habilitado | Sin vulnerabilidades críticas |
+| CD Gate | ✅ Habilitado | Hoy solo avisa (WARN); la única regla obligatoria es GEM |
+| Artifactory Upload | ⛔ No habilitado | deployLibraries=false |
+| Dependencias Artifactory | ✅ Habilitado | Descarga librerías de maven-gcg-prod |
+| Vendor | No aplica | No aparece en el log |
+
+## Para qué sirve cada paso del CI
+| Fase | Paso | Estado | Qué hace | Se conecta a | En GitHub Actions |
+|---|---|---|---|---|---|
+| 1. Inicio | **Checkout del repo** | ✅ Habilitado | Jenkins descarga el repo de la app (los .sql, bomfiles, pipeline.yml y assembly.xml). | https://github.com/BnmxInternal/‹repo›.git | **Sí**: actions/checkout |
+| 1. Inicio | **Descarga Unify CI** | ✅ Habilitado | Descarga los scripts de Unify que orquestan todo el pipeline (launchPipeline.sh). | https://github.com/CitiInternal/164603.fdn-unify.unify-ci.git (rama cicd) | **No**: El workflow de GitHub Actions reemplaza a Unify |
+| 1. Inicio | **Initialize Pipeline** | ✅ Habilitado | Lee de la base de Unify los datos fijos de la app (CSI, región, permisos). | Base de datos de Unify (interna) | **No**: Pasan a variables del repo o del environment |
+| 2. Validaciones de Unify | **CD Gate** | ✅ Habilitado | Le pregunta al servicio central de Citi si la app cumple las políticas de seguridad. Hoy solo avisa (WARN); la única regla obligatoria es GEM. | https://gatingservice.citigroup.net/cd/results/‹id› | **Sí**: Llamada a la API del Gating service si Citi lo exige |
+| 2. Validaciones de Unify | **API Governance** | No aplica | Revisa contratos de APIs. Se salta porque esta app no publica APIs. | — | **No**: No aplica a SQL |
+| 2. Validaciones de Unify | **Unify Patterns** | ✅ Habilitado | Detecta que es un proyecto 'copy' (no Java) y ubica el assembly.xml que dice qué empaquetar. | Local (workspace) | **No**: El workflow ya define qué empaquetar |
+| 2. Validaciones de Unify | **Integrity check** | ✅ Habilitado | Verifica que el pipeline.yml cumpla el estándar de Unify y actualiza sus datos. | Unify (interno) | **No**: Propio de Unify |
+| 2. Validaciones de Unify | **Test framework** | ✅ Habilitado | Revisa si hay pruebas para registrar. Aquí no detectó cambios. | Unify (interno) | **No**: Sin pruebas hoy |
+| 2. Validaciones de Unify | **SCM info** | ✅ Habilitado | Arma el change log entre el build anterior y este. En el log falló (gitChangeLog vacío y un endpoint caído) pero no detuvo el pipeline. | Servicio interno de Unify | **Opcional**: GitHub ya muestra los cambios del PR |
+| 3. Configuración | **Configure THOR** | ✅ Habilitado | Configura Maven, Java y la conexión a Artifactory para el build. | Artifactory: https://www.artifactrepository.citigroup.net/artifactory/maven-gcg-prod | **No**: Para SQL no hace falta Maven ni Java |
+| 3. Configuración | **Pipeline config** | ✅ Habilitado | Lee qué escaneos correr, sus umbrales y a qué ambiente desplegar después del build (DEV). | pipeline.yml del repo | **Reemplazar**: Se vuelve el YAML del workflow |
+| 4. Build en EB | **Build** | ✅ Habilitado | Corre Maven en un agente de Enterprise Build. Para Teradata solo junta los archivos, no compila nada. | https://ebjenkins01.nam.nsroot.net/job/MEXICO/… | **Reemplazar**: Basta con un zip, sin Maven |
+| 4. Build en EB | **Golden archive** | ✅ Habilitado | Guarda una copia del código fuente de este build para auditoría. | https://swdc-obj-wip1.wlb.nam.nsroot.net/eb.repo/…/SrcArc | **Opcional**: Solo si auditoría lo exige |
+| 4. Build en EB | **BOM scan** | ✅ Habilitado | Lista las librerías que trae el paquete (manifest para BlackDuck). | EB (interno) | **No**: SQL no tiene dependencias |
+| 4. Build en EB | **Empaqueta** | ✅ Habilitado | Arma el zip con los archivos que indica assembly.xml. | Local (target/) | **Sí**: Un paso de zip |
+| 4. Build en EB | **Archiva el paquete** | ✅ Habilitado | Sube el zip al almacenamiento de EB, de donde luego lo descarga el server en el deploy. | https://swdc-obj-wip1.wlb.nam.nsroot.net/eb.repo/…/PkgArc | **Reemplazar**: Subir el zip a Artifactory |
+| 5. Calidad y seguridad | **Lint de SQL** | 💡 Propuesto | Detecta errores de sintaxis en los .sql antes de llegar al deploy (ej. SQLFluff con dialecto Teradata). | — | **Sí**: Propuesto |
+| 5. Calidad y seguridad | **Valida bomfiles** | 💡 Propuesto | Comprueba que cada .sql listado exista y tenga su rollback. | — | **Sí**: Propuesto (script simple) |
+| 5. Calidad y seguridad | **Secret scanning** | 💡 Propuesto | Evita que se suban contraseñas en los .sql o la config. | — | **Sí**: Propuesto (GitHub secret scanning) |
+| 5. Calidad y seguridad | **SonarQube** | ✅ Habilitado | Análisis estático: errores, código duplicado, malas prácticas. | https://sonarqube04.nam.nsroot.net | **Sí**: Mantener |
+| 5. Calidad y seguridad | **Checkmarx** | ⛔ No habilitado | Análisis de seguridad del código (SAST). No está configurado en el pipeline.yml. | — | **A necesidad**: Si seguridad lo pide |
+| 5. Calidad y seguridad | **BlackDuck** | ⛔ No habilitado | Solo genera el manifest; el escaneo no está habilitado. | — | **A necesidad**: Poco útil para SQL |
+| 5. Calidad y seguridad | **Snyk** | ✅ Habilitado | Revisa vulnerabilidades en dependencias. No encontró críticas. | Snyk (interno) | **Opcional**: SQL casi no tiene dependencias |
+| 6. Publicación | **Dependencias** | ✅ Habilitado | Baja de Artifactory las librerías que Maven necesita para el build. | https://www.artifactrepository.citigroup.net/artifactory/maven-gcg-prod | **No**: Sin Maven no hace falta |
+| 6. Publicación | **Upload a Artifactory** | ⛔ No habilitado | Subiría librerías a Artifactory. Está apagado (deployLibraries=false). | — | **No**: No aplica |
+| 6. Publicación | **Registro en EB** | ✅ Habilitado | Registra el paquete en EB para que RLM y el server lo encuentren por nombre de build; también reporta a Thor. | https://enterprisebuild.citigroup.net:8643/EbService · ThorService | **Reemplazar**: El deploy descarga directo de Artifactory |
+| 7. Despliegue | **RLM Integration** | ✅ Habilitado | Arma la solicitud a RLM con el Template de la app y ENVIRONMENT=DEV. | RLM (interno) | **Reemplazar**: Jobs por GitHub Environment |
+| 7. Despliegue | **Crea request en RLM** | ✅ Habilitado | Crea el request en RLM y lo ejecuta de inmediato (EXECUTE_NOW). | https://releaseorchestrationdeployment.citigroup.net/brpm/requests/‹id› | **Reemplazar**: Job de deploy en un runner con acceso a Teradata |
+| 8. Cierre | **Post build** | ✅ Habilitado | Actualiza la info del build y la integración de Sonar en Unify. | Unify (interno) | **No**: Propio de Unify |
+| 8. Cierre | **Tag del repo** | ✅ Habilitado | Crea un tag snapshot.‹build› en el commit desplegado. | https://github.com/BnmxInternal/‹repo›.git | **Sí**: git tag en el workflow |
+| 8. Cierre | **Logs a Splunk** | ✅ Habilitado | Manda el resultado de Sonar a Splunk para monitoreo. | Splunk (interno) | **Opcional**: Si observabilidad lo requiere |
+
+## Archivos del repo
+| Archivo | Qué hace | Cuándo se usa |
+|---|---|---|
+| `‹AMB›_….sql` | Definición de la creación o el cambio de las tablas | Deploy (2.5) |
+| `‹AMB›_…_rollback.sql` | Revierte lo que hace el .sql | Rollback (4.0) |
+| `‹AMB›_bomfile.txt` | Lista qué .sql se ejecutan | Deploy (2.5) |
+| `‹AMB›_bomfile_rollback.txt` | Lista qué .sql de rollback se ejecutan | Rollback (4.0) |
+| `‹AMB›_release_mload_tables.txt` | Lista las tablas que se van a crear o cargar | Por confirmar quién lo usa |
+
+## Ambientes y servidores Teradata
+| Ambiente | Servidor Teradata | CR (ServiceNow) |
+|---|---|---|
+| DEV | `edwdev.nam.nsroot.net` | — |
+| SIT | `edwdev.nam.nsroot.net` | — |
+| UAT | `edwdev.nam.nsroot.net` | — |
+| PROD | `edwmexp.lac.nsroot.net` | CTM0000089335 |
+| COB (DR, solo si PROD falla) | `edwmexc.nam.nsroot.net` | CTM0000008356 |
