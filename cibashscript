@@ -1,0 +1,210 @@
+<mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1200" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="shb-41" value="CI en Jenkins: workflow copy" style="text;html=1;fontSize=22;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="20" y="10" width="800" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-42" value="No hay código que compilar: Unify corre sus pasos estándar, pero el trabajo real es empaquetar y archivar los scripts." style="text;html=1;fontSize=13;align=left;verticalAlign=middle;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="20" y="46" width="1300" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-43" value="1 · Inicio" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="20" y="90" width="230" height="720" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-44" value="&lt;b&gt;Checkout del repo&lt;/b&gt;&lt;br&gt;Baja los scripts&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="32" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-45" value="&lt;b&gt;Descarga Unify CI&lt;/b&gt;&lt;br&gt;Baja el motor de Unify&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="32" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-46" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-44" target="shb-45">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-47" value="&lt;b&gt;Initialize Pipeline&lt;/b&gt;&lt;br&gt;Carga la config de la app&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="32" y="320" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-48" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-45" target="shb-47">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-49" value="2 · Validaciones de Unify" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="270" y="90" width="230" height="720" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-50" value="&lt;b&gt;CD Gate&lt;/b&gt;&lt;br&gt;Revisa políticas de seguridad&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="282" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-51" value="&lt;b&gt;API Governance&lt;/b&gt;&lt;br&gt;Valida APIs (no aplica)&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#555555;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="282" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-52" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-50" target="shb-51">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-53" value="&lt;b&gt;Unify Patterns&lt;/b&gt;&lt;br&gt;Identifica el tipo de proyecto&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="282" y="320" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-54" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-51" target="shb-53">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-55" value="&lt;b&gt;Integrity check&lt;/b&gt;&lt;br&gt;Valida el pipeline.yml&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="282" y="410" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-56" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-53" target="shb-55">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-57" value="&lt;b&gt;SCM info&lt;/b&gt;&lt;br&gt;Lista cambios&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="282" y="500" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-58" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-55" target="shb-57">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-59" value="3 · Configuración" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="520" y="90" width="230" height="720" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-60" value="&lt;b&gt;Configure THOR&lt;/b&gt;&lt;br&gt;Prepara herramientas&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="532" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-61" value="&lt;b&gt;Pipeline config&lt;/b&gt;&lt;br&gt;Lee el pipeline.yml&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="532" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-62" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-60" target="shb-61">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-63" value="4 · Build en EB" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="770" y="90" width="230" height="720" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-64" value="&lt;b&gt;Build&lt;/b&gt;&lt;br&gt;Junta los archivos&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-65" value="&lt;b&gt;Golden archive&lt;/b&gt;&lt;br&gt;Guarda copia del código&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-66" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-64" target="shb-65">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-67" value="&lt;b&gt;Empaqueta&lt;/b&gt;&lt;br&gt;Arma el zip&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="320" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-68" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-65" target="shb-67">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-69" value="&lt;b&gt;Archiva el paquete&lt;/b&gt;&lt;br&gt;Guarda el zip en EB&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="410" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-70" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-67" target="shb-69">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-71" value="5 · Calidad y seguridad" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1020" y="90" width="230" height="720" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-72" value="&lt;b&gt;ShellCheck&lt;/b&gt;&lt;br&gt;Lint de bash&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-73" value="&lt;b&gt;Secret scanning&lt;/b&gt;&lt;br&gt;Busca contraseñas&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-74" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-72" target="shb-73">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-75" value="&lt;b&gt;SonarQube&lt;/b&gt;&lt;br&gt;Revisa calidad&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="320" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-76" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-73" target="shb-75">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-77" value="&lt;b&gt;Quality Gate&lt;/b&gt;&lt;br&gt;Aprueba o frena el build&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="410" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-78" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-75" target="shb-77">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-79" value="&lt;b&gt;Checkmarx / BlackDuck&lt;/b&gt;&lt;br&gt;Escaneos de seguridad&lt;br&gt;&lt;i&gt;GHA: A necesidad&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="500" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-80" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-77" target="shb-79">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-81" value="&lt;b&gt;GEM report&lt;/b&gt;&lt;br&gt;Vulnerabilidades críticas&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="590" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-82" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-79" target="shb-81">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-83" value="&lt;b&gt;Snyk&lt;/b&gt;&lt;br&gt;Librerías vulnerables&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1032" y="680" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-84" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-81" target="shb-83">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-85" value="6 · Despliegue" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1270" y="90" width="230" height="720" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-86" value="&lt;b&gt;RLM Integration&lt;/b&gt;&lt;br&gt;Prepara el deploy&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1282" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-87" value="&lt;b&gt;Crea request en RLM&lt;/b&gt;&lt;br&gt;Dispara el deploy en DEV&lt;br&gt;&lt;i&gt;GHA: Reemplazar&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1282" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-88" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-86" target="shb-87">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-89" value="7 · Cierre" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontStyle=1;fontSize=14;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="1520" y="90" width="230" height="720" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-90" value="&lt;b&gt;Post build&lt;/b&gt;&lt;br&gt;Actualiza info del build&lt;br&gt;&lt;i&gt;GHA: No&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1532" y="140" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-91" value="&lt;b&gt;Tag del repo&lt;/b&gt;&lt;br&gt;Marca la versión&lt;br&gt;&lt;i&gt;GHA: Sí&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1532" y="230" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-92" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-90" target="shb-91">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-93" value="&lt;b&gt;Logs a Splunk&lt;/b&gt;&lt;br&gt;Envía resultados&lt;br&gt;&lt;i&gt;GHA: Opcional&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1532" y="320" width="206" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-94" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-91" target="shb-93">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-95" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-43" target="shb-49">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-96" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-49" target="shb-59">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-97" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-59" target="shb-63">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-98" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-63" target="shb-71">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-99" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-71" target="shb-85">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-100" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="shb-85" target="shb-89">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-101" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="20" y="830" width="40" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-102" value="Habilitado" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="70" y="830" width="240" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-103" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="320" y="830" width="40" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-104" value="No habilitado / sin resultados" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="370" y="830" width="240" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-105" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;fontColor=#555555;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="620" y="830" width="40" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-106" value="No aplica" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="670" y="830" width="240" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-107" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="920" y="830" width="40" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shb-108" value="Propuesto" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="970" y="830" width="240" height="24" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>
