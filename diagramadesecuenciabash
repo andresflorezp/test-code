@@ -1,0 +1,157 @@
+<mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1200" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="shd-146" value="Desarrollador" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;participant=umlActor;verticalAlign=top;labelPosition=center;verticalLabelPosition=bottom;align=center;" vertex="1" parent="1">
+      <mxGeometry x="80.0" y="20" width="40" height="1000" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-147" value="Repo de la app" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="230" y="20" width="160" height="1000" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-148" value="Jenkins" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="440" y="20" width="160" height="1000" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-149" value="Enterprise Build (EB)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="650" y="20" width="160" height="1000" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-150" value="RLM" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="860" y="20" width="160" height="1000" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-151" value="Server destino" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="1070" y="20" width="160" height="1000" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-152" value="ServiceNow" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=50;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+      <mxGeometry x="1280" y="20" width="160" height="1000" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-153" value="Edita los scripts (push)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="100.0" y="110" as="sourcePoint"/>
+        <mxPoint x="310.0" y="110" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-154" value="Checkout repo" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="520.0" y="150" as="sourcePoint"/>
+        <mxPoint x="310.0" y="150" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-155" value="CI workflow copy: valida y empaqueta (zip)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="520.0" y="175" as="sourcePoint"/>
+        <mxPoint x="520.0" y="199" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="550.0" y="175"/>
+          <mxPoint x="550.0" y="199"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-156" value="Archiva el paquete (45 días)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="520.0" y="250" as="sourcePoint"/>
+        <mxPoint x="730.0" y="250" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-157" value="Crea request (ENVIRONMENT = DEV)" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="520.0" y="290" as="sourcePoint"/>
+        <mxPoint x="940.0" y="290" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-158" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="640.0" y="320" width="820.0" height="640" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-159" value="[Por ambiente: DEV → SIT → UAT → PROD]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="696.0" y="320" width="460" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-160" value="1.0 Carga variables del ambiente" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="940.0" y="360" as="sourcePoint"/>
+        <mxPoint x="940.0" y="384" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="970.0" y="360"/>
+          <mxPoint x="970.0" y="384"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-161" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="655.0" y="410" width="790.0" height="100" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-162" value="[El ambiente requiere CR]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="711.0" y="410" width="460" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-163" value="Valida CR" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="940.0" y="460" as="sourcePoint"/>
+        <mxPoint x="1360.0" y="460" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-164" value="CR válido" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1360.0" y="490" as="sourcePoint"/>
+        <mxPoint x="940.0" y="490" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-165" value="2.4 Descarga el paquete" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="940.0" y="550" as="sourcePoint"/>
+        <mxPoint x="730.0" y="550" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-166" value="zip" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="730.0" y="575" as="sourcePoint"/>
+        <mxPoint x="940.0" y="575" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-167" value="2.4 Copia y descomprime en CITI_DEST_DIR" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="940.0" y="610" as="sourcePoint"/>
+        <mxPoint x="1150.0" y="610" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-168" value="2.5 Ejecuta CITI_DEST_SCRIPT&lt;br&gt;como CITI_DEST_USER" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="940.0" y="660" as="sourcePoint"/>
+        <mxPoint x="1150.0" y="660" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-169" value="Corre el script definido en el Template" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1150.0" y="680" as="sourcePoint"/>
+        <mxPoint x="1150.0" y="704" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="1180.0" y="680"/>
+          <mxPoint x="1180.0" y="704"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-170" value="EXIT_CODE 0" style="html=1;endArrow=open;endFill=0;dashed=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1150.0" y="750" as="sourcePoint"/>
+        <mxPoint x="940.0" y="750" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-171" value="opt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=50;height=24;fillColor=none;" vertex="1" parent="1">
+      <mxGeometry x="655.0" y="780" width="790.0" height="160" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-172" value="[3.0 Se promueve]" style="text;html=1;align=left;verticalAlign=middle;fontStyle=2;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="711.0" y="780" width="460" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="shd-173" value="Siguiente ambiente" style="html=1;endArrow=block;endFill=1;edgeStyle=none;align=left;spacingLeft=6;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="940.0" y="820" as="sourcePoint"/>
+        <mxPoint x="940.0" y="844" as="targetPoint"/>
+        <Array as="points">
+          <mxPoint x="970.0" y="820"/>
+          <mxPoint x="970.0" y="844"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="shd-174" value="5.0 Crea CR del siguiente ambiente" style="html=1;endArrow=block;endFill=1;edgeStyle=none;verticalAlign=bottom;fontSize=12;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="940.0" y="900" as="sourcePoint"/>
+        <mxPoint x="1360.0" y="900" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+  </root>
+</mxGraphModel>
