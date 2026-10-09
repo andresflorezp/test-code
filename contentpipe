@@ -1,0 +1,328 @@
+{info:title=Resumen}
+Propuesta para migrar el *CI* de Jenkins a *GitHub Actions* reusando el {{pipeline.sh}} actual (refactorizado) y manteniendo el {{pipeline.yaml}} de cada repo como el lugar donde se prenden o apagan los stages. El CI termina con un paquete versionado en *Artifactory*. El CD (hoy RLM) pasa a *Ansible* y queda fuera de esta propuesta.
+{info}
+
+||Estado||Alcance||Responsable||
+|{status:colour=Yellow|title=En revisión}|Solo CI|Andrés Flórez|
+
+{toc:maxLevel=2}
+
+h2. 1. Diagrama
+_(aquí va la imagen que ya pusiste)_
+
+h2. 2. Por qué migrar
+{panel:title=Problemas del modelo actual|borderStyle=solid|borderColor=#e6b8b5|titleBGColor=#fdf1f0}
+* Dependencia de un motor de CI externo: la configuración vive en parte fuera del repo y el motor se descarga en cada build; cualquier cambio depende de otro equipo.
+* Stages que corren sin aportar: Sonar, Snyk, Golden archive o BOM scan corren aunque el repo sean solo scripts o SQL.
+* CI y CD acoplados: el mismo pipeline registra el paquete y crea el request en RLM.
+* Configuración repartida entre el repo, Jenkins y la plataforma de CI, con ajustes manuales que generan inconsistencias.
+{panel}
+
+h2. 3. Componentes
+||Componente||Dónde vive||Qué hace||
+|*ci.yml*|Repo de la app|Define cuándo corre (push, PR, manual) y llama al workflow central. Igual en todas las apps.|
+|*pipeline.yaml*|Repo de la app|La misma estructura de hoy ({{workFlow}}, {{build}}, {{staticCodeAnalysis}}, {{threshold}}) con llaves {{enabled}} nuevas para prender o apagar stages. Se quitan las de Jenkins, del repo de origen y de RLM. Se valida con un esquema.|
+|*ci-template.yml*|Repo central {{cicd-templates}}|Workflow reutilizable con los jobs del CI. Versionado con tags ({{@v1}}) para que las apps no se rompan con cambios.|
+|*pipeline.sh*|Repo central {{cicd-templates}}|Script actual refactorizado: una función por stage ({{config}}, {{lint}}, {{build}}, {{sonar}}, {{package}}, {{publish}}…). Cada función revisa su flag en el {{pipeline.yaml}}.|
+|*Runner self-hosted*|Red interna|Necesario para llegar a SonarQube, Artifactory, Snyk y el servicio de políticas internos.|
+|*Secrets*|GitHub (org / environment)|Tokens de Sonar, Snyk y Artifactory. Si seguridad lo exige, se leen de un gestor de secretos (por ejemplo CyberArk) en el runner.|
+
+h2. 4. Stages: hoy vs GitHub Actions
+||Stage||Hoy (Jenkins)||En GitHub Actions||Por defecto||Se controla con||
+|*Checkout*|Jenkins clona el repo|{{actions/checkout}}|Activo|—|
+|*Leer configuración*|Inicialización del motor de CI y lectura de su base de configuración|Job _setup_: lee y valida el {{pipeline.yaml}} y decide qué stages corren|Activo|—|
+|*CD Gate*|Consulta al servicio de políticas de seguridad|Paso que llama a la API del servicio de políticas|Activo|{{security.cdGate}} _(nueva)_|
+|*Lint*|No existe|*Nuevo.* Linter según tipo: SQLFluff, ShellCheck, yamllint…|Activo|{{validate.lint}} _(nueva)_|
+|*API governance*|Valida los contratos de API (se salta en workflow copy)|Lint del contrato OpenAPI (por ejemplo Spectral) contra las reglas de API del equipo|Condicional|{{validate.api}} _(nueva)_; activo si el repo tiene specs|
+|*Secret scanning*|No existe|*Nuevo.* gitleaks o el secret scanning de GitHub|Activo|{{validate.secrets}} _(nueva)_|
+|*Preparar herramientas*|Paso de configuración de Maven y Java|{{actions/setup-java}}, {{setup-node}}… solo si el tipo lo necesita|Condicional|{{workFlow}}|
+|*Build*|Maven en un agente de build externo|{{pipeline.sh build}} en el runner; en *vendor*, {{vendor-fetch}} baja y verifica las piezas de Artifactory|Condicional|{{workFlow}} (copy, maven, npm, python, vendor) · {{build.pomFileLocation}}|
+|*Unit tests*|Dentro de {{mvn install}}|{{pipeline.sh test}}|Condicional|{{workFlow}} · {{threshold.unitTest*}}|
+|*SonarQube + Quality Gate*|Motor de CI actual|{{sonar-scanner}} + espera el Quality Gate|Condicional|{{staticCodeAnalysis.sonarQube.enabled}} _(nueva)_ · {{threshold.*}}|
+|*Snyk*|Motor de CI actual|Snyk CLI|Condicional|{{security.snyk}} _(nueva)_|
+|*Checkmarx / BlackDuck*|Motor de CI actual (hoy sin resultados)|Se habilitan a necesidad|Apagado|{{staticCodeAnalysis.checkMarx.enabled}} _(nueva)_|
+|*Empaquetar*|Según {{assembly.xml}}|{{pipeline.sh package}}: zip según {{package.includes}}|Activo|{{build.packageIncludes}}|
+|*Publicar*|Registro en el EB (Enterprise Build), retención de 45 días|Sube el paquete versionado a *Artifactory*|Condicional|{{build.deployToPkgArchive}} · {{publish.*}} _(nueva)_|
+|*Tag del repo*|Plugin de Git en Jenkins|{{git tag}} en el workflow|Condicional|Solo main / release|
+|*Reporte*|Splunk y servicios de reporte del motor actual|Resumen del run en GitHub ({{GITHUB_STEP_SUMMARY}}); Splunk opcional|Activo|{{build.printVerboseLog}} (detalle del log)|
+|*Detección de patrón, integrity check, test framework, SCM info*|Pasos propios del motor de CI actual|Se quitan: el workflow ya define el patrón y el {{pipeline.yaml}} se valida con un esquema|Se quita|—|
+|*Golden archive, BOM scan*|Agente de build externo|Se quitan: GitHub guarda el historial. Se reactivan si auditoría lo exige|Se quita|—|
+|*Despliegue*|Crea el request en RLM|Sale del CI. El CD se hace con *Ansible* (fuera de alcance)|Se quita|—|
+
+h2. 5. Qué quitamos y por qué
+||Se quita||Qué hace hoy||Por qué se quita||Qué lo reemplaza||
+|*Jobs de Jenkins por app*|Corren el pipeline de cada repo|Cada job tiene su configuración, plugins y credenciales; mantenerlos es manual y se desalinean.|Un workflow reutilizable versionado que usan todas las apps.|
+|*Descarga del motor de CI y su base de configuración*|Baja el motor en cada build y lee parte de la config de una base externa|La configuración queda fuera del repo, cualquier cambio depende de otro equipo y suma tiempo a cada build.|{{pipeline.sh}} en el repo central y la config en el {{pipeline.yaml}} de cada app.|
+|*Integrity check, detección de patrón, test framework, SCM info*|Validan el propio motor y arman reportes internos|No revisan el código de la app; validan la plataforma que se está quitando.|Validación del {{pipeline.yaml}} con esquema; GitHub ya muestra cambios y PRs.|
+|*Agente de build externo y configuración de Maven / Java*|El build corre en otra máquina con herramientas preinstaladas|Otro salto de red y otra infraestructura que mantener; en repos copy y vendor ni siquiera hay build.|Build en el runner con {{actions/setup-java}}, {{setup-node}}… solo cuando el tipo lo pide.|
+|*EB (Enterprise Build)*|Registra el paquete del build; RLM lo descarga de ahí|*Retiene los paquetes solo 45 días:* pasado ese tiempo no se puede volver a desplegar ni auditar esa versión. Además duplica lo que ya hace Artifactory.|Artifactory con versión, metadata (commit, run, rama) y una política de retención definida por el equipo.|
+|*Golden archive*|Guarda una copia del código fuente de cada build|GitHub ya guarda el historial completo y cada paquete queda ligado a un commit con tag.|Tag del commit + metadata del paquete. Se reactiva solo si auditoría lo exige.|
+|*BOM scan / manifest de BlackDuck*|Genera el manifest aunque el escaneo esté apagado|Produce un archivo que nadie usa.|BlackDuck a necesidad; SBOM opcional junto al paquete.|
+|*Servicios de reporte del motor*|Publican el estado del build en tableros internos|Dependen del motor que se quita.|Resumen del run en GitHub; Splunk opcional.|
+|*Creación del request en RLM*|El CI dispara el despliegue en DEV|Acopla CI y CD: un cambio en el despliegue obliga a tocar el pipeline de build.|El CI termina en Artifactory; el CD con Ansible toma el paquete.|
+|*appScan*|Bloque del pipeline.yaml|Está en NA en todos los repos revisados.|Se reactiva si seguridad lo pide.|
+|*Llaves sourceCode, jenkinsAdditionalFolder, postBuildDeployEnv, deploy.**|Apuntan al repo, a la carpeta de Jenkins y a RLM|El repo es el mismo donde corre el workflow y el despliegue sale del CI.|Nada: se eliminan del pipeline.yaml.|
+
+h2. 6. pipeline.yaml: actual vs propuesto
+||Llave||Cambio||Por qué||
+|{{workFlow}}|Se mantiene|Define el tipo de build (copy, maven…).|
+|{{releaseId · projectId · region · csiId}}|Se mantiene|Metadatos: nombre del paquete, clave de Sonar, tags.|
+|{{sourceCode.projectStream}}|Se quita|La rama la define el trigger del workflow.|
+|{{sourceCode.projectModule · repositoryInstance}}|Se quita|El repo es el mismo donde corre el workflow (ya está en GitHub).|
+|{{build.pomFileLocation · dependencyResolutionRepo · deployLibraries}}|Se mantiene|Solo aplican a builds Maven.|
+|{{build.deployToPkgArchive}}|Cambia|Sigue activando la publicación, pero ahora en Artifactory.|
+|{{build.packageIncludes}}|Se mantiene|Qué entra al paquete (además de assembly.xml).|
+|{{build.printVerboseLog}}|Se mantiene|Log detallado para depurar.|
+|{{build.jenkinsAdditionalFolder}}|Se quita|Carpeta de Jenkins; ya no existe.|
+|{{build.postBuildDeployEnv}}|Se quita|El CI ya no despliega; lo hace el CD con Ansible.|
+|{{staticCodeAnalysis.sonarQube}}|Cambia|Se agrega {{enabled}} (hoy corre siempre) y se corrige {{sonarLanuguage}} → {{sonarLanguage}}.|
+|{{staticCodeAnalysis.checkMarx}}|Cambia|Se agrega {{enabled}}; se dejan solo las llaves que use el escaneo.|
+|{{staticCodeAnalysis.appScan}}|Se quita|Sin uso hoy (NA). Se reactiva si seguridad lo pide.|
+|{{threshold.*}}|Se mantiene|Umbrales del Quality Gate de Sonar.|
+|{{deploy.*.rlm*}}|Se quita|RLM sale; el despliegue lo define el CD con Ansible.|
+|{{validate.lint · validate.secrets · validate.api}}|Nueva|Lint según tipo, secret scanning y API governance (activo si el repo publica specs OpenAPI).|
+|{{security.cdGate · security.snyk}}|Nueva|Hoy corren siempre; ahora se prenden o apagan.|
+|{{publish.repository · publish.branches}}|Nueva|Repo de Artifactory y ramas que publican.|
+
+{section}
+{column:width=50%}
+*Actual*
+{code:language=yaml|collapse=true}
+workFlow: copy
+releaseId: mx.cloud
+projectId: bs.hrm.edm.t.teradata
+region: MEXICO
+csiId: 165630
+sourceCode:
+  projectStream: development
+  projectModule: mdw/p_mx_bs_hrm_edm_t.git
+  repositoryInstance: bitbucket
+build:
+  pomFileLocation: .
+  dependencyResolutionRepo: artifactory
+  deployLibraries: false
+  deployToPkgArchive: true
+  packageIncludes: NA
+  printVerboseLog: false
+  jenkinsAdditionalFolder: teradata
+  postBuildDeployEnv: DEV
+staticCodeAnalysis:
+  sonarQube:
+    sonarLanuguage: NA
+    sonarExcludes: NA
+  checkMarx:
+    SCAN_WF: NA
+    CHECKMARX_ENV: NA
+    CHECKMARX_ARCHER_BASE_CMPNAME: NA
+    CHECKMARX_CONFIG_CMPNAME: NA
+    CHECKMARX_TYPE_OF_SCAN: NA
+    CHECKMARX_CX_TEAMNAME: NA
+    RELEASENAME: NA
+  appScan:
+    archerRecord: NA
+threshold:
+  unitTestSuccessDensity: 0
+  unitTestCoverage: 0
+  techDebtRatio: 0
+  securityRating: 0
+  reliabilityRating: 0
+deploy:
+  DEV:
+    rlmExecute: true
+    rlmEnvironment: DEV
+    rlmTemplate: 165630_MX_CARDS_BS_HRM_EDM_T_TERADATA
+{code}
+{column}
+{column:width=50%}
+*Propuesto*
+{code:language=yaml|collapse=true}
+workFlow: copy                     # igual: define el tipo de build
+releaseId: mx.cloud
+projectId: bs.hrm.edm.t.teradata
+region: MEXICO
+appId: 165630                      # antes csiId
+build:
+  pomFileLocation: .               # solo aplica si workFlow es maven
+  dependencyResolutionRepo: artifactory
+  deployLibraries: false
+  deployToPkgArchive: true         # ahora publica el paquete en Artifactory
+  packageIncludes: NA
+  printVerboseLog: false
+validate:                          # NUEVO
+  lint: true                       # SQLFluff, ShellCheck… según los archivos
+  secrets: true
+  api: false                       # true si el repo publica specs OpenAPI
+staticCodeAnalysis:
+  sonarQube:
+    enabled: false                 # NUEVO: hoy corre siempre
+    sonarLanguage: NA              # se corrige el typo sonarLanuguage
+    sonarExcludes: NA
+  checkMarx:
+    enabled: false                 # NUEVO
+    SCAN_WF: NA
+    CHECKMARX_ENV: NA
+    CHECKMARX_TYPE_OF_SCAN: NA
+    CHECKMARX_CX_TEAMNAME: NA
+security:                          # NUEVO
+  cdGate: true
+  snyk: false
+threshold:                         # igual: umbrales del Quality Gate
+  unitTestSuccessDensity: 0
+  unitTestCoverage: 0
+  techDebtRatio: 0
+  securityRating: 0
+  reliabilityRating: 0
+publish:                           # NUEVO
+  repository: generic-dev-local
+  branches: [main, "release/*"]
+{code}
+{column}
+{section}
+
+h2. 7. Caso vendor (binarios en Artifactory)
+||||Hoy (Jenkins)||En GitHub Actions||
+|*Qué se baja*|Variables mapeadas como input parameters del job|Bloque {{vendor.artifacts}} en el {{pipeline.yaml}}, versionado en el repo. La versión se puede sobreescribir con un input de {{workflow_dispatch}}.|
+|*Descarga*|El pipeline se conecta a Artifactory y la jala|{{pipeline.sh vendor-fetch}}: descarga cada pieza con un token de Artifactory|
+|*Integridad*|No se verifica|*Nuevo:* verifica el {{sha256}} de cada pieza; si no coincide, falla|
+|*Escaneo*|—|Secret scanning de los scripts propios; Snyk / BlackDuck a necesidad|
+|*Empaquetado*|Empaqueta|{{pipeline.sh package}}: las piezas + los scripts del repo ({{packageIncludes}})|
+|*Salida*|Envía a RLM|Paquete versionado en Artifactory con metadata (versión del proveedor, checksums, commit). El CD con Ansible lo toma de ahí.|
+{expand:title=Ejemplo de pipeline.yaml y ci.yml para vendor}
+{code:language=yaml|title=pipeline.yaml}
+# pipeline.yaml de un repo vendor
+workFlow: vendor
+releaseId: mx.cloud
+projectId: ‹proyecto›
+region: MEXICO
+appId: ‹id›
+vendor:                            # NUEVO: qué se baja de Artifactory
+  repository: vendor-binaries-local
+  artifacts:
+    - path: ‹proveedor›/‹producto›/‹version›/instalador.zip
+      sha256: ‹checksum›           # se verifica al descargar
+    - path: ‹proveedor›/‹producto›/‹version›/scripts.tar.gz
+      sha256: ‹checksum›
+build:
+  deployToPkgArchive: true
+  packageIncludes: ["deploy/**"]   # scripts propios que acompañan al binario
+validate:
+  lint: true
+  secrets: true
+security:
+  cdGate: true
+publish:
+  repository: generic-dev-local
+  branches: [main, "release/*"]
+{code}
+{code:language=yaml|title=ci.yml con input manual}
+# ci.yml de un repo vendor: además de push, permite lanzarlo a mano
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Versión del proveedor a empaquetar
+        required: false            # si se omite, usa la del pipeline.yaml
+jobs:
+  ci:
+    uses: ‹org›/cicd-templates/.github/workflows/ci-template.yml@v1
+    with:
+      config: pipeline.yaml
+      vendor-version: ${{ inputs.version }}
+    secrets: inherit
+{code}
+{expand}
+
+h2. 8. Refactor del pipeline.sh
+||||Qué||
+|*Se conserva*|Build por tipo, generación de la config de Sonar, llamadas a Snyk y al servicio de políticas, armado del paquete según {{assembly.xml}} / {{package.includes}}.|
+|*Se parte*|En funciones por stage, llamadas como {{pipeline.sh <stage>}}, cada una idempotente y con código de salida claro (0 éxito, distinto de 0 falla).|
+|*Se cambia*|Las variables de Jenkins y de la plataforma actual ({{WORKSPACE}} y las propias del motor) se leen del {{pipeline.yaml}} y de las variables de GitHub ({{GITHUB_*}}, {{inputs}}, {{secrets}}).|
+|*Se quita*|Lectura de la base de configuración externa, integrity check, banners, integraciones con el agente de build, EB, los servicios de reporte y RLM.|
+
+h2. 9. Cómo se vería el workflow
+{expand:title=ci.yml en el repo de la app}
+{code:language=yaml}
+# .github/workflows/ci.yml (en el repo de cada app)
+name: CI
+on:
+  push:
+    branches: [main, "release/*"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    uses: ‹org›/cicd-templates/.github/workflows/ci-template.yml@v1
+    with:
+      config: pipeline.yaml
+    secrets: inherit
+{code}
+{expand}
+{expand:title=Workflow reutilizable (esqueleto)}
+{code:language=yaml}
+# cicd-templates/.github/workflows/ci-template.yml (repo central)
+on:
+  workflow_call:
+    inputs:
+      config: { type: string, default: pipeline.yaml }
+
+jobs:
+  setup:
+    runs-on: [self-hosted, linux]
+    outputs:
+      cfg: ${{ steps.read.outputs.cfg }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: read
+        run: ./ci/pipeline.sh config "${{ inputs.config }}"   # valida y expone flags
+
+  validate:
+    needs: setup
+    if: fromJSON(needs.setup.outputs.cfg).validate.lint
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./ci/pipeline.sh lint && ./ci/pipeline.sh secrets
+
+  build:
+    needs: [setup, validate]
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./ci/pipeline.sh build      # no hace nada si build.type = copy
+      - run: ./ci/pipeline.sh test
+
+  quality:
+    needs: build
+    runs-on: [self-hosted, linux]
+    steps:
+      - run: ./ci/pipeline.sh cdgate
+      - run: ./ci/pipeline.sh sonar      # cada función revisa su flag
+      - run: ./ci/pipeline.sh snyk
+
+  package-publish:
+    needs: quality
+    runs-on: [self-hosted, linux]
+    steps:
+      - run: ./ci/pipeline.sh package
+      - if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/')
+        run: ./ci/pipeline.sh publish && ./ci/pipeline.sh tag
+{code}
+{expand}
+
+h2. 10. Plan de migración
+||Fase||Qué||Detalle||
+|Fase 0|*Base*|Repo central, runner self-hosted, secrets, refactor del {{pipeline.sh}} y esquema del {{pipeline.yaml}}.|
+|Fase 1|*Piloto*|Una app tipo *copy* (scripts bash): el caso más simple. Jenkins y GitHub Actions corren en paralelo y se comparan resultados.|
+|Fase 2|*Por tipo*|SQL (Teradata), configuración (Kafka) y luego apps con build (Maven, npm).|
+|Fase 3|*Corte*|Se apagan los jobs de Jenkins por app. El CD se conecta a Ansible.|
+
+h2. 11. Decisiones pendientes
+* (?) Runner: dónde corre, con qué usuario y qué acceso de red necesita (Sonar, Artifactory, Snyk, servicio de políticas).
+* (?) Secrets: GitHub secrets por organización / environment, o lectura desde CyberArk en el runner.
+* (?) CD Gate: si sigue siendo obligatorio y cómo se integra (API directa).
+* (?) Versionado del paquete: número de build, semver o hash del commit; y estructura del repo en Artifactory por ambiente.
+* (?) Retención: EB guarda los paquetes solo 45 días; definir en Artifactory cuánto se retiene por ambiente (por ejemplo, más tiempo para lo que llegó a PROD).
+* (?) Ramas que publican: qué ramas generan un paquete en Artifactory (main, release/*).
