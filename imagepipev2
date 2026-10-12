@@ -1,0 +1,534 @@
+<mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2050" pageHeight="1000" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="mgc-2" value="CI propuesto en GitHub Actions" style="text;html=1;fontSize=22;fontStyle=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+      <mxGeometry x="20" y="0" width="800" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-3" value="&lt;b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Repositorio de la app&lt;/b&gt;&lt;br&gt;• ci.yml — llama al orquestador (~15 líneas)&lt;br&gt;• pipeline.yaml — igual en F1 · se actualiza en F2" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#ffffff;strokeColor=#999999;" vertex="1" parent="1">
+      <mxGeometry x="20" y="44" width="330" height="88" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-4" value="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0d6b7a;strokeColor=none;fontColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="30" y="54" width="24" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-5" value="&lt;b&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Repo de reusable workflows&lt;/b&gt;&lt;br&gt;• ci-template.yml — orquestador (un solo run)&lt;br&gt;• Fase 1: pipeline.sh completo · Fase 2: un workflow por módulo" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#ffffff;strokeColor=#0d6b7a;strokeWidth=2;" vertex="1" parent="1">
+      <mxGeometry x="360" y="44" width="450" height="88" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-6" value="2" style="ellipse;whiteSpace=wrap;html=1;fillColor=#0d6b7a;strokeColor=none;fontColor=#ffffff;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="370" y="54" width="24" height="24" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-7" value="&lt;b&gt;Runners&lt;/b&gt;&lt;br&gt;• GitHub-hosted: lo que solo necesita internet&lt;br&gt;• Self-hosted: lo que llega a servicios internos" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#ffffff;strokeColor=#999999;" vertex="1" parent="1">
+      <mxGeometry x="820" y="44" width="330" height="88" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-8" value="&lt;b&gt;Disparadores&lt;/b&gt;&lt;br&gt;• pull_request → solo valida&lt;br&gt;• push a main / release → valida y publica" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#ffffff;strokeColor=#999999;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="44" width="464" height="88" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-9" value="" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#f5f7f9;strokeColor=#cccccc;" vertex="1" parent="1">
+      <mxGeometry x="20" y="158" width="1604" height="84" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-10" value="Entradas" style="text;html=1;align=center;verticalAlign=middle;rotation=-90;fontStyle=1;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="8" y="190" width="80" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-11" value="" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#f5f7f9;strokeColor=#cccccc;" vertex="1" parent="1">
+      <mxGeometry x="20" y="440" width="1604" height="96" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-12" value="Salidas" style="text;html=1;align=center;verticalAlign=middle;rotation=-90;fontStyle=1;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="8" y="478" width="80" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-13" value="▸ pipeline.yaml" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="110" y="166" width="158" height="68" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-14" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="189.0" y="242" as="sourcePoint"/>
+        <mxPoint x="189.0" y="262" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-15" value="Setup" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=14;fontStyle=1;fontSize=13;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="110" y="262" width="158" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-16" value="&lt;b&gt;checkout&lt;br&gt;lee pipeline.yaml&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontColor=#18212c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="110" y="316" width="158" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-17" value="Obligatorio" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="127" y="356" width="124" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-18" value="workFlow" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="110" y="380" width="158" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-19" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="189.0" y="400" as="sourcePoint"/>
+        <mxPoint x="189.0" y="440" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-20" value="▸ stages a correr" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="110" y="448" width="158" height="66" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-21" value="▸ código&lt;br&gt;▸ specs OpenAPI" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="278" y="166" width="158" height="68" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-22" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="357.0" y="242" as="sourcePoint"/>
+        <mxPoint x="357.0" y="262" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-23" value="Validación" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=14;fontStyle=1;fontSize=13;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="278" y="262" width="158" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-24" value="&lt;b&gt;SQLFluff · ShellCheck&lt;br&gt;gitleaks · Spectral*&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontColor=#18212c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="278" y="316" width="158" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-25" value="Nuevo · obligatorio" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=10;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="295" y="356" width="124" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-26" value="siempre" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="278" y="380" width="158" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-27" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="357.0" y="400" as="sourcePoint"/>
+        <mxPoint x="357.0" y="440" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-28" value="▸ errores de lint&lt;br&gt;▸ secretos expuestos" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="278" y="448" width="158" height="66" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-29" value="▸ código&lt;br&gt;▸ o pieza vendor" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="446" y="166" width="158" height="68" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-30" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="525.0" y="242" as="sourcePoint"/>
+        <mxPoint x="525.0" y="262" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-31" value="Build" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=14;fontStyle=1;fontSize=13;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="446" y="262" width="158" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-32" value="&lt;b&gt;Maven · npm · pip&lt;br&gt;copy · descarga vendor&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontColor=#18212c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="446" y="316" width="158" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-33" value="Según workFlow" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="463" y="356" width="124" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-34" value="workFlow" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="446" y="380" width="158" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-35" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="525.0" y="400" as="sourcePoint"/>
+        <mxPoint x="525.0" y="440" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-36" value="▸ build / binario" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="446" y="448" width="158" height="66" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-37" value="▸ pruebas" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="614" y="166" width="158" height="68" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-38" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="693.0" y="242" as="sourcePoint"/>
+        <mxPoint x="693.0" y="262" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-39" value="Unit Test" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=14;fontStyle=1;fontSize=13;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="614" y="262" width="158" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-40" value="&lt;b&gt;JUnit · Jest · pytest&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontColor=#18212c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="614" y="316" width="158" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-41" value="Según workFlow" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="631" y="356" width="124" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-42" value="workFlow · threshold" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="614" y="380" width="158" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-43" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="693.0" y="400" as="sourcePoint"/>
+        <mxPoint x="693.0" y="440" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-44" value="▸ reporte de pruebas&lt;br&gt;▸ coverage" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="614" y="448" width="158" height="66" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-45" value="▸ app / versión" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="782" y="166" width="158" height="68" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-46" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="861.0" y="242" as="sourcePoint"/>
+        <mxPoint x="861.0" y="262" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-47" value="CD Gate" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=14;fontStyle=1;fontSize=13;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="782" y="262" width="158" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-48" value="&lt;b&gt;servicio de&lt;br&gt;políticas de seguridad&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontColor=#18212c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="782" y="316" width="158" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-49" value="Obligatorio" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="799" y="356" width="124" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-50" value="siempre" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="782" y="380" width="158" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-51" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="861.0" y="400" as="sourcePoint"/>
+        <mxPoint x="861.0" y="440" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-52" value="▸ aprobado / rechazado" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="782" y="448" width="158" height="66" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-53" value="▸ código&lt;br&gt;▸ coverage" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="950" y="166" width="158" height="68" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-54" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1029.0" y="242" as="sourcePoint"/>
+        <mxPoint x="1029.0" y="262" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-55" value="Calidad" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=14;fontStyle=1;fontSize=13;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="950" y="262" width="158" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-56" value="&lt;b&gt;SonarQube · Snyk&lt;br&gt;Checkmarx*&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontColor=#18212c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="950" y="316" width="158" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-57" value="Según pipeline.yaml" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="967" y="356" width="124" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-58" value="sonarQube · checkMarx" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="950" y="380" width="158" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-59" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1029.0" y="400" as="sourcePoint"/>
+        <mxPoint x="1029.0" y="440" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-60" value="▸ Quality Gate&lt;br&gt;▸ vulnerabilidades" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="950" y="448" width="158" height="66" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-61" value="▸ build / archivos" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="1118" y="166" width="158" height="68" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-62" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1197.0" y="242" as="sourcePoint"/>
+        <mxPoint x="1197.0" y="262" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-63" value="Empaquetar" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=14;fontStyle=1;fontSize=13;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1118" y="262" width="158" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-64" value="&lt;b&gt;zip / jar&lt;br&gt;según assembly.xml&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontColor=#18212c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1118" y="316" width="158" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-65" value="Obligatorio" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1135" y="356" width="124" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-66" value="packageIncludes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1118" y="380" width="158" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-67" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1197.0" y="400" as="sourcePoint"/>
+        <mxPoint x="1197.0" y="440" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-68" value="▸ paquete" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="1118" y="448" width="158" height="66" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-69" value="▸ paquete" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="1286" y="166" width="158" height="68" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-70" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1365.0" y="242" as="sourcePoint"/>
+        <mxPoint x="1365.0" y="262" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-71" value="Publicar" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=14;fontStyle=1;fontSize=13;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1286" y="262" width="158" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-72" value="&lt;b&gt;F1: registro en EB (S3)&lt;br&gt;F2: Artifactory · git tag&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontColor=#18212c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1286" y="316" width="158" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-73" value="Obligatorio" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontSize=10;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="1303" y="356" width="124" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-74" value="deployToPkgArchive" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1286" y="380" width="158" height="18" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-75" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1365.0" y="400" as="sourcePoint"/>
+        <mxPoint x="1365.0" y="440" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-76" value="▸ F1: paquete en EB&lt;br&gt;▸ F2: versión en Artifactory" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="1286" y="448" width="158" height="66" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-77" value="▸ F1: paquete en EB&lt;br&gt;▸ F2: Artifactory" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="1454" y="166" width="150" height="68" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-78" value="Deploy&lt;br&gt;&lt;font style='font-size:11px'&gt;lo hace el CD&lt;/font&gt;" style="shape=step;perimeter=stepPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=14;fontStyle=1;fontSize=13;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1454" y="262" width="150" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-79" value="&lt;b&gt;F1: RLM&lt;br&gt;F2: Ansible&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;fontColor=#18212c;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="1454" y="316" width="150" height="36" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-80" value="(lo define el CD)" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+      <mxGeometry x="1454" y="448" width="150" height="66" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-81" value="" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#fdf1f0;strokeColor=#e6b8b5;" vertex="1" parent="1">
+      <mxGeometry x="20" y="552" width="1604" height="96" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-82" value="Se elimina" style="text;html=1;align=center;verticalAlign=middle;rotation=-90;fontStyle=1;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="8" y="590" width="80" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-83" value="&lt;b&gt;Jobs de Jenkins&lt;/b&gt;&lt;br&gt;uno por cada app&lt;br&gt;&lt;br&gt;&lt;i&gt;→ una sola plantilla&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#b85450;dashed=1;fontColor=#a33b37;" vertex="1" parent="1">
+      <mxGeometry x="114" y="562" width="150" height="76" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-84" value="F1" style="rounded=1;arcSize=50;html=1;fillColor=#0d6b7a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="234" y="555" width="28" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-85" value="&lt;b&gt;Integrity check&lt;/b&gt;&lt;br&gt;SCM info · test framework&lt;br&gt;&lt;br&gt;&lt;i&gt;→ no revisan la app&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#b85450;dashed=1;fontColor=#a33b37;" vertex="1" parent="1">
+      <mxGeometry x="282" y="562" width="150" height="76" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-86" value="F2" style="rounded=1;arcSize=50;html=1;fillColor=#3a5f9a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="402" y="555" width="28" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-87" value="&lt;b&gt;Agente de build&lt;/b&gt;&lt;br&gt;externo + Maven/Java&lt;br&gt;&lt;br&gt;&lt;i&gt;→ build en el runner&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#b85450;dashed=1;fontColor=#a33b37;" vertex="1" parent="1">
+      <mxGeometry x="450" y="562" width="150" height="76" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-88" value="F2" style="rounded=1;arcSize=50;html=1;fillColor=#3a5f9a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="570" y="555" width="28" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-89" value="&lt;b&gt;BOM scan / manifest&lt;/b&gt;&lt;br&gt;sin escaneo&lt;br&gt;&lt;br&gt;&lt;i&gt;→ nadie lo usaba&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#b85450;dashed=1;fontColor=#a33b37;" vertex="1" parent="1">
+      <mxGeometry x="954" y="562" width="150" height="76" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-90" value="F2" style="rounded=1;arcSize=50;html=1;fillColor=#3a5f9a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="1074" y="555" width="28" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-91" value="&lt;b&gt;Golden archive&lt;/b&gt;&lt;br&gt;copia del fuente&lt;br&gt;&lt;br&gt;&lt;i&gt;→ GitHub ya la guarda&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#b85450;dashed=1;fontColor=#a33b37;" vertex="1" parent="1">
+      <mxGeometry x="1122" y="562" width="150" height="76" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-92" value="F2" style="rounded=1;arcSize=50;html=1;fillColor=#3a5f9a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="1242" y="555" width="28" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-93" value="&lt;b&gt;EB (Enterprise Build)&lt;/b&gt;&lt;br&gt;sigue en F1 por RLM&lt;br&gt;&lt;br&gt;&lt;i&gt;→ retención de 45 días&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#b85450;dashed=1;fontColor=#a33b37;" vertex="1" parent="1">
+      <mxGeometry x="1290" y="562" width="150" height="76" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-94" value="F2" style="rounded=1;arcSize=50;html=1;fillColor=#3a5f9a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="1410" y="555" width="28" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-95" value="&lt;b&gt;Request a RLM&lt;/b&gt;&lt;br&gt;sigue en F1&lt;br&gt;&lt;br&gt;&lt;i&gt;→ pasa a Ansible&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffffff;strokeColor=#b85450;dashed=1;fontColor=#a33b37;" vertex="1" parent="1">
+      <mxGeometry x="1458" y="562" width="142" height="76" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-96" value="F2" style="rounded=1;arcSize=50;html=1;fillColor=#3a5f9a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="1570" y="555" width="28" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-97" value="" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#f5f7f9;strokeColor=#cccccc;" vertex="1" parent="1">
+      <mxGeometry x="20" y="664" width="1604" height="268" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-98" value="Automatización" style="text;html=1;align=center;verticalAlign=middle;rotation=-90;fontStyle=1;fontSize=12;fontColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="8" y="788.0" width="80" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-99" value="F1" style="rounded=1;arcSize=50;html=1;fillColor=#0d6b7a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="106" y="676" width="26" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-100" value="&lt;b&gt;Fase 1 — GitHub Actions + pipeline.sh completo:&lt;/b&gt; 1 run, 1 job self-hosted · pipeline.yaml igual · el CD sigue en RLM" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="140" y="674" width="1300" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-101" value="&lt;b&gt;steps del workflow&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;checkout · lint · gitleaks&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f1f2;strokeColor=#0d6b7a;strokeWidth=1.5;" vertex="1" parent="1">
+      <mxGeometry x="114" y="698" width="318" height="46" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-102" value="&lt;b&gt;pipeline.sh completo (un step): build → test → CD Gate → Sonar/Snyk → paquete → registro en EB&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;lee el pipeline.yaml igual que hoy · variables de GitHub mapeadas a las de Jenkins · credenciales como GitHub secrets&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0d6b7a;strokeWidth=2;" vertex="1" parent="1">
+      <mxGeometry x="450" y="698" width="990" height="46" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-103" value="&lt;b&gt;RLM&lt;/b&gt;&lt;br&gt;&lt;font style='font-size:11px'&gt;toma el paquete del EB&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1454" y="698" width="150" height="46" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-104" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="mgc-101" target="mgc-102">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-105" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="mgc-102" target="mgc-103">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-106" value="F2" style="rounded=1;arcSize=50;html=1;fillColor=#3a5f9a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="106" y="764" width="26" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-107" value="&lt;b&gt;Fase 2 — modular:&lt;/b&gt; 1 run, el orquestador llama un reusable workflow por módulo · pipeline.yaml actualizado · Artifactory + Ansible" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;" vertex="1" parent="1">
+      <mxGeometry x="140" y="762" width="1300" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-108" value="ci-template.yml @v2 — orquestador: obligatorios sin if · opcionales con if según las llaves enabled del pipeline.yaml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#0d6b7a;strokeWidth=2;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="114" y="786" width="1326" height="26" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-109" value="setup.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1ebf8;strokeColor=#9673a6;strokeWidth=1.5;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="120" y="824" width="138" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-110" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="189.0" y="812" as="sourcePoint"/>
+        <mxPoint x="189.0" y="824" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-111" value="validate.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1ebf8;strokeColor=#9673a6;strokeWidth=1.5;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="288" y="824" width="138" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-112" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="357.0" y="812" as="sourcePoint"/>
+        <mxPoint x="357.0" y="824" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-113" value="build.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f1f2;strokeColor=#0d6b7a;strokeWidth=1.5;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="456" y="824" width="138" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-114" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="525.0" y="812" as="sourcePoint"/>
+        <mxPoint x="525.0" y="824" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-115" value="test.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f1f2;strokeColor=#0d6b7a;strokeWidth=1.5;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="624" y="824" width="138" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-116" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="693.0" y="812" as="sourcePoint"/>
+        <mxPoint x="693.0" y="824" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-117" value="cdgate.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f1f2;strokeColor=#0d6b7a;strokeWidth=1.5;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="792" y="824" width="138" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-118" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="861.0" y="812" as="sourcePoint"/>
+        <mxPoint x="861.0" y="824" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-119" value="quality.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f1f2;strokeColor=#0d6b7a;strokeWidth=1.5;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="960" y="824" width="138" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-120" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1029.0" y="812" as="sourcePoint"/>
+        <mxPoint x="1029.0" y="824" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-121" value="package.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f1f2;strokeColor=#0d6b7a;strokeWidth=1.5;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1128" y="824" width="138" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-122" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1197.0" y="812" as="sourcePoint"/>
+        <mxPoint x="1197.0" y="824" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-123" value="publish.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f1f2;strokeColor=#0d6b7a;strokeWidth=1.5;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1296" y="824" width="138" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-124" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1365.0" y="812" as="sourcePoint"/>
+        <mxPoint x="1365.0" y="824" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-125" value="build.yml y pipeline.sh eligen el builder según workFlow:" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="110" y="866" width="350" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-126" value="copy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="470" y="865" width="60" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-127" value="maven" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="536" y="865" width="60" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-128" value="npm" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="602" y="865" width="60" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-129" value="python" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="668" y="865" width="60" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-130" value="vendor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#999999;fontFamily=Courier New;fontColor=#0d6b7a;fontSize=10;" vertex="1" parent="1">
+      <mxGeometry x="734" y="865" width="60" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-131" value="Entre jobs el build y el paquete pasan como artifacts del run." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="820" y="866" width="500" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-132" value="El ci.yml de la app es el mismo en las dos fases: pasar de Fase 1 a Fase 2 es cambiar @v1 por @v2." style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontColor=#333333;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="110" y="890" width="900" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-133" value="&lt;b&gt;Playbooks Ansible&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="1454" y="824" width="150" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-134" value="" style="endArrow=block;endFill=1;html=1;strokeColor=#666666;" edge="1" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1436" y="839" as="sourcePoint"/>
+        <mxPoint x="1454" y="839" as="targetPoint"/>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="mgc-135" value="&lt;b style='font-size:15px'&gt;Qué ganamos&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Un solo flujo para todas las apps: un cambio se hace una vez.&lt;br&gt;• Errores visibles en cada PR, no después de mezclar el código.&lt;br&gt;• Lint y secret scanning en todos los repos desde la Fase 1.&lt;br&gt;• Paquetes sin vencer: Artifactory en vez del EB de 45 días (Fase 2).&lt;br&gt;&lt;br&gt;&lt;b style='font-size:15px'&gt;Fase 1 · migrar a GitHub Actions&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Jenkins → GitHub Actions (un run)&lt;br&gt;• pipeline.sh completo, sin refactor&lt;br&gt;• pipeline.yaml sin cambios&lt;br&gt;• Nuevo: lint y secret scanning&lt;br&gt;• Sigue igual: registro en EB (S3) y RLM&lt;br&gt;• Todo en runner self-hosted&lt;br&gt;&lt;br&gt;&lt;b style='font-size:15px'&gt;Fase 2 · modular y CD nuevo&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Un reusable workflow por módulo, un run&lt;br&gt;• pipeline.yaml actualizado (enabled, publish…)&lt;br&gt;• EB → Artifactory&lt;br&gt;• RLM → Ansible&lt;br&gt;• Cada módulo en el runner que necesita&lt;br&gt;• Se quitan las piezas del motor anterior&lt;br&gt;&lt;br&gt;&lt;b style='font-size:15px'&gt;Pendiente de definir&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Lista final de stages obligatorios&lt;br&gt;• Runners: etiquetas y salida a internet&lt;br&gt;• Secrets: GitHub o gestor de secretos&lt;br&gt;• Cuándo arranca el CD con Ansible&lt;br&gt;• Inventario de parámetros de Jenkins" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=12;spacingTop=6;fillColor=#ffffff;strokeColor=#cccccc;spacingRight=12;" vertex="1" parent="1">
+      <mxGeometry x="1644" y="44" width="380" height="888" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-136" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="20" y="948" width="26" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-137" value="Obligatorio · no se puede apagar" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="54" y="946" width="230" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-138" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="280" y="948" width="26" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-139" value="Según pipeline.yaml / workFlow" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="314" y="946" width="230" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-140" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="540" y="948" width="26" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-141" value="Nuevo · obligatorio" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="574" y="946" width="230" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-142" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="730" y="948" width="26" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-143" value="CD · fuera de alcance del CI" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="764" y="946" width="230" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-144" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+      <mxGeometry x="960" y="948" width="26" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-145" value="Se elimina del CI actual" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="994" y="946" width="230" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-146" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f1ebf8;strokeColor=#9673a6;strokeWidth=1.5;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="948" width="26" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-147" value="GitHub-hosted (internet)" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1194" y="946" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-148" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e3f1f2;strokeColor=#0d6b7a;strokeWidth=1.5;" vertex="1" parent="1">
+      <mxGeometry x="1370" y="948" width="26" height="16" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-149" value="Self-hosted (red interna)" style="text;html=1;align=left;verticalAlign=middle;fontSize=12;" vertex="1" parent="1">
+      <mxGeometry x="1404" y="946" width="200" height="20" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-150" value="F1" style="rounded=1;arcSize=50;html=1;fillColor=#0d6b7a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="1590" y="948" width="26" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-151" value="F2" style="rounded=1;arcSize=50;html=1;fillColor=#3a5f9a;strokeColor=none;fontColor=#ffffff;fontStyle=1;fontSize=9;" vertex="1" parent="1">
+      <mxGeometry x="1620" y="948" width="26" height="15" as="geometry"/>
+    </mxCell>
+    <mxCell id="mgc-152" value="fase en la que cambia · * Spectral si hay specs" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="1654" y="946" width="380" height="20" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>
