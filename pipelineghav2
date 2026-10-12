@@ -1,0 +1,459 @@
+{info:title=Resumen}
+Propuesta para migrar el *CI* de Jenkins a *GitHub Actions* en dos fases. *Fase 1:* GitHub Actions corre el {{pipeline.sh}} completo, el {{pipeline.yaml}} no cambia y el CD sigue en *RLM* (con el registro en EB). *Fase 2:* el sh se parte en reusable workflows (un solo run), se actualiza el {{pipeline.yaml}} y el paquete pasa a *Artifactory* cuando el CD arranque con *Ansible*.
+{info}
+
+||Estado||Alcance||Responsable||
+|{status:colour=Yellow|title=En revisión}|CI (CD solo nombrado)|Andrés Flórez|
+
+{toc:maxLevel=2}
+
+h2. 1. Diagrama
+_(aquí va la imagen del diagrama actualizado)_
+
+
+h2. 2. Por qué migrar
+{panel:title=Problemas del modelo actual|borderStyle=solid|borderColor=#e6b8b5|titleBGColor=#fdf1f0}
+* Dependencia de un motor de CI externo: la configuración vive en parte fuera del repo y el motor se descarga en cada build; cualquier cambio depende de otro equipo.
+* Stages que corren sin aportar: Sonar, Snyk, Golden archive o BOM scan corren aunque el repo sean solo scripts o SQL.
+* CI y CD acoplados: el mismo pipeline registra el paquete y crea el request en RLM.
+* Configuración repartida entre el repo, Jenkins y la plataforma de CI, con ajustes manuales que generan inconsistencias.
+{panel}
+
+
+h2. 3. Alcance por fase
+Qué entra en cada fase. La Fase 1 cambia solo dónde corre el CI; la Fase 2 cambia cómo está armado y a dónde va el paquete.
+
+||||Fase 1 · Migrar a GitHub Actions||Fase 2 · Modular y CD nuevo||
+|*Orquestador*|GitHub Actions reemplaza a Jenkins. Un run, un job.|Un run; el orquestador llama un reusable workflow por módulo.|
+|*pipeline.sh*|Se corre *completo*, sin refactor. Solo se mapean las variables de Jenkins a las de GitHub.|Se parte en módulos (setup, validate, build, test, cdgate, quality, package, publish).|
+|*pipeline.yaml*|*Sin cambios.* El sh lo lee igual que hoy.|*Se actualiza:* llaves {{enabled}}, bloques {{validate}}, {{security}}, {{publish}}; se quitan las de Jenkins y RLM.|
+|*Stages nuevos*|Lint y secret scanning, obligatorios, como steps del workflow.|API governance, Snyk y Checkmarx se prenden por llave. Obligatorios fijos en el orquestador.|
+|*Dónde queda el paquete*|*EB (bucket S3)*, como hoy, porque RLM lo toma de ahí.|*Artifactory*, versionado y sin la retención de 45 días.|
+|*CD*|*Sigue RLM*: el sh crea el request como hoy.|*Ansible* toma el paquete de Artifactory. Sale el request a RLM del CI.|
+|*Runners*|Todo en self-hosted (red interna).|Cada módulo en el runner que necesita (GitHub-hosted o self-hosted).|
+|*Cómo se activa el CI*|Un {{ci.yml}} por repo (caller de ~15 líneas), repartido con un script de PRs por lotes.|El mismo {{ci.yml}}, apuntando a {{@v2}}.|
+|*Configuración por repo*|{{pipeline.yaml}} como hoy + lo que hoy está en el job de Jenkins pasa al {{ci.yml}}.|Todo en el {{pipeline.yaml}} actualizado; el {{ci.yml}} queda igual en todos los repos.|
+|*Jenkins*|Se apagan los jobs por app al terminar la fase.|—|
+|*Se quita*|Jobs de Jenkins.|Motor de CI y su config externa, integrity check, agente externo, Golden archive, BOM scan, EB, request a RLM.|
+|*Cambio para la app*|Agregar {{ci.yml}} (~15 líneas).|{{@v1}} → {{@v2}} en el ci.yml y PR al pipeline.yaml.|
+
+{note:title=EB y RLM en la Fase 1}
+*EB y Artifactory van atados al CD:* mientras el CD sea RLM, el registro en EB se queda activo. El cambio a Artifactory entra en la Fase 2, junto con Ansible.
+{note}
+
+
+h2. 4. Componentes
+||Componente||Dónde vive||Fase||Qué hace||
+|*ci.yml*|Repo de la app|Fase 1 y 2|Cuándo corre (push, PR, manual) y llama al orquestador. Igual en las dos fases; solo cambia {{@v1}} → {{@v2}}.|
+|*pipeline.yaml*|Repo de la app|Fase 1 y 2|Fase 1: igual que hoy. Fase 2: se actualiza (ver sección pipeline.yaml).|
+|*ci-template.yml*|Repo de reusable workflows|Fase 1 y 2|Orquestador. {{@v1}}: un job con el pipeline.sh completo. {{@v2}}: un job por módulo en el mismo run.|
+|*pipeline.sh*|Repo de reusable workflows (composite action)|Fase 1|El script actual, completo. Viaja con la versión del workflow; el repo de la app no lo clona.|
+|*Módulos*|Repo de reusable workflows|Fase 2|{{setup}}, {{validate}}, {{build}}, {{test}}, {{cdgate}}, {{quality}}, {{package}}, {{publish}}: cada uno un reusable workflow con su {{runs-on}}.|
+|*Runners*|Self-hosted / GitHub-hosted|Fase 1 y 2|Fase 1: self-hosted. Fase 2: según el módulo.|
+|*Secrets*|GitHub (org / environment)|Fase 1 y 2|Fase 1: las credentials que hoy da Jenkins (Sonar, Snyk, EB, RLM). Fase 2: Sonar, Snyk y Artifactory.|
+|*EB · RLM*|Plataforma actual|Fase 1|Siguen siendo el destino del paquete y el CD en la Fase 1.|
+|*Artifactory · Ansible*|Plataforma nueva|Fase 2|Reemplazan a EB y RLM.|
+
+
+h2. 5. Stages obligatorios y condicionales
+||Stage||Fase 1||Fase 2||
+|*Lint · secret scanning*|Obligatorio step del workflow|Obligatorio módulo {{validate}}|
+|*Build · unit tests*|Lo decide el sh como hoy ({{workFlow}})|Condicional {{workFlow}} · {{threshold}}|
+|*CD Gate*|Corre dentro del sh como hoy|Obligatorio módulo {{cdgate}}|
+|*SonarQube*|Lo decide el sh como hoy|Condicional {{staticCodeAnalysis.sonarQube.enabled}}|
+|*Snyk*|Lo decide el sh como hoy|Condicional {{security.snyk}}|
+|*Checkmarx / BlackDuck*|Lo decide el sh como hoy|Condicional {{staticCodeAnalysis.checkMarx.enabled}}|
+|*API governance*|Lo decide el sh como hoy|Condicional {{validate.api}}|
+|*Empaquetar*|Dentro del sh|Obligatorio módulo {{package}}|
+|*Publicar*|Registro en EB dentro del sh|Obligatorio Artifactory en main / release|
+
+{note}
+En la Fase 1 lo único que agrega el workflow son los obligatorios nuevos (lint y secretos); el resto corre como hoy dentro del sh. En la Fase 2 los obligatorios están fijos en el orquestador (sin {{if}}) y ningún repo los puede apagar.
+{note}
+
+
+h2. 6. Qué quitamos y por qué
+||Se quita||Cuándo||Qué hace hoy||Por qué se quita||Qué lo reemplaza||
+|*Jobs de Jenkins por app*|Fase 1|Corren el pipeline de cada repo|Cada job tiene su configuración, plugins y credenciales; mantenerlos es manual y se desalinean.|Un workflow reutilizable versionado que usan todas las apps.|
+|*Descarga del motor de CI y su base de configuración*|Fase 2|Baja el motor en cada build y lee parte de la config de una base externa|La configuración queda fuera del repo y suma tiempo a cada build. En Fase 1 se mantiene porque el sh corre completo.|Módulos en el repo de reusable workflows y config en el pipeline.yaml.|
+|*Integrity check, detección de patrón, test framework, SCM info*|Fase 2|Validan el propio motor y arman reportes internos|No revisan el código de la app.|Validación del pipeline.yaml con esquema; GitHub ya muestra cambios y PRs.|
+|*Agente de build externo*|Fase 2|El build corre en otra máquina con herramientas preinstaladas|Otro salto de red y otra infraestructura que mantener.|Build en el runner, solo cuando el tipo lo pide.|
+|*EB (Enterprise Build)*|Fase 2|Registra el paquete; RLM lo descarga de ahí|*Retiene los paquetes solo 45 días.* Se queda en la Fase 1 porque RLM lo necesita.|Artifactory con versión, metadata y retención definida por el equipo.|
+|*Golden archive*|Fase 2|Guarda una copia del código fuente de cada build|GitHub ya guarda el historial y cada paquete queda ligado a un commit con tag.|Tag del commit + metadata del paquete.|
+|*BOM scan / manifest de BlackDuck*|Fase 2|Genera el manifest aunque el escaneo esté apagado|Produce un archivo que nadie usa.|BlackDuck a necesidad.|
+|*Servicios de reporte del motor*|Fase 2|Publican el estado del build en tableros internos|Dependen del motor que se quita.|Resumen del run en GitHub.|
+|*Creación del request en RLM*|Fase 2|El CI dispara el despliegue en DEV|Acopla CI y CD. Se queda en la Fase 1 hasta que el CD pase a Ansible.|El CI termina en Artifactory; Ansible toma el paquete.|
+|*appScan*|Fase 2|Bloque del pipeline.yaml|Está en NA en todos los repos revisados.|Se reactiva si seguridad lo pide.|
+|*Llaves sourceCode, jenkinsAdditionalFolder, postBuildDeployEnv, deploy.**|Fase 2|Apuntan al repo, a la carpeta de Jenkins y a RLM|Ya no aplican cuando sale Jenkins y RLM.|Se eliminan en la actualización del pipeline.yaml.|
+
+
+h2. 7. pipeline.yaml por fase
+h3. Fase 1: sin cambios
+El {{pipeline.sh}} lo lee igual que hoy, así que no hay PRs en los repos. El workflow solo lee {{workFlow}} para elegir el linter.
+
+h3. Fase 2: actual vs propuesto
+||Llave||Cambio||Por qué||
+|{{workFlow}}|Se mantiene|Define el tipo de build (copy, maven…).|
+|{{releaseId · projectId · region · csiId}}|Se mantiene|Metadatos: nombre del paquete, clave de Sonar, tags.|
+|{{sourceCode.*}}|Se quita|El repo es el mismo donde corre el workflow; la rama la da el trigger.|
+|{{build.pomFileLocation · dependencyResolutionRepo · deployLibraries}}|Se mantiene|Solo aplican a builds Maven.|
+|{{build.deployToPkgArchive}}|Cambia|Sigue activando la publicación, pero ahora en Artifactory (antes EB).|
+|{{build.packageIncludes · printVerboseLog}}|Se mantiene|Qué entra al paquete y log detallado.|
+|{{build.jenkinsAdditionalFolder}}|Se quita|Carpeta de Jenkins; ya no existe.|
+|{{build.postBuildDeployEnv}}|Se quita|El CI ya no despliega; lo hace Ansible.|
+|{{staticCodeAnalysis.sonarQube}}|Cambia|Se agrega {{enabled}} y se corrige {{sonarLanuguage}} → {{sonarLanguage}}.|
+|{{staticCodeAnalysis.checkMarx}}|Cambia|Se agrega {{enabled}}; se dejan solo las llaves que use el escaneo.|
+|{{staticCodeAnalysis.appScan}}|Se quita|Sin uso hoy (NA).|
+|{{threshold.*}}|Se mantiene|Umbrales del Quality Gate de Sonar.|
+|{{deploy.*.rlm*}}|Se quita|RLM sale cuando el CD pasa a Ansible.|
+|{{validate.lint · validate.secrets · validate.api}}|Nueva|Lint, secret scanning y API governance.|
+|{{security.cdGate · security.snyk}}|Nueva|Snyk se prende o apaga; CD Gate queda obligatorio.|
+|{{publish.repository · publish.branches}}|Nueva|Repo de Artifactory y ramas que publican.|
+
+{note}
+*Para no hacer cientos de PRs a mano:* el orquestador {{@v2}} puede leer los dos formatos un tiempo (si no hay {{enabled}}, usa las reglas de hoy), y los PRs del pipeline.yaml se abren con un script por lotes.
+{note}
+
+{section}
+{column:width=50%}
+{code:language=yaml|title=Actual|collapse=true}
+workFlow: copy
+releaseId: mx.cloud
+projectId: bs.hrm.edm.t.teradata
+region: MEXICO
+csiId: 165630
+sourceCode:
+  projectStream: development
+  projectModule: mdw/p_mx_bs_hrm_edm_t.git
+  repositoryInstance: bitbucket
+build:
+  pomFileLocation: .
+  dependencyResolutionRepo: artifactory
+  deployLibraries: false
+  deployToPkgArchive: true
+  packageIncludes: NA
+  printVerboseLog: false
+  jenkinsAdditionalFolder: teradata
+  postBuildDeployEnv: DEV
+staticCodeAnalysis:
+  sonarQube:
+    sonarLanuguage: NA
+    sonarExcludes: NA
+  checkMarx:
+    SCAN_WF: NA
+    CHECKMARX_ENV: NA
+    CHECKMARX_ARCHER_BASE_CMPNAME: NA
+    CHECKMARX_CONFIG_CMPNAME: NA
+    CHECKMARX_TYPE_OF_SCAN: NA
+    CHECKMARX_CX_TEAMNAME: NA
+    RELEASENAME: NA
+  appScan:
+    archerRecord: NA
+threshold:
+  unitTestSuccessDensity: 0
+  unitTestCoverage: 0
+  techDebtRatio: 0
+  securityRating: 0
+  reliabilityRating: 0
+deploy:
+  DEV:
+    rlmExecute: true
+    rlmEnvironment: DEV
+    rlmTemplate: 165630_MX_CARDS_BS_HRM_EDM_T_TERADATA
+{code}
+{column}
+{column:width=50%}
+{code:language=yaml|title=Propuesto (Fase 2)|collapse=true}
+workFlow: copy                     # igual: define el tipo de build
+releaseId: mx.cloud
+projectId: bs.hrm.edm.t.teradata
+region: MEXICO
+appId: 165630                      # antes csiId
+build:
+  pomFileLocation: .               # solo aplica si workFlow es maven
+  dependencyResolutionRepo: artifactory
+  deployLibraries: false
+  deployToPkgArchive: true         # ahora publica el paquete en Artifactory
+  packageIncludes: NA
+  printVerboseLog: false
+validate:                          # NUEVO
+  lint: true                       # SQLFluff, ShellCheck… según los archivos
+  secrets: true
+  api: false                       # true si el repo publica specs OpenAPI
+staticCodeAnalysis:
+  sonarQube:
+    enabled: false                 # NUEVO: hoy corre siempre
+    sonarLanguage: NA              # se corrige el typo sonarLanuguage
+    sonarExcludes: NA
+  checkMarx:
+    enabled: false                 # NUEVO
+    SCAN_WF: NA
+    CHECKMARX_ENV: NA
+    CHECKMARX_TYPE_OF_SCAN: NA
+    CHECKMARX_CX_TEAMNAME: NA
+security:                          # NUEVO
+  cdGate: true
+  snyk: false
+threshold:                         # igual: umbrales del Quality Gate
+  unitTestSuccessDensity: 0
+  unitTestCoverage: 0
+  techDebtRatio: 0
+  securityRating: 0
+  reliabilityRating: 0
+publish:                           # NUEVO
+  repository: generic-dev-local
+  branches: [main, "release/*"]
+{code}
+{column}
+{section}
+
+
+h2. 8. Caso vendor (binarios en Artifactory)
+||||Hoy (Jenkins)||Fase 1||Fase 2||
+|*Qué se baja*|Variables mapeadas como input parameters del job|Inputs de {{workflow_dispatch}} con los mismos nombres; el sh los recibe como hoy|Bloque {{vendor.artifacts}} en el pipeline.yaml; la versión se puede sobreescribir con un input|
+|*Descarga*|El pipeline se conecta a Artifactory|Igual, dentro del sh|Módulo {{build}} con tipo vendor|
+|*Integridad*|No se verifica|No se verifica|*Nuevo:* verifica el {{sha256}} de cada pieza|
+|*Escaneo*|—|Secret scanning de los scripts propios|Igual + Snyk / BlackDuck a necesidad|
+|*Salida*|EB → RLM|EB → RLM|Artifactory → Ansible|
+
+{section}
+{column:width=50%}
+{code:language=yaml|title=ci.yml vendor (Fase 1)|collapse=true}
+# ci.yml de un repo vendor en Fase 1: los input parameters de Jenkins
+# pasan a inputs de workflow_dispatch; el pipeline.yaml no cambia
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Versión del proveedor a empaquetar
+        required: true
+jobs:
+  ci:
+    uses: ‹org›/reusable-workflows/.github/workflows/ci-template.yml@v1
+    with:
+      config: pipeline.yaml
+      vendor-version: ${{ inputs.version }}   # se entrega al sh como la variable de hoy
+    secrets: inherit
+{code}
+{column}
+{column:width=50%}
+{code:language=yaml|title=pipeline.yaml vendor (Fase 2)|collapse=true}
+# pipeline.yaml de un repo vendor
+workFlow: vendor
+releaseId: mx.cloud
+projectId: ‹proyecto›
+region: MEXICO
+appId: ‹id›
+vendor:                            # NUEVO: qué se baja de Artifactory
+  repository: vendor-binaries-local
+  artifacts:
+    - path: ‹proveedor›/‹producto›/‹version›/instalador.zip
+      sha256: ‹checksum›           # se verifica al descargar
+    - path: ‹proveedor›/‹producto›/‹version›/scripts.tar.gz
+      sha256: ‹checksum›
+build:
+  deployToPkgArchive: true
+  packageIncludes: ["deploy/**"]   # scripts propios que acompañan al binario
+validate:
+  lint: true
+  secrets: true
+security:
+  cdGate: true
+publish:
+  repository: generic-dev-local
+  branches: [main, "release/*"]
+{code}
+{column}
+{section}
+
+
+h2. 9. pipeline.sh: completo (Fase 1) y modular (Fase 2)
+h3. Fase 1: viabilidad de correr el sh completo
+||Aspecto||¿Se puede?||Qué hace falta||
+|Correr el sh en un solo step|Sí|Runner self-hosted con las mismas herramientas del agente de Jenkins (bash, git, Java/Maven, jq/yq, curl, sonar-scanner, snyk).|
+|Variables de Jenkins ({{WORKSPACE}}, {{BUILD_NUMBER}}, {{GIT_BRANCH}}…)|Sí|Se mapean en el {{env:}} del job. El sh no se toca.|
+|Credenciales|Sí|Las credentials de Jenkins (Sonar, Snyk, EB, RLM) pasan a GitHub secrets con el mismo nombre de variable.|
+|Registro en EB y request a RLM|Sí|Siguen dentro del sh. El runner tiene que llegar al bucket del EB y a RLM.|
+|Arranque del motor (descarga y base de configuración externa)|Sí|Se mantiene igual que hoy; el runner necesita acceso de red a esos servicios. Es lo primero que se prueba en la Fase 0.|
+|PRs|Parcial|En un PR no debe registrar en EB ni crear request a RLM: en PR solo corren lint y secretos.|
+|Log y diagnóstico|Parcial|Todo queda en un step; se pueden agregar marcas {{::group::}} por stage.|
+|Reintentar solo un stage|No|Si falla Sonar se vuelve a correr todo el sh.|
+|Runners distintos por stage|No|Todo corre en el mismo self-hosted.|
+
+{note:title=Veredicto}
+*Veredicto:* viable. La Fase 1 no toca el script; el riesgo está en el acceso de red del runner a los mismos servicios que usa hoy el agente de Jenkins.
+{note}
+
+h3. Fase 2: refactor a módulos
+||||Qué||
+|*Se conserva*|Build por tipo, generación de la config de Sonar, llamadas a Snyk y al servicio de políticas, armado del paquete según {{assembly.xml}} / {{packageIncludes}}.|
+|*Se parte*|En módulos, cada uno un reusable workflow que llama su parte del script. Todos corren en el mismo run, coordinados por el orquestador.|
+|*Se cambia*|Las variables de Jenkins y del motor se leen del {{pipeline.yaml}} y de las variables de GitHub. El registro en EB pasa a publicación en Artifactory.|
+|*Se quita*|Base de configuración externa, integrity check, banners, agente de build, EB, servicios de reporte y RLM.|
+
+h3. Fase 1 vs Fase 2
+||||Fase 1 · sh completo||Fase 2 · modular||
+|Esfuerzo|Bajo: wrapper de variables + secrets|Alto: partir el script|
+|Runs|1 run, 1 job|1 run, un job por módulo|
+|Ver qué falló|Buscar en un log largo|El job del módulo que falló|
+|Reintentar|Todo el sh|Solo el módulo (re-run failed jobs)|
+|Dependencia de la plataforma actual|Se mantiene (motor, EB, RLM)|Se elimina|
+
+
+h2. 10. Dónde corren los runners
+||Job||Fase 1||Fase 2||Por qué||
+|setup · validate (lint, gitleaks, Spectral)|Self-hosted|GitHub-hosted|No llaman a servicios internos; las herramientas se bajan de internet.|
+|build · test|Self-hosted|Self-hosted|Dependencias del Artifactory interno.|
+|cdgate|Self-hosted|Self-hosted|Servicio de políticas interno.|
+|quality (Sonar, Snyk, Checkmarx)|Self-hosted|Self-hosted|SonarQube interno. Snyk es SaaS: el self-hosted necesita salida a internet por proxy (o un Snyk Broker).|
+|package · publish|Self-hosted|Self-hosted|Fase 1: EB (S3) y RLM. Fase 2: Artifactory interno.|
+
+# *El self-hosted necesita salida HTTPS a GitHub* aunque esté en la red interna (por proxy) para recibir jobs y subir logs.
+# *Fase 1:* el runner debe llegar a todo lo que hoy usa el agente de Jenkins: motor de CI, base de configuración, bucket del EB, RLM, Sonar, Snyk y servicio de políticas.
+# *Fase 2, artifacts entre jobs:* el build pasa al job de package por el almacenamiento de GitHub. Si la política no lo permite, build, test y package se juntan en un solo job self-hosted.
+# *Runner groups* para restringir qué repos usan los self-hosted, y *runners efímeros* para no dejar código ni credenciales entre builds.
+
+
+h2. 11. Cómo se vería el workflow
+Ejemplos de referencia, no definitivos.
+
+{code:language=yaml|title=ci.yml en el repo de la app (Fase 1 y 2)|collapse=true}
+# .github/workflows/ci.yml (en el repo de cada app) — igual en Fase 1 y Fase 2
+name: CI
+on:
+  push:
+    branches: [main, "release/*"]   # las ramas que hoy dispara Jenkins
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  ci:
+    uses: ‹org›/reusable-workflows/.github/workflows/ci-template.yml@v1   # Fase 2: @v2
+    with:
+      config: pipeline.yaml
+    secrets: inherit
+{code}
+
+{code:language=yaml|title=Fase 1 · ci-template.yml @v1 (pipeline.sh completo)|collapse=true}
+# ‹org›/reusable-workflows/.github/workflows/ci-template.yml @v1 — Fase 1: pipeline.sh completo
+on:
+  workflow_call:
+    inputs:
+      config: { type: string, default: pipeline.yaml }
+      runner: { type: string, default: '["self-hosted","linux","red-interna"]' }
+
+jobs:
+  ci:
+    runs-on: ${{ fromJSON(inputs.runner) }}
+    env:                                   # el sh sigue viendo las variables de Jenkins
+      WORKSPACE: ${{ github.workspace }}
+      BUILD_NUMBER: ${{ github.run_number }}
+      JOB_NAME: ${{ github.repository }}
+      GIT_BRANCH: ${{ github.ref_name }}
+      GIT_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint y secret scanning (nuevo, obligatorio)
+        uses: ‹org›/reusable-workflows/actions/validate@v1    # linter según workFlow + gitleaks
+
+      - name: pipeline.sh completo (incluye registro en EB y request a RLM, como hoy)
+        if: github.event_name != 'pull_request'   # en PR solo se valida
+        uses: ‹org›/reusable-workflows/actions/pipeline-sh@v1
+        env:                               # lo que hoy entrega Jenkins como credentials
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          EB_CREDENTIALS: ${{ secrets.EB_CREDENTIALS }}
+          RLM_CREDENTIALS: ${{ secrets.RLM_CREDENTIALS }}
+{code}
+
+{code:language=yaml|title=Fase 2 · ci-template.yml @v2 (orquestador, un solo run)|collapse=true}
+# ‹org›/reusable-workflows/.github/workflows/ci-template.yml @v2 — Fase 2: modular, un solo run
+on:
+  workflow_call:
+    inputs:
+      config: { type: string, default: pipeline.yaml }
+
+jobs:
+  setup:                            # obligatorio · lee las llaves enabled del pipeline.yaml
+    uses: ‹org›/reusable-workflows/.github/workflows/setup.yml@v2
+    with: { config: "${{ inputs.config }}" }
+
+  validate:                         # obligatorio: sin if
+    needs: setup
+    uses: ‹org›/reusable-workflows/.github/workflows/validate.yml@v2
+    with: { api: "${{ needs.setup.outputs.api }}" }
+
+  build:
+    needs: [setup, validate]
+    uses: ‹org›/reusable-workflows/.github/workflows/build.yml@v2
+    with: { workflow: "${{ needs.setup.outputs.workflow }}" }
+    secrets: inherit
+
+  test:
+    needs: [setup, build]
+    if: needs.setup.outputs.test == 'true'
+    uses: ‹org›/reusable-workflows/.github/workflows/test.yml@v2
+
+  cdgate:                           # obligatorio
+    needs: build
+    uses: ‹org›/reusable-workflows/.github/workflows/cdgate.yml@v2
+    secrets: inherit
+
+  quality:                          # sonar / snyk / checkmarx según enabled
+    needs: [setup, build, test]
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
+    uses: ‹org›/reusable-workflows/.github/workflows/quality.yml@v2
+    with:
+      sonar: ${{ needs.setup.outputs.sonar }}
+      snyk: ${{ needs.setup.outputs.snyk }}
+      checkmarx: ${{ needs.setup.outputs.checkmarx }}
+    secrets: inherit
+
+  package:                          # obligatorio
+    needs: [cdgate, quality]
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') }}
+    uses: ‹org›/reusable-workflows/.github/workflows/package.yml@v2
+
+  publish:                          # obligatorio en main / release → Artifactory
+    needs: [setup, package]
+    if: needs.setup.outputs.publish == 'true'
+    uses: ‹org›/reusable-workflows/.github/workflows/publish.yml@v2
+    secrets: inherit
+{code}
+
+{code:language=yaml|title=Fase 2 · un módulo: build.yml|collapse=true}
+# ‹org›/reusable-workflows/.github/workflows/build.yml @v2 — un módulo
+on:
+  workflow_call:
+    inputs:
+      workflow: { type: string, required: true }        # copy | maven | npm | python | vendor
+      runner:   { type: string, default: '["self-hosted","linux","red-interna"]' }
+
+jobs:
+  build:
+    runs-on: ${{ fromJSON(inputs.runner) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ‹org›/reusable-workflows/actions/build@v2                      # la parte del pipeline.sh que construye
+        with: { workflow: "${{ inputs.workflow }}" }
+      - uses: actions/upload-artifact@v4                  # pasa el build al job de package
+        with: { name: build, path: dist/, retention-days: 1 }
+{code}
+
+
+h2. 12. Plan de migración
+||Fase||Qué||Detalle||
+|Fase 0|*Base*|Repo de reusable workflows, runner self-hosted con acceso a lo mismo que el agente de Jenkins, secrets, prueba del pipeline.sh completo en GitHub Actions e *inventario de los jobs de Jenkins*: parámetros, variables y credenciales que no estén en el pipeline.yaml.|
+|Fase 1|*GitHub Actions + sh completo*|Piloto con una app *copy*, en paralelo con Jenkins. Luego el resto por tipo. pipeline.yaml igual, EB y RLM igual. Al final se apagan los jobs de Jenkins.|
+|Fase 2|*Modular + Artifactory + Ansible*|Se extraen los módulos al {{@v2}}, se actualiza el pipeline.yaml por lotes, el paquete pasa a Artifactory y el CD a Ansible. Se quitan EB, RLM y las piezas del motor.|
+
+
+h2. 13. Decisiones pendientes
+# *Stages obligatorios:* confirmar la lista (lint, secretos, CD Gate, empaquetar, publicar).
+# *Runner de la Fase 1:* acceso de red al motor de CI, bucket del EB, RLM, Sonar, Snyk y servicio de políticas.
+# *Inventario de los jobs de Jenkins:* qué parámetros, variables y credenciales tiene cada job fuera del pipeline.yaml; define cuánto lleva cada ci.yml en la Fase 1.
+# *Secrets:* GitHub secrets por organización / environment, o un gestor de secretos en el runner.
+# *Cuándo arranca el CD con Ansible:* marca el cambio de EB a Artifactory.
+# *Fase 2, versionado y retención en Artifactory:* número de build, semver o commit; cuánto se retiene por ambiente.
+# *Fase 2, ramas que publican:* main, release/*.
