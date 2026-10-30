@@ -1,0 +1,88 @@
+## Contratos de integración
+
+### ① GitHub Actions → ROP · registro del resultado de CI
+
+**Endpoint:** `POST /v1/information-technologies/build-executions/register` (API `itmt-its-d-build-execution-management`)
+**Auth:** GitHub Actions OIDC ID Token (`GitHubOIDC`) + headers estándar de Apigee (`uuid`, `ChannelId`, `sid`, `countryCode`, `businessCode`, `Idempotency-Key` = SHA-256(repositoryId:workflowRunId:runAttempt)).
+
+| Bloque | Contenido | Quién lo consume |
+|---|---|---|
+| `BuildExecution` | workflowRunId, workflowRunAttempt, repository (id, fullName), commitSha, headBranch, eventName, status, conclusion, actor | ROP: decide si la versión es promovible |
+| `jobs[]` → Checkout, UnitTest, Sonar, Snyk | resultados, métricas, URLs de reportes | ROP: gates de calidad y trazabilidad |
+| `jobs[]` → `BuildResult` | technology, runtimeVersion, buildTool | ROP → Self Service: **technology → deploy_type** |
+| `jobs[]` → `ArtifactPublishResult` | artifactName, artifactVersion, artifactRepository, artifactPath, artifactUrl, artifactDigest, packageType | **lo único que llega a AAP** |
+
+**Lo que el ROP toma de aquí para AAP:** `repository.fullName` → `app_id` (normalizado) · `buildResult.technology` → `deploy_type` (vía Self Service) · `artifactPublishResult.{artifactName, artifactVersion, artifactUrl, artifactDigest}` · `workflowRunId` (trazabilidad).
+
+---
+
+### ② ROP → AAP · lanzamiento del despliegue (uno por ambiente)
+
+**Endpoint:** `POST /api/controller/v2/job_templates/deploy-<deploy_type>/launch/`
+**Auth:** Bearer token del usuario de servicio `svc_rop` (permiso *Execute* en `deploy-*`, *Use* en los inventarios).
+El Job Template se referencia **por nombre**; el ROP arma `deploy-` + `deploy_type`. `inventory` y `credentials` también por nombre.
+
+```json
+{
+  "inventory": "inv-uat",
+  "credentials": ["ssh-svc-ansible-uat", "vault-banamex"],
+  "extra_vars": {
+    "contract_version": 2,
+    "app_id": "payments-management",
+    "deploy_type": "appserver",
+    "environment": "uat",
+    "deploy_action": "deploy",
+    "release_id": "PRM-2026-4002",
+    "change_id": "CHG0012345",
+    "artifact_name": "payments-api",
+    "artifact_version": "1.8.3",
+    "artifact_url": "https://artifactory.banamex.com/artifactory/libs-release-local/com/banamex/payments-api/1.8.3/payments-api-1.8.3.jar",
+    "artifact_digest": "sha256:8f31c4a2e7d88b3a",
+    "workflow_run_id": 8723918821,
+    "app_vars": {
+      "API_BASE_URL": "https://api-uat.banamex.internal",
+      "JAVA_OPTS": "-Xms512m -Xmx1g",
+      "DB_PASSWORD": "vault:secret/apps/payments-management/db#password"
+    }
+  }
+}
+```
+
+| Campo | Origen | Obligatorio | Validación |
+|---|---|---|---|
+| `inventory` | ROP (ambiente a desplegar) | sí | parámetro del launch, uno de inv-dev / inv-sit / inv-uat / inv-perf / inv-prod |
+| `credentials` | aap-config (por ambiente) | sí | Machine credential del ambiente + Vault |
+| `contract_version` | fijo | sí | = 2 |
+| `app_id` | contrato ① `repository.fullName` | sí | `^[a-z0-9-]+$`, debe existir el grupo `app_<id>` en el inventario |
+| `deploy_type` | Self Service (technology) | sí | coincide con el Job Template |
+| `environment` | ROP | sí | dev / sit / uat / perf / prod |
+| `deploy_action` | ROP | sí | deploy / rollback |
+| `release_id` | ROP (promotion request) | sí | PRM-… |
+| `change_id` | GATR / ServiceNow | en uat, perf, prod | `^CHG\d{7}$` |
+| `artifact_name`, `artifact_version` | contrato ① ArtifactPublish | sí | versión `^\d+\.\d+\.\d+` |
+| `artifact_url` | contrato ① ArtifactPublish | sí | host de Artifactory del banco |
+| `artifact_digest` | contrato ① ArtifactPublish | sí | `^sha256:[0-9a-f]+$`; el rol lo verifica tras descargar |
+| `workflow_run_id` | contrato ① | no | trazabilidad en audit |
+| `app_vars` | Release Operations Store | no | diccionario; sin claves `filecopy_*` / `appserver_*` / etc.; secretos solo como `vault:ruta#campo` |
+
+**Respuesta:** `201 Created` → `{ "job": 4471, "url": "/api/controller/v2/jobs/4471/", "status": "pending" }`
+
+**Validación en 3 capas (lado AAP):**
+1. Job Template con `ask_inventory_on_launch`, `ask_credential_on_launch`, `ask_variables_on_launch` = true (si no, 400).
+2. Survey: tipos y opciones de los campos planos.
+3. `pre_tasks` → `assert`: regex de versión y digest, host de Artifactory, `change_id` obligatorio en prod, `app_vars` sin claves de servidor ni secretos en claro.
+
+**Lo que NO viaja:** rutas, usuario dueño, servicio, hosts (inventario en Git) · valores de secretos (Vault en runtime) · playbook, Project, EE (fijos en el Job Template).
+
+---
+
+### ③ AAP → ROP · estado del despliegue (por definir con el equipo del ROP)
+
+| Dato | De dónde | Uso en el ROP |
+|---|---|---|
+| `status` | `GET /api/controller/v2/jobs/{id}/` → pending · waiting · running · successful · failed · canceled | tarjeta del ambiente, desbloquear el siguiente |
+| eventos | `GET /api/controller/v2/jobs/{id}/job_events/` (nombre de cada task + resultado) | log en vivo de "Deployment Progress" |
+| resumen al terminar | Notification Template (webhook) con `release_id`, `job_id`, `status`, `url` | cerrar el ambiente en el promotion request |
+| disponibilidad | `GET /api/controller/v2/ping/` | indicador "Ansible status" |
+
+**Pendiente de acordar:** polling a la API de AAP vs. notificación a un endpoint del ROP vs. evento en el CI/CD Event Backbone (Kafka). Si notificación: URL del endpoint y token.
