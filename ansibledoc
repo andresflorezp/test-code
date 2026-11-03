@@ -1,0 +1,749 @@
+Diseño de la solución · Banamex
+
+h1. CD de aplicaciones con Ansible, orquestado por ROP y ejecutado en AAP
+
+Qué vamos a construir, cómo funciona cada pieza y para cuándo. Cada sección corresponde a una actividad del plan de diseño, con su fecha, responsables y entregable.
+
+* *Responsables del diseño:* Andrés, Warren
+* *Corte de diseño:* 16/11/2026 (estrategia y preflights 27/11)
+* *Actualizado:* 03/11/2026
+
+h2. Panorama
+
+GitHub construye y termina. Desde ahí, todo lo maneja ROP: decide qué versión va a qué ambiente, valida el ticket en ServiceNow y lanza AAP una vez por ambiente. AAP ejecuta con lo que carga de un solo repositorio.
+
+{info:title=Diagrama · Panorama: flujo CI → ROP → AAP}
+Insertar aquí el diagrama draw.io *01-panorama-rop-aap.drawio* (o la imagen 01-panorama-rop-aap.png).
+{info}
+
+||Zona||Qué pasa ahí||
+|*CI · GitHub*|Cada app tiene una sola rama ({{main}}). Un push construye, prueba (Sonar, Snyk) y publica un artefacto versionado en Artifactory. GitHub registra el resultado en ROP (contrato ①) y termina. El mismo artefacto recorre todos los ambientes.|
+|*CD · ROP*|ROP junta lo que viene de CI, lo común del tech stack (Self Service) y lo propio de cada app y ambiente (Release Operations Store), arma el contrato ② y lanza AAP una vez por ambiente. GATR valida el ticket en ServiceNow antes de promover a UAT, PERF, PROD y COB. AAP nunca habla con ServiceNow.|
+|*AAP*|Un Job Template por tipo de despliegue. Despliega en los servidores del inventario del ambiente, resuelve secretos en Vault en tiempo de ejecución y regresa el estado a ROP (contrato ③).|
+|*Plataforma Ansible*|Un solo repositorio con todo: roles, playbooks, inventarios, definición de los EE, configuración de AAP y la hoja de alta.|
+
+h3. Cómo llega AAP a los servidores
+
+La vista de infraestructura: qué servicios usa AAP, por dónde entra a la red, cómo llega a cada ambiente y a dónde manda la evidencia.
+
+{info:title=Diagrama · Cómo llega AAP a los servidores}
+Insertar aquí el diagrama draw.io *02-infraestructura-aap.drawio* (o la imagen 02-infraestructura-aap.png).
+{info}
+
+||Pieza||Rol en la ejecución||
+|*AAP*|Único que ejecuta. Corre dentro de la red de gestión y llega a los servidores por SSH, pasando por el bastión donde la red está segmentada. Los servidores no llevan agente de Ansible.|
+|*ansible-platform*|AAP sincroniza de aquí el proyecto y los inventarios. GitHub Actions corre el CI del repo y construye las imágenes del EE.|
+|*Vault / CyberArk*|AAP lee los secretos y la credencial SSH en tiempo de ejecución, con una credencial por ambiente.|
+|*Registry y mirror*|Imágenes firmadas del EE; paquetes y collections sin salir a internet.|
+|*Artifactory*|Los servidores descargan el artefacto y AAP verifica el digest.|
+|*PROD y COB*|Dos ambientes, cada uno con su inventario y su launch. COB es el disaster recovery: se despliega después de PROD para que quede con la misma versión.|
+|*ServiceNow*|Solo habla con ROP (GATR). AAP no se conecta.|
+|*Observabilidad*|Cada servidor manda métricas y logs; cada ejecución de AAP deja una traza.|
+
+----
+
+h2. Plan del diseño
+
+||#||Actividad||Fecha||Responsables||Entregable||
+|1|Definición flujo de ROP + AAP (baseline)|06/11/26|Gis, Jessa, Mario|Flujo de punta a punta, promoción y rollback|
+|2|Arquitectura de automatización|16/11/26|Andrés, Warren|Hoja de alta + pipeline que genera el código|
+|3|Definir contrato ROP - AAP|13/11/26|Gis, Jessa, Mario|Contratos ② y ③ y mapeo de variables|
+|4|Definir Collections (common + deploy) y Execution Environment|16/11/26|Andrés, Warren|Organización de roles, plan de migración y EE|
+|5|Definir estructura de repositorios|16/11/26|Andrés, Warren|Árbol del repositorio y reglas|
+|6|Definir estándares de playbooks|16/11/26|Andrés, Warren|Plantilla de playbook por tipo de despliegue|
+|7|Definir Ansible roles|16/11/26|Andrés, Warren|Esqueleto de rol, reglas y pruebas|
+|8|Definir manejo de errores, logs y secretos|16/11/26|Andrés, Warren|Patrón de errores, evidencia y uso de secretos|
+|9|Estrategia de deployment para cada tecnología|27/11/26|Andrés, Warren, Alan|Estrategias y rollback|
+|10|Preflights (validaciones antes de despliegue para cada tecnología)|27/11/26|Lalo, Andrés|Catálogo de validaciones|
+
+----
+
+h2. 1. Definición flujo de ROP + AAP (baseline)
+
+||Fecha||Responsables||Entregable||
+|06/11/26|Gis, Jessa, Mario|Flujo de punta a punta, promoción y rollback|
+
+*Qué se define:* el camino único de un cambio, desde el push hasta PROD, quién decide en cada paso y qué pasa cuando algo falla.
+
+h3. Los tres contratos
+
+||Contrato||De → a||Qué lleva||Cuándo||
+|①|GitHub Actions → ROP|Resultado de CI: repositorio, workflow run, jobs, artefacto publicado (nombre, versión, URL, digest)|Al terminar cada build en {{main}}|
+|②|ROP → AAP|Launch del Job Template con inventario, credenciales y variables del ambiente (sección 3)|Una vez por ambiente|
+|③|AAP → ROP|Estado y eventos del job|Al iniciar y al terminar cada job|
+
+h3. Piezas de ROP
+
+||Pieza||Qué hace||
+|*Build Execution Mgmt*|Recibe el contrato ① de GitHub: workflow run, jobs y artefacto|
+|*Self Service*|Lo común por tech stack: tecnología → {{deploy_type}} y valores por defecto. También guarda el mapa de nombres de AAP por ambiente y resuelve sus IDs|
+|*Release Operations Store* (Oracle)|Lo propio de cada app: variables por app y ambiente ({{app_vars}})|
+|*ROP Microservices*|Arma el contrato ② por ambiente y lanza AAP|
+|*Promotion request*|Decide qué versión se promueve y guarda el estado y el job de AAP por ambiente|
+|*GATR*|Valida el ticket en ServiceNow antes de cada ambiente desde UAT en adelante: UAT, PERF, PROD y COB|
+
+h3. Promoción por ambiente
+
+||Ambiente||Cómo se promueve||Inventario||Validación de ticket (GATR)||
+|*DEV*|Automático después del build|{{inv-dev}}|No|
+|*SIT*|Automático si DEV terminó en Success|{{inv-sit}}|No|
+|*UAT*|Con ticket aprobado|{{inv-uat}}|Sí|
+|*PERF*|Con ticket aprobado|{{inv-perf}}|Sí|
+|*PROD*|Ticket + CAB|{{inv-prod}}|Sí|
+|*COB* (disaster recovery)|Ticket propio, después de que PROD termina en Success. Queda con la misma versión que PROD|{{inv-cob}}|Sí|
+
+* Cada ambiente es un launch del Job Template {{deploy\-<deploy_type>}} con {{inventory=inv\-<env>}} y el contrato ②.
+* El siguiente ambiente se desbloquea solo si el anterior terminó en Success.
+* Desde UAT en adelante, ningún ambiente se promueve sin su ticket aprobado.
+* ROP es el único que habla con ServiceNow. AAP no valida tickets ni deja notas; solo recibe el {{change_id}} para trazabilidad.
+
+h3. Escenario de rollback
+
+Mismo Job Template, mismo {{release_id}} y {{change_id}}, sin ticket nuevo.
+
+||Paso||Quién||Qué pasa||
+|1. Falla el job|AAP|Health check, tarea o timeout. El {{rescue}} del rol restaura el respaldo en ese servidor; como va un servidor a la vez, no toca los demás. AAP reporta {{failed}} por ③.|
+|2. Se detiene la cadena|ROP|Marca el ambiente en error. Los siguientes ambientes no se lanzan.|
+|3. Relanza como rollback|ROP|Mismo contrato ② con {{deploy_action: rollback}}, mismo inventario, {{release_id}} y {{change_id}}. Automático o desde el portal.|
+|4. Restaura la versión anterior|AAP|Rollback en todos los servidores del ambiente y reinicio de servicios. ③ {{successful}} → la release queda como "rolled back".|
+
+{info}
+*PROD y COB siempre en la misma versión:* COB es el respaldo de PROD. Si cualquiera de los dos falla, ROP hace rollback en los dos.
+{info}
+
+El arreglo posterior es un cambio nuevo: nuevo push, nuevo artefacto, nueva promoción y nuevos tickets.
+
+----
+
+h2. 2. Arquitectura de automatización
+
+||Fecha||Responsables||Entregable||
+|16/11/26|Andrés, Warren|Hoja de alta + pipeline que genera el código|
+
+*Qué se define:* cómo entra al repositorio un servidor, una app o un tipo de despliegue nuevo. Nadie escribe inventarios ni esqueletos a mano: se llena una fila en la hoja, un pipeline la valida y abre un Pull Request con todo lo necesario.
+
+{info:title=Diagrama · Pipeline de alta}
+Insertar aquí el diagrama draw.io *03-pipeline-hoja-de-alta.drawio* (o la imagen 03-pipeline-hoja-de-alta.png).
+{info}
+
+||Paso||Quién||Qué pasa||
+|1. Editar|Dueño de la CMDB o de la app|Rama {{cmdb/<ticket>-<resumen>}}, edita {{cmdb/cmdb-inventario.xlsx}}, commit firmado con el ticket y PR. Nunca desde la web de GitHub.|
+|2. Validar|{{cmdb-validate}}|Valida cada fila (formato, duplicados, IP en el rango del ambiente, grupos válidos, {{deploy_type}} existente) y comenta en el PR qué entra, cambia o sale. Si una fila está mal, no genera nada y dice qué corregir.|
+|3. Aprobar|Dueño + plataforma|Revisan el resumen del cambio, no el binario.|
+|4. Generar|{{cmdb-generate}}|Al hacer merge, genera los archivos desde plantillas y abre un PR automático en el mismo repo.|
+|5. Merge|Plataforma|Revisa lo generado y hace merge.|
+|6. Sincronizar|AAP|Actualiza el proyecto y los inventarios. Los servidores nuevos se preparan con {{onboard-server.yml}} antes de su primer despliegue.|
+
+h3. Qué genera cada tipo de fila
+
+||Si agregas…||Pestaña||El pipeline genera||
+|Un servidor|{{servidores}}|Su entrada en {{inventories/<env>/hosts.yml}} con sus grupos|
+|Una app con un tipo de despliegue que ya existe|{{aplicaciones}}|El grupo {{app\_<id>}} en el inventario de cada ambiente y su {{group_vars}} con rutas, usuario, servicio, puerto y health check. No hace falta playbook nuevo: la app usa el de su tipo.|
+|Una app con un tipo de despliegue nuevo|{{aplicaciones}}|Lo anterior + el esqueleto del rol, el playbook {{deploy\-<tipo>.yml}} y el Job Template en {{aap-config/}}. Las tareas del rol las escribe el equipo.|
+|Una baja|cualquiera|El archivo regenerado. La fila no se borra: se marca {{estado: baja}}|
+
+h3. Pestaña {{servidores}}
+
+Columnas: {{hostname}}, {{ip_gestion}}, {{entorno}} (dev, sit, uat, perf, prod, cob), {{estado}}, {{gestionado_ansible}}, {{so}}, {{familia}} (linux, windows, database, openshift), {{apps}} (una o varias {{app_id}}), {{cmdb_ci}}, {{owner}}. Todo campo cerrado con lista desplegable.
+
+||hostname||ip_gestion||entorno||so||apps||
+|{{pay-prd-01.banamex.internal}}|10.30.1.11|prod|rhel9|payments-management|
+|{{pay-cob-01.banamex.internal}}|10.40.1.11|cob|rhel9|payments-management|
+
+h3. Pestaña {{aplicaciones}}
+
+Una fila por app y ambiente. Aquí va lo que *no viaja* en el contrato: dónde vive la app en el servidor y cómo se opera. Las variables de entorno de la app no van aquí: viven en ROP (Release Operations Store).
+
+||Columna||Ejemplo||Para qué||
+|{{app_id}}|payments-management|Debe ser el mismo identificador que manda ROP; genera el grupo {{app_payments_management}}|
+|{{deploy_type}}|appserver|Qué Job Template y qué playbook usa; debe coincidir con la tecnología en Self Service|
+|{{entorno}}|uat|Inventario donde se genera|
+|{{ruta_instalacion}}|/opt/payments-api|Dónde se despliega|
+|{{usuario}}, {{grupo}}|payments, payments|Dueño de archivos y proceso|
+|{{servicio}}|payments-api|Unidad systemd que se reinicia|
+|{{puerto}}, {{health_path}}|8080, /actuator/health|Health check|
+|{{owner}}|app-payments-team|Quién revisa los PR de esa app|
+
+h4. Qué queda en el repo
+
+{code:language=yaml|linenumbers=false}
+# inventories/prod/hosts.yml — GENERADO desde la hoja. No editar a mano.
+all:
+  children:
+    app_payments_management:
+      hosts:
+        pay-prd-01.banamex.internal: { ansible_host: 10.30.1.11 }
+# inventories/cob/hosts.yml tiene el mismo grupo con pay-cob-01
+
+# inventories/prod/group_vars/app_payments_management.yml — GENERADO
+app_install_dir: /opt/payments-api
+app_user: payments
+app_group: payments
+app_service: payments-api
+app_port: 8080
+app_health_path: /actuator/health
+{code}
+
+{tip}
+*Qué no hace el pipeline:* no inventa valores. Lo que no sale de la hoja queda como {{CHANGE_ME}} y el CI no deja pasar el PR hasta que alguien lo llena.
+{tip}
+
+h3. Reconciliación semanal
+
+Un workflow compara la hoja con los servidores que responden y con los {{app_id}} registrados en ROP, y abre un issue con las diferencias: servidores que no responden, servidores que responden y no están en la hoja, y apps que existen en ROP pero no en el inventario (o al revés).
+
+----
+
+h2. 3. Definir contrato ROP - AAP
+
+||Fecha||Responsables||Entregable||
+|13/11/26|Gis, Jessa, Mario|Contratos ② y ③ y mapeo de variables|
+
+*Qué se define:* exactamente qué manda ROP al lanzar, cómo lo recibe AAP, qué regresa AAP y de dónde sale cada variable.
+
+h3. ② ROP → AAP · launch (uno por ambiente)
+
+*Endpoint:* {{POST /api/controller/v2/job_templates/<id o nombre>/launch/}}. *Auth:* token del usuario de servicio {{svc_rop}}.
+
+{code:language=javascript|linenumbers=false}
+{
+  "inventory": 12,                       // ID de inv-uat (no el nombre)
+  "credentials": [34, 35],              // IDs: ssh-svc-ansible-uat, vault-uat
+  "extra_vars": {
+    "contract_version": 2,
+    "app_id": "payments-management",
+    "deploy_type": "appserver",
+    "environment": "uat",
+    "deploy_action": "deploy",
+    "release_id": "PRM-2026-4002",
+    "change_id": "CHG0012345",
+    "artifact_name": "payments-api",
+    "artifact_version": "1.8.3",
+    "artifact_url": "https://artifactory.banamex.com/artifactory/libs-release-local/com/banamex/payments-api/1.8.3/payments-api-1.8.3.jar",
+    "artifact_digest": "sha256:8f31c4a2e7d88b3a…",
+    "workflow_run_id": 8723918821,
+    "app_vars": {
+      "API_BASE_URL": "https://api-uat.banamex.internal",
+      "JAVA_OPTS": "-Xms512m -Xmx1g",
+      "DB_PASSWORD": "vault:secret/apps/payments-management/db#password"
+    }
+  }
+}
+{code}
+
+*Respuesta:* {{201 Created}} → {{\{ "job": 4471, "ignored_fields": \{\}, "status": "pending", … \}}}. ROP guarda el {{job}} para correlacionar el contrato ③.
+
+h3. ¿AAP recibe todo esto?
+
+Revisión campo por campo contra cómo funciona el launch de AAP.
+
+||Campo||Origen||Obligatorio||Validación||Cómo lo recibe AAP||
+|{{inventory}}|ROP (ambiente)|sí|uno de inv-dev … inv-cob|Con {{ask_inventory_on_launch}}. ID numérico que resuelve el Self Service de ROP|
+|{{credentials}}|aap-config (por ambiente)|sí|machine del ambiente + Vault|Con {{ask_credential_on_launch}}. IDs que resuelve ROP; {{svc_rop}} con permiso Use (definido en {{aap-config}})|
+|{{contract_version}}|fijo|sí|= 2|Survey (integer) + assert|
+|{{app_id}}|contrato ① (repositorio)|sí|{{^\[a-z0-9\-\]+$}}; debe existir el grupo {{app\_<id>}}|Survey (text). ROP lo manda ya normalizado (reglas de nombres abajo)|
+|{{deploy_type}}|Self Service|sí|coincide con el Job Template|Survey (opción múltiple) + assert|
+|{{environment}}|ROP|sí|dev / sit / uat / perf / prod / cob|Survey (opción múltiple) + assert contra el ambiente del inventario|
+|{{deploy_action}}|ROP|sí|deploy / rollback|Survey (opción múltiple)|
+|{{release_id}}|Promotion request|sí|{{PRM\-…}}|Survey (text)|
+|{{change_id}}|GATR / ServiceNow|uat, perf, prod, cob|{{\^CHG\d\{7\}$}}|Survey (text, opcional) + assert por ambiente|
+|{{artifact_name}}, {{artifact_version}}|contrato ①|sí|versión {{^\d\+\.\d\+\.\d\+$}}|Survey (text) + assert|
+|{{artifact_url}}|contrato ①|sí|host de Artifactory del banco|Survey (text) + assert|
+|{{artifact_digest}}|contrato ①|sí|{{\^sha256:\[0-9a-f\]+$}}; el rol lo verifica tras descargar|Survey (text) + assert|
+|{{workflow_run_id}}|contrato ①|no|trazabilidad|Survey (integer)|
+|{{app_vars}}|Self Service + Release Ops Store|no|diccionario; secretos solo como {{vault:ruta#campo}}|Fuera del survey (no admite diccionarios). Llega con {{ask_variables_on_launch}} y lo valida {{contract_check}}|
+
+h3. Configuración del Job Template para que funcione
+
+||Ajuste||Por qué||
+|{{ask_inventory_on_launch}}, {{ask_credential_on_launch}}, {{ask_variables_on_launch}} = true|Sin esto AAP descarta el campo. No falla: lo reporta en {{ignored_fields}}. ROP debe tratar un {{ignored_fields}} no vacío como error|
+|Survey con los campos planos|Valida tipos y opciones antes de lanzar. {{app_vars}} queda fuera del survey|
+|{{allow_simultaneous}} (Concurrent Jobs) = true|Un mismo template sirve a muchas apps; sin esto los jobs de apps distintas hacen fila. ROP evita dos launches de la misma app y ambiente al mismo tiempo|
+|Nombre en la URL|La URL acepta el ID o el nombre con el formato de AAP {{deploy-appserver\++<organización>}}|
+|IDs de inventarios y credenciales|El Self Service de ROP guarda el mapa ambiente → nombres de AAP ({{inv-uat}}, {{ssh-svc-ansible-uat}}, {{vault-uat}}) y resuelve los IDs con {{GET …/inventories/?name=}} y {{GET …/credentials/?name=}}. Los guarda en caché y los vuelve a consultar si un launch responde 400 o 404. No se guardan IDs fijos porque cambian si un objeto se recrea|
+|Permisos de {{svc_rop}}|Execute en {{deploy\-*}}; Use en los inventarios *y en las credenciales*|
+|Timeout del job|Para que un job colgado termine en {{failed}} y ROP pueda reaccionar|
+
+Todo lo de esta tabla se declara en {{aap-config}} (sección 5); nada se configura a mano en la consola de AAP.
+
+h4. Reglas de nombres
+
+||Qué||Regla||Ejemplo||Quién lo aplica||
+|{{app_id}}|Nombre del repositorio sin la organización, en minúsculas; solo letras, números y guiones|{{banamex/Payments-Management}} → {{payments-management}}|ROP, antes de mandar el contrato|
+|Grupo de la app en el inventario|{{app\_}} + {{app_id}} con guiones cambiados por guion bajo|{{app_payments_management}}|Pipeline de alta|
+|{{deploy_type}}|Minúsculas, sin espacios; el mismo en Self Service, hoja, rol, playbook y Job Template|{{appserver}} → {{deploy-appserver.yml}}, {{deploy-appserver}}|Self Service y pipeline de alta|
+|{{environment}}|Uno de la lista cerrada|{{dev}}, {{sit}}, {{uat}}, {{perf}}, {{prod}}, {{cob}}|ROP|
+|Objetos de AAP|{{<tipo>-<nombre>-<env>}}|{{inv-uat}}, {{ssh-svc-ansible-uat}}, {{vault-uat}}|{{aap-config}}|
+
+h4. Validación en tres capas
+
+# *Template:* prompts habilitados; si falta uno, el campo aparece en {{ignored_fields}}.
+# *Survey:* tipos y opciones de los campos planos.
+# *Rol {{contract_check}}:* primero de cada playbook. Valida regex de versión y digest, host de Artifactory, {{change_id}} desde UAT en adelante, que {{environment}} coincida con el inventario, que exista el grupo de la app y que {{app_vars}} no traiga claves de servidor ni secretos en claro.
+
+*Lo que no viaja:* rutas, usuario, servicio y servidores (inventario en git), valores de secretos (Vault en runtime), playbook, proyecto y EE (fijos en el Job Template).
+
+h3. ③ AAP → ROP · estado del job
+
+||Mecanismo||Cómo||
+|Notificación (principal)|Notification template tipo webhook en el Job Template, en inicio, éxito y fallo. Cuerpo: {{job.id}}, {{job.status}}, nombre del template, hora de inicio y fin. ROP lo cruza con el {{job}} que recibió al lanzar|
+|Consulta (respaldo)|{{GET /api/controller/v2/jobs/<id>/}} si el webhook no llega en el tiempo esperado|
+|Detalle por servidor|{{GET /api/controller/v2/jobs/<id>/job_host_summaries/}} para saber qué servidores fallaron|
+
+h3. Mapeo de variables: de ROP a Ansible
+
+Cada variable tiene un solo dueño. Esta tabla dice dónde se define, cómo llega y quién la usa.
+
+||Variable||Dónde se define||Cómo llega a AAP||Quién la usa en Ansible||
+|{{app_id}}|ROP · Build Execution Mgmt (del repositorio)|extra var|El playbook apunta al grupo {{app\_<id>}}; de ahí salen rutas y servicio|
+|{{deploy_type}}|ROP · Self Service|Elige el Job Template + extra var|{{contract_check}} confirma que coincide|
+|{{environment}}|ROP · Promotion request|Elige el inventario + extra var|{{contract_check}} lo compara con el ambiente del inventario|
+|{{deploy_action}}|ROP|extra var|El playbook corre despliegue o rollback|
+|{{release_id}}, {{change_id}}, {{workflow_run_id}}|ROP · Promotion request, GATR, contrato ①|extra vars|Rol {{audit}}: dato local en el servidor y trazas|
+|{{artifact\_*}}|ROP · contrato ①|extra vars|Rol {{artifact}}: descarga y verifica digest|
+|{{app_vars}} (no secretos)|ROP · Self Service (por stack) + Release Ops Store (por app y ambiente)|extra var (diccionario)|Rol {{app_env}}: escribe el {{.env}}|
+|{{app_vars}} (secretos)|Valor en Vault; en ROP solo la referencia {{vault:ruta#campo}}|extra var con la referencia|Rol {{app_env}}: resuelve en Vault y escribe el {{.env}} sin mostrarlo|
+|{{app_install_dir}}, {{app_user}}, {{app_service}}, {{app_port}}, {{app_health_path}}|Hoja de alta (pestaña aplicaciones)|Inventario del proyecto ({{group_vars}})|Roles de despliegue y health check|
+|Servidores por ambiente|Hoja de alta (pestaña servidores)|Inventario del ambiente|Playbook (grupo {{app\_<id>}})|
+|Credenciales SSH y de Vault|{{aap-config}} (definición) · Self Service de ROP (resolución de IDs)|IDs en {{credentials}}|Conexión y resolución de secretos|
+
+h4. Cómo se arma {{app_vars}} en ROP
+
+# Self Service aporta los valores por defecto del tech stack (por ejemplo {{JAVA_OPTS}} para appserver).
+# Release Operations Store aporta los de la app en ese ambiente.
+# ROP Microservices los combina: *si la clave existe en los dos, gana el de la app*.
+
+h4. Reglas de {{app_vars}}
+
+* Solo variables de entorno de la app, en {{MAYÚSCULAS_CON_GUION_BAJO}}.
+* Nunca claves que configuren el servidor o los roles (rutas, usuario, servicio, {{appserver\_*}}, {{filecopy\_*}}): eso vive en el inventario.
+* Secretos solo como referencia {{vault:<motor>/<ruta>#<campo>}}. Un valor que parezca secreto en claro hace fallar {{contract_check}}.
+* Las extra vars tienen la máxima precedencia en Ansible, así que nada del inventario puede pisar lo que manda ROP.
+
+{code:language=yaml|linenumbers=false}
+# Cómo lo resuelve el rol app_env
+# "vault:secret/apps/payments-management/db#password"
+#   motor: secret · ruta: apps/payments-management/db · campo: password
+# → lookup a Vault con la credencial del ambiente
+# → {{ app_install_dir }}/.env, dueño app_user, modo 0600, no_log: true
+API_BASE_URL=https://api-uat.banamex.internal
+JAVA_OPTS=-Xms512m -Xmx1g
+DB_PASSWORD=********
+{code}
+
+----
+
+h2. 4. Definir Collections (common + deploy) y Execution Environment
+
+||Fecha||Responsables||Entregable||
+|16/11/26|Andrés, Warren|Organización de roles, plan de migración y EE|
+
+*Qué se define:* cómo se agrupan los roles (lo común y lo de cada tipo de despliegue), en qué momento pasan a collections versionadas y con qué imágenes ejecuta AAP.
+
+h3. Dos etapas
+
+h4. Etapa 1 · arranque — Roles dentro del repo
+
+* Sin collections propias. Los roles viven en {{roles/common/}} y {{roles/deploy/}}.
+* AAP los toma del proyecto al sincronizar.
+* Se escriben ya con las reglas de la sección 7, para que moverlos después sea solo empaquetar.
+* Un cambio de rol es un PR: sin release ni EE nuevo.
+
+h4. Etapa 2 · cuando el código madure — {{banamex.common}} y {{banamex.deploy}}
+
+* Se mueve lo estable, con pruebas y usado por más de una app.
+* Versión SemVer, changelog y release por tag.
+* Se publican en Private Automation Hub y entran al EE.
+* Los playbooks llaman los roles con nombre completo ({{banamex.common.artifact}}).
+
+|| ||Etapa 1||Etapa 2||
+|Dónde vive un rol|{{roles/common/artifact/}}|{{collections/…/banamex/common/roles/artifact/}}|
+|Cómo se llama|{{artifact}}|{{banamex.common.artifact}}|
+|Versión|Commit del repo|SemVer por collection|
+|Cómo llega a AAP|Sincronizando el proyecto|Private Automation Hub → EE|
+|Qué cambia al migrar|Solo la ruta y el nombre en el playbook. Interfaz, variables y pruebas quedan iguales.|
+
+{code:language=yaml|linenumbers=false}
+# ansible.cfg (etapa 1)
+[defaults]
+roles_path = roles/common:roles/deploy
+gathering  = explicit
+
+[privilege_escalation]
+become = False
+{code}
+
+h3. Qué va en {{common}}
+
+||Rol||Qué hace||
+|{{contract_check}}|Valida el contrato ② antes de tocar nada|
+|{{preflight}}|Validaciones de solo lectura (sección 10)|
+|{{artifact}}|Descarga {{artifact_url}} y verifica {{artifact_digest}}|
+|{{backup}}|Respalda la versión y configuración actuales antes del cambio|
+|{{app_env}}|Resuelve secretos y escribe el {{.env}} desde {{app_vars}}|
+|{{healthcheck}}|Espera a que la app responda en su puerto y ruta de salud|
+|{{rollback}}|Restaura el respaldo y reinicia el servicio|
+|{{audit}}|Deja en el servidor qué versión, release y cambio se aplicaron|
+
+h3. Qué va en {{deploy}}
+
+Un rol + un playbook por {{deploy_type}} (por ejemplo {{appserver}}). El rol sabe instalar ese tipo de app: dejar el artefacto en su lugar, ajustar la configuración y reiniciar. La lista de tipos sale de "Clasificar por tipo de despliegue" (13/11).
+
+h3. Execution Environment
+
+Imágenes inmutables con exactamente el ansible-core, las collections externas y las librerías que se probaron. Una imagen base y una por familia de servidor; la misma imagen, con el mismo digest, se usa en todos los ambientes.
+
+||Imagen||Para qué||Agrega sobre la base||
+|{{ee-base}}|Base común|ansible-core 2.21, cliente de Vault, CA interna|
+|{{ee-linux}}|Servidores Linux|{{ansible.posix}}, {{community.general}}|
+|{{ee-windows}}|Servidores Windows|{{ansible.windows}}, cliente WinRM|
+|{{ee-database}}|Bases de datos|Collections y clientes de cada motor|
+|{{ee-openshift}}|OpenShift|{{kubernetes.core}}, {{redhat.openshift}}|
+
+{code:language=yaml|linenumbers=false}
+# ee/linux/execution-environment.yml (ansible-builder v3)
+version: 3
+images:
+  base_image:
+    name: registry.banamex.internal/platform/ee-base@sha256:<digest>   # nunca :latest
+dependencies:
+  galaxy: requirements.yml          # etapa 1: solo collections externas; etapa 2: + banamex.common/deploy
+  python: requirements.txt          # versiones exactas
+  system: bindep.txt
+options:
+  tags:
+    - registry.banamex.internal/platform/ee-linux:<AAAA.MM>.<n>
+{code}
+
+* Todo sale del mirror interno; sin internet en el build.
+* Sin secretos, inventarios ni configuración de ambiente dentro.
+* Tag inmutable; AAP la usa por digest y cada Job Template declara su EE.
+* Se publica solo con 0 vulnerabilidades críticas, smoke test en verde, SBOM y firma.
+* Versión nueva cuando cambia ansible-core, una collection, una librería o la base. Si falla en DEV, se queda la anterior.
+
+----
+
+h2. 5. Definir estructura de repositorios
+
+||Fecha||Responsables||Entregable||
+|16/11/26|Andrés, Warren|Árbol del repositorio y reglas|
+
+*Qué se define:* dónde vive cada cosa. *Un solo repositorio* con todo lo que AAP necesita: roles, playbooks, inventarios, imágenes, configuración de AAP y la hoja de alta. Un PR puede cambiar a la vez un rol, su playbook y su Job Template, con un solo CI.
+
+{code:language=none|linenumbers=false}
+ansible-platform/
+├── .github/
+│   ├── CODEOWNERS                       # revisores por carpeta
+│   ├── pull_request_template.md
+│   └── workflows/
+│       ├── pr-ci.yml                    # lint, syntax-check, validación de inventarios y de la hoja, pruebas de roles
+│       ├── cmdb-validate.yml            # PR que toca cmdb/
+│       ├── cmdb-generate.yml            # merge de cmdb/: genera inventarios y esqueletos, abre PR
+│       ├── ee-build.yml                 # build, escaneo, SBOM y firma de las imágenes
+│       └── aap-config.yml               # aplica aap-config/ en AAP
+├── ansible.cfg
+├── cmdb/
+│   ├── cmdb-inventario.xlsx             # pestañas servidores y aplicaciones
+│   └── plantilla-cmdb-inventario.xlsx
+├── roles/
+│   ├── common/                          # contract_check, preflight, artifact, backup, app_env, healthcheck, rollback, audit
+│   └── deploy/                          # un rol por deploy_type: appserver, …
+├── playbooks/                           # deploy-<deploy_type>.yml, onboard-server.yml
+├── inventories/
+│   ├── dev/ · sit/ · uat/ · perf/ · prod/ · cob/
+│   │   ├── hosts.yml                    # GENERADO desde la hoja
+│   │   └── group_vars/
+│   │       ├── all.yml                  # inventory_env, conexión, intérprete
+│   │       └── app_<id>.yml             # GENERADO: rutas, usuario, servicio, puerto, health
+├── ee/
+│   ├── base/ · linux/ · windows/ · database/ · openshift/   # execution-environment.yml de cada imagen
+├── aap-config/                          # todo lo que AAP necesita, como código
+│   ├── organization.yml
+│   ├── projects/                        # ansible-platform
+│   ├── execution_environments/          # ee-* por digest
+│   ├── credential_types/                # vault AppRole (tipo propio)
+│   ├── credentials/                     # ssh-svc-ansible-<env>, vault-<env>; sin valores
+│   ├── inventories/                     # inv-dev … inv-cob con fuente desde el proyecto
+│   ├── job_templates/                   # deploy-<deploy_type>: ask_* on launch, survey, EE, timeout, concurrencia
+│   ├── notifications/                   # webhook del contrato ③ hacia ROP
+│   └── rbac/                            # svc_rop: Execute en deploy-*, Use en inventarios y credenciales
+├── templates/                           # plantillas del pipeline de alta
+├── tools/                               # exportador de la hoja, validadores, generador
+└── docs/
+{code}
+
+En la etapa 2 se agrega {{collections/ansible_collections/banamex/\{common,deploy\}/}} y {{roles/}} se vacía.
+
+h3. Qué vive en {{aap-config}}
+
+Todo lo que AAP necesita para ejecutar se declara aquí y lo aplica el workflow {{aap-config.yml}}. Si no está en el código, no existe: nada se crea ni se cambia a mano en la consola.
+
+||Objeto||Qué se declara||
+|Organización y proyecto|La organización y el proyecto {{ansible-platform}} apuntando a {{main}}|
+|Execution Environments|Cada {{ee\-*}} por digest|
+|Inventarios|{{inv-dev}} … {{inv-cob}}, con fuente desde el proyecto|
+|Tipos de credencial|El tipo propio de Vault con AppRole|
+|Credenciales|{{ssh-svc-ansible\-<env>}} y {{vault\-<env>}}. Sin valores en git: el pipeline los toma de la bóveda al aplicar|
+|Job Templates|{{deploy\-<deploy_type>}}: playbook, EE, {{ask\_*\_on_launch}}, survey del contrato, concurrencia, timeout y notificaciones|
+|Notificaciones|Webhook del contrato ③ hacia ROP|
+|Permisos|{{svc_rop}}: Execute en {{deploy\-*}}, Use en inventarios y credenciales|
+
+h3. Reglas
+
+||Regla||Detalle||
+|Sin ramas por ambiente|El ambiente lo da el inventario que elige ROP, nunca el código|
+|{{main}} protegida|PR obligatorio y CI en verde. Ramas cortas ({{feat/}}, {{fix/}}) y Conventional Commits|
+|CODEOWNERS|{{cmdb/}}: dueño de la CMDB + plataforma. {{aap-config/}}, {{ee/}} y {{.github/}}: líderes de plataforma. {{inventories/prod/}} e {{inventories/cob/}}: 2 aprobaciones|
+|Generado no se edita|{{hosts.yml}} y {{group_vars/app\_*.yml}} solo cambian desde la hoja; el CI rechaza ediciones a mano|
+|pre-commit en verde|yamllint, ansible-lint, gitleaks, detección de llaves privadas|
+|Sin collections externas en git|Entran por {{requirements.yml}} al EE|
+
+----
+
+h2. 6. Definir estándares de playbooks
+
+||Fecha||Responsables||Entregable||
+|16/11/26|Andrés, Warren|Plantilla de playbook por tipo de despliegue|
+
+*Qué se define:* cómo se escribe un playbook. Hay *un playbook por tipo de despliegue*, no uno por app: la app se elige con {{app_id}} y sus datos salen del inventario y del contrato. El playbook ordena; los roles hacen el trabajo.
+
+||El playbook||El contrato ②||El inventario||Los roles||
+|Qué grupo, en qué orden y qué roles|Qué versión, qué app, qué ambiente, deploy o rollback, variables de la app|Qué servidores, rutas, usuario y servicio|Cómo se valida, descarga, instala, verifica y revierte|
+
+h3. Plantilla: {{playbooks/deploy-appserver.yml}}
+
+{code:language=yaml|linenumbers=false}
+# Mismo playbook para deploy y rollback y para todos los ambientes (PROD y COB incluidos).
+# El ambiente lo da el inventario que elige ROP; la acción, deploy_action.
+- name: appserver | {{ deploy_action }}
+  hosts: "app_{{ app_id | replace('-', '_') }}"
+  serial: 1                                   # un servidor a la vez
+  roles:
+    - contract_check
+    - preflight
+    - { role: artifact,  when: deploy_action == 'deploy' }
+    - { role: backup,    when: deploy_action == 'deploy' }
+    - { role: appserver, when: deploy_action == 'deploy' }
+    - { role: app_env,   when: deploy_action == 'deploy' }
+    - { role: rollback,  when: deploy_action == 'rollback' }
+    - healthcheck
+    - audit
+{code}
+
+Si un servidor falla, el playbook se detiene y los demás servidores del ambiente no se tocan.
+
+h3. Reglas
+
+* Un playbook por {{deploy_type}}, con el mismo nombre que su Job Template ({{deploy-appserver.yml}} ↔ {{deploy-appserver}}).
+* Sin tareas sueltas: todo paso es un rol. Lo que se repite en dos playbooks es un rol de common.
+* Sin {{vars}}, {{vars_files}} ni {{vars_prompt}}: los valores llegan por el contrato o el inventario.
+* Sin {{become}} en el playbook; cada tarea que lo necesita lo declara en su rol.
+* {{hosts}} siempre a partir de {{app_id}}; prohibido {{all}}, nombres de servidor o IP.
+* Compensación con {{block}}/{{rescue}} dentro del rol, nunca en el playbook. Prohibido {{ignore_errors}}.
+* Todo playbook corre con {{-\-check -\-diff}} sin errores.
+
+----
+
+h2. 7. Definir Ansible roles
+
+||Fecha||Responsables||Entregable||
+|16/11/26|Andrés, Warren|Esqueleto de rol, reglas y pruebas|
+
+*Qué se define:* cómo se construye un rol. Cada rol hace una sola cosa, declara su interfaz, da el mismo resultado si se ejecuta dos veces y se prueba antes de llegar a DEV. Se crea desde la plantilla; no se copia un rol existente.
+
+{code:language=none|linenumbers=false}
+roles/<common|deploy>/<rol>/
+├── defaults/main.yml         # vacío: las entradas no tienen valor por defecto
+├── vars/main.yml             # constantes internas (__<rol>_*)
+├── vars/{RedHat,Debian}.yml  # diferencias por familia de SO
+├── meta/main.yml             # plataformas soportadas, dependencies: []
+├── meta/argument_specs.yml   # interfaz tipada de entrada
+├── handlers/main.yml
+├── tasks/main.yml            # solo import_tasks con tags
+├── tasks/<area>.yml          # una responsabilidad por archivo
+├── templates/*.j2            # cabecera {{ ansible_managed }}
+├── tests/integration/        # converge, verify, vars
+└── README.md
+{code}
+
+{code:language=yaml|linenumbers=false}
+# roles/common/artifact/meta/argument_specs.yml (extracto)
+argument_specs:
+  main:
+    short_description: Descarga el artefacto y verifica su digest
+    options:
+      artifact_url:      { type: str, required: true, description: URL en Artifactory }
+      artifact_digest:   { type: str, required: true, description: "sha256:<hex>" }
+      artifact_version:  { type: str, required: true, description: Versión semántica }
+      app_install_dir:   { type: str, required: true, description: Ruta de la app (inventario) }
+{code}
+
+h3. Reglas
+
+||Regla||Detalle||
+|Una responsabilidad|{{artifact}} descarga; no instala ni reinicia|
+|Nombres de variables|Propias con el nombre del rol ({{<rol>_}}); internas con {{__<rol>_}}. Compartidas: las del contrato y las {{app\_*}} del inventario|
+|Interfaz|Toda entrada con tipo, {{required: true}} y descripción|
+|Sin defaults|Ningún valor escondido; todo llega del contrato o del inventario|
+|Sin dependencias|Los roles se combinan en el playbook, no dentro de otro rol|
+|Nombres completos de módulos|{{ansible.builtin.copy}}, no {{copy}}|
+|Reinicios|Solo por handler; se aplican antes del health check|
+|Idempotente|La segunda ejecución da {{changed=0}}|
+
+h3. Cómo se prueba
+
+||Nivel||Qué||Cuándo||
+|Estático|yamllint, ansible-lint (perfil production), gitleaks, syntax-check|Cada commit y PR|
+|Integración|VM temporal por familia de SO: aplicar, segunda pasada con {{changed=0}} y verificación con asserts|PR que cambia el rol|
+|Fallo provocado|Se fuerza un error para ver que revierte y deja el job en rojo|Antes de DEV|
+|Rollback|Deploy + rollback en DEV por cada {{deploy_type}}|Antes de SIT|
+
+----
+
+h2. 8. Definir manejo de errores, logs y secretos
+
+||Fecha||Responsables||Entregable||
+|16/11/26|Andrés, Warren|Patrón de errores, evidencia y uso de secretos|
+
+*Qué se define:* qué pasa cuando algo falla, qué evidencia queda de cada ejecución y cómo se usan los secretos sin que aparezcan en ningún lado.
+
+h3. Errores
+
+||Situación||Qué hacer||Cómo||
+|Contrato inválido|Fallar antes de tocar servidores|{{contract_check}} con mensaje que dice qué campo y por qué|
+|Algo tarda en estar listo (servicio que arranca)|Reintentar con límite|{{until}} + {{retries}} + {{delay}}; nunca {{pause}} fijo|
+|Error transitorio de red (Artifactory, Vault)|Reintentar poco y fallar|{{retries: 3}}, {{delay: 5}}|
+|Falla a mitad del cambio en un servidor|Dejarlo como estaba y fallar|{{block}}/{{rescue}} restaura el respaldo; el job termina en {{failed}} y ROP detiene la cadena|
+
+{code:language=yaml|linenumbers=false}
+# Patrón dentro del rol appserver (nunca en el playbook)
+- name: Appserver | deploy with compensation
+  block:
+    - # dejar el artefacto, ajustar configuración, reiniciar por handler
+  rescue:
+    - name: Appserver | restore backup
+      ansible.builtin.include_role: { name: rollback }
+    - name: Appserver | fail with original reason
+      ansible.builtin.fail:
+        msg: >-
+          {{ artifact_version }} falló en {{ inventory_hostname }} en '{{ ansible_failed_task.name }}'.
+          Se restauró el respaldo. Revisar journalctl -u {{ app_service }}.
+{code}
+
+* Prohibido {{ignore_errors: true}}. Un {{rescue}} nunca deja el job en verde.
+* Mensajes accionables: qué falló, en qué servidor, qué valor y qué hacer.
+
+h3. Logs y evidencia
+
+||Dónde||Qué queda||
+|AAP|Salida completa del job, resumen por servidor, extra vars (sin secretos)|
+|ROP|Estado por ambiente y job de AAP de cada launch (contrato ③)|
+|Servidor|Rol {{audit}}: {{/etc/ansible/facts.d/<app>.fact}} con versión, {{release_id}}, {{change_id}}, job de AAP y fecha|
+|Observabilidad|Traza por ejecución con {{release_id}}, {{change_id}}, ambiente y job, para tableros y alertas|
+
+h3. Secretos
+
+* Ningún secreto en claro en git, en ROP, en el contrato ni en logs. En ROP solo viaja la referencia {{vault:ruta#campo}}.
+* AAP resuelve las referencias en tiempo de ejecución con una credencial por ambiente (AppRole), que solo lee la ruta de su ambiente.
+* {{no_log: true}} en toda tarea que recibe o escribe un secreto. El {{.env}} queda con modo {{0600}} y dueño {{app_user}}.
+* Las credenciales {{vault\-<env>}} son de un tipo de credencial propio, definido en {{aap-config}}, que inyecta la dirección de Vault y el AppRole como variables de entorno. Las credenciales de "búsqueda" de AAP no se pueden adjuntar a un job; solo llenan campos de otras credenciales.
+* SSH: credencial de máquina por ambiente para {{svc-ansible}}.
+* Gestor definitivo (HashiCorp Vault o CyberArk) lo confirma Ciberseguridad. Si cambia, solo cambia cómo {{app_env}} resuelve la referencia.
+
+----
+
+h2. 9. Estrategia de deployment para cada tecnología
+
+||Fecha||Responsables||Entregable||
+|27/11/26|Andrés, Warren, Alan|Estrategias y rollback|
+
+*Qué se define:* cómo se despliega y cómo se revierte cada tipo de despliegue. Cada {{deploy_type}} declara su estrategia en su rol y su playbook.
+
+||Estrategia||Cuándo||Cómo funciona||Cómo se revierte||
+|*Rolling* (por defecto)|Varios servidores que pueden convivir con dos versiones un momento|Un servidor a la vez: respaldo, despliegue, health check. Si uno falla, se detiene|{{rescue}} en el servidor que falló + rollback de ROP en el resto|
+|*PROD → COB*|Producción y disaster recovery|Dos launches: COB se despliega solo si PROD terminó en Success|Si falla PROD, COB no se toca. Si falla COB, rollback en COB y en PROD: los dos vuelven a la versión anterior|
+|*Canary*|Cambio de riesgo|Un servidor primero y se observa antes de seguir|*Por confirmar si aplica*|
+|*Blue-green*|Revertir en segundos|Se despliega en el color inactivo y el balanceador cambia|*Por confirmar si aplica*|
+
+h3. Tipos de rollback
+
+||Tipo||Qué revierte||Cómo||Quién lo dispara||
+|En línea|El servidor que falló|{{rescue}} del rol restaura el respaldo|Automático|
+|Del ambiente|Todos los servidores del ambiente|Mismo Job Template con {{deploy_action: rollback}}|ROP, automático o desde el portal|
+|PROD + COB|Los dos ambientes|Un rollback por ambiente, mismo {{release_id}}|ROP, automático si quedan desalineados|
+|Arreglo|—|Cambio nuevo: push, artefacto, promoción y CR|Equipo de la app|
+
+h4. Requisitos para que el rollback funcione
+
+* El respaldo se toma siempre antes de cambiar nada
+* Se define cuántos respaldos se guardan por app y dónde
+* Primer despliegue de una app: no hay respaldo; se define qué hace el rollback
+* Se prueba deploy + rollback en DEV por cada tipo de despliegue
+
+----
+
+h2. 10. Preflights (validaciones antes de despliegue para cada tecnología)
+
+||Fecha||Responsables||Entregable||
+|27/11/26|Lalo, Andrés|Catálogo de validaciones|
+
+*Qué se define:* qué revisa AAP en cada servidor antes de tocarlo. Son validaciones de solo lectura: si algo no está listo, no se cambia nada y el mensaje dice qué corregir. El ticket y la ventana de cambio no se validan aquí: eso lo hace ROP antes de lanzar.
+
+||Id||Check||Valida||
+|PF-01|{{connectivity}}|SSH y sudo con {{svc-ansible}}|
+|PF-02|{{os}}|Distribución y versión soportadas por el {{deploy_type}}|
+|PF-03|{{resources}}|Espacio para el artefacto y el respaldo, memoria y carga|
+|PF-04|{{ports}}|Puerto de la app y destinos alcanzables (Artifactory, Vault)|
+|PF-05|{{runtime}}|Versión del runtime que pide el {{deploy_type}} (Java, Node…)|
+|PF-06|{{secrets}}|Cada referencia {{vault:}} de {{app_vars}} se puede leer, sin mostrarla|
+|PF-07|{{service}}|La unidad {{app_service}} existe; estado actual registrado|
+|PF-08|{{artifact}}|{{artifact_url}} responde desde el servidor|
+
+* Cada {{deploy_type}} declara qué checks corre y sus umbrales en su rol; las reglas comunes viven en {{preflight}}.
+* Orden: de lo más barato y bloqueante (conexión, SO) a lo más caro (secretos, artefacto).
+* Cada check termina en un {{assert}} con mensaje claro. Ejemplo: "PF-03: /opt tiene 1,2 GB libres en pay-uat-01; se necesitan 2 GB para artefacto y respaldo."
+
+----
+
+h2. Lo que se nos puede estar escapando
+
+Puntos para cerrar en las sesiones de diseño.
+
+h3. Detalles de AAP que quedan en {{aap-config}} y se prueban el 04/12
+
+* *IDs en vez de nombres:* El launch recibe inventario y credenciales por ID. El Self Service de ROP los resuelve por nombre.
+* *Permiso Use sobre credenciales:* Si {{svc_rop}} no lo tiene, el launch responde 403.
+* *{{ignored_fields}}:* Si un prompt no está habilitado, AAP no falla: ignora el campo. ROP debe revisarlo en cada respuesta.
+* *Concurrencia:* Sin "Concurrent Jobs" los despliegues de apps distintas hacen fila en el mismo template.
+* *Credencial de Vault:* Tiene que ser un tipo de credencial propio con AppRole; las de búsqueda no se adjuntan al job.
+
+h3. Temas que no están en el plan
+
+* *Respaldos:* Cuántos se guardan, dónde, cuánto espacio y qué hace el rollback en el primer despliegue de una app.
+* *Alta de servidores:* Cuenta {{svc-ansible}}, acceso SSH y runtime antes del primer despliegue ({{onboard-server.yml}}). ¿Quién lo hace y cuándo?
+* *Familias fuera de Linux:* Hay imágenes para Windows, bases de datos y OpenShift: cada una pide credenciales y roles distintos. ¿Entran en la primera ola?
+* *Retención de evidencia:* AAP limpia jobs viejos por defecto; hay que alinear la retención con lo que pide auditoría.
+* *Token de {{svc_rop}}:* Dónde se guarda en ROP y cada cuánto se rota.
+* *Ruta de emergencia:* Qué pasa si ROP no está disponible y hay que desplegar o revertir en PROD.
+* *Gestor de secretos:* CyberArk vs HashiCorp con Ciberseguridad, sin fecha.
+
+----
+
+h2. Después del diseño
+
+||Fase||Actividad||Fecha||Responsables||
+|Validación AAP|Conectividad AAP → servidores|04/12/26|Lalo, Bless|
+|Validación AAP|Integración ROP ↔ AAP|04/12/26|Andrés, Gis|
+|Desarrollo|Rollback por tech stack|04/12/26|Warren|
+|Desarrollo|Desarrollo de playbooks (por olas)|02/04/27|Todos (olas: Gis)|
+|Configuración AAP|Desplegar, rollback y monitoreo|sin fecha|—|
+|Ambientes bajos|Despliegue · rollback · monitoreo|20/01/27 · 26/01/27 · feb 2027|—|
+|PROD|Despliegue · monitoreo|22/02/27 · feb 2027|—|
+
+{warning}
+*A revisar:* el desarrollo de playbooks termina el 02/04/27 y PROD empieza el 22/02/27. Se asume que PROD arranca con la primera ola.
+{warning}
+
+_Documento de trabajo del equipo de automatización._
+
+----
